@@ -1,0 +1,156 @@
+---
+// src/pages/minecraft/skyblock.astro
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+---
+
+<Layout title="Minecraft - Servidor Skyblock">
+  <main class="min-h-screen bg-gradient-to-br from-cyan-900 to-sky-900 py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header del Servidor -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <a href="/minecraft" class="inline-flex items-center text-cyan-300 hover:text-cyan-200 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Volver a Minecraft
+          </a>
+        </div>
+        
+        <div class="flex items-center mb-4">
+          <img src="/minecraft-skyblock.jpg" alt="Servidor Skyblock" class="w-16 h-16 rounded-lg mr-4 object-cover">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Servidor Skyblock</h1>
+            <p class="text-gray-300">Supervivencia en las alturas</p>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-cyan-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              <span class="font-medium">Jugadores</span>
+            </div>
+            <span class="text-lg font-medium">16 En línea</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-yellow-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              <span class="font-medium">Estado</span>
+            </div>
+            <span class="text-lg font-medium">En línea</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-sky-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+              <span class="font-medium">Versión</span>
+            </div>
+            <span class="text-lg font-medium">1.20.1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario para nueva publicación -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8">
+        <h3 class="text-xl font-bold text-white mb-4">Comparte tu progreso en el cielo</h3>
+        <form class="space-y-4">
+          <textarea 
+            placeholder="¿Cómo va tu isla en el cielo?"
+            class="w-full bg-white/5 border border-white/20 rounded-lg p-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
+            rows="3"
+          ></textarea>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <button type="button" class="flex items-center text-cyan-300 hover:text-cyan-200 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Imagen
+              </button>
+            </div>
+            <button type="submit" class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg transition-colors">
+              Publicar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Muro de publicaciones -->
+      <div class="space-y-6">
+        <PostCard 
+          author="SkyMaster"
+          time="Hace 20 minutos"
+          content="¡Finalmente logré hacer un generador de cobblestone automático! Ya no tendré que expandir mi isla bloque por bloque ⛏️"
+          image="/minecraft-cobble-gen.jpg"
+          likes="42"
+          comments="16"
+        />
+        
+        <PostCard 
+          author="CloudWalker"
+          time="Hace 1 hora"
+          content="Mi granja de árboles ya está produciendo suficiente madera. Próximo objetivo: granja de animales en el cielo 🌳"
+          likes="28"
+          comments="12"
+        />
+        
+        <PostCard 
+          author="IslandBuilder"
+          time="Hace 3 horas"
+          content="¿Alguien más se cayó al vacío mientras construía? Perdí 2 horas de progreso pero ya estoy de vuelta 😅"
+          likes="67"
+          comments="34"
+        />
+        
+        <PostCard 
+          author="ResourceGatherer"
+          time="Hace 5 horas"
+          content="Logré conseguir mi primer diamante del cofre de recompensas. ¡Ahora puedo hacer herramientas mejores! 💎"
+          image="/minecraft-diamond.jpg"
+          likes="89"
+          comments="27"
+        />
+        
+        <PostCard 
+          author="FarmExpert"
+          time="Hace 8 horas"
+          content="Mi granja de trigo automatizada está funcionando perfectamente. 64 panes cada 10 minutos 🍞"
+          likes="35"
+          comments="19"
+        />
+        
+        <PostCard 
+          author="SkyArchitect"
+          time="Hace 12 horas"
+          content="Construí un puente hacia otra isla flotante. ¡Encontré un cofre con items raros!"
+          image="/minecraft-sky-bridge.jpg"
+          likes="73"
+          comments="25"
+        />
+        
+        <PostCard 
+          author="ChallengeSeeker"
+          time="Hace 1 día"
+          content="Completé el desafío de hacer un portal al Nether en Skyblock. Fue más difícil de lo que pensaba 🔥"
+          likes="156"
+          comments="48"
+        />
+        
+        <PostCard 
+          author="TeamPlayer"
+          time="Hace 1 día"
+          content="¿Alguien quiere formar equipo? Podemos conectar nuestras islas y hacer proyectos más grandes juntos"
+          likes="45"
+          comments="23"
+        />
+      </div>
+    </div>
+  </main>
+</Layout>

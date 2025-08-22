@@ -1,0 +1,160 @@
+---
+// src/pages/fortnite.astro
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+---
+
+<Layout title="Fortnite - Muro">
+  <main class="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 py-12 px-4 relative overflow-hidden">
+    <!-- Animated background elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse animation-delay-4000"></div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto relative z-10">
+      <!-- Header del Juego -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8 border border-white/20">
+        <div class="flex items-center justify-between mb-4">
+          <a href="/" class="inline-flex items-center text-blue-300 hover:text-blue-200 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Volver a juegos
+          </a>
+        </div>
+        
+        <div class="flex items-center mb-4">
+          <img src="/fortnite.svg" alt="Fortnite" class="w-16 h-16 rounded-lg mr-4 object-cover">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Fortnite</h1>
+            <p class="text-gray-300">Battle Royale y modos creativos</p>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-blue-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              <span class="font-medium">Jugadores</span>
+            </div>
+            <span class="text-lg font-medium">100 En partida</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-yellow-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="font-medium">Victoria Royale</span>
+            </div>
+            <span class="text-lg font-medium">15 Hoy</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-green-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              <span class="font-medium">Temporada</span>
+            </div>
+            <span class="text-lg font-medium">Capítulo 5</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario para nuevo post -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8 border border-white/20">
+        <form class="space-y-4">
+          <div>
+            <textarea 
+              placeholder="¿Conseguiste tu Victoria Royale hoy?"
+              class="w-full bg-white/5 border border-white/20 rounded-lg p-4 text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <label class="flex items-center text-gray-300 hover:text-white cursor-pointer transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z"></path>
+                </svg>
+                Añadir imagen
+                <input type="file" class="hidden" accept="image/*">
+              </label>
+            </div>
+            <button 
+              type="submit"
+              class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
+            >
+              Publicar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Posts del muro -->
+      <div class="space-y-6">
+        <PostCard 
+          author="NinjaGamer"
+          time="Hace 15 min"
+          content="¡VICTORIA ROYALE! 🏆 Conseguí mi primera victoria de la temporada con 12 eliminaciones. El nuevo loot pool está increíble!"
+          likes="42"
+          comments="18"
+        />
+        
+        <PostCard 
+          author="BuildMaster"
+          time="Hace 45 min"
+          content="¿Alguien más extraña las construcciones en Zero Build? Me encanta el modo pero a veces quiero hacer una torre rápida"
+          image="/fortnite-build.jpg"
+          likes="28"
+          comments="15"
+        />
+        
+        <PostCard 
+          author="SkinCollector"
+          time="Hace 1 hora"
+          content="El nuevo skin de la tienda está BRUTAL 🔥 Ya sé en qué me voy a gastar mis V-Bucks"
+          likes="35"
+          comments="22"
+        />
+        
+        <PostCard 
+          author="ProPlayer"
+          time="Hace 3 horas"
+          content="Consejo del día: siempre lleven materiales de curación. Me salvaron en el top 5 cuando tenía solo 1 HP"
+          image="/fortnite-healing.jpg"
+          likes="67"
+          comments="31"
+        />
+        
+        <PostCard 
+          author="CreativeBuilder"
+          time="Hace 5 horas"
+          content="Terminé mi nuevo mapa creativo! Es un parkour con temática futurista. Código: 1234-5678-9012"
+          likes="89"
+          comments="45"
+        />
+        
+        <PostCard 
+          author="StormChaser"
+          time="Hace 8 horas"
+          content="La tormenta me pilló construyendo y tuve que correr como loco. Casi no llego a la zona segura 😅"
+          image="/fortnite-storm.jpg"
+          likes="23"
+          comments="12"
+        />
+        
+        <PostCard 
+          author="SquadLeader"
+          time="Hace 1 día"
+          content="Buscando squad para ranked. Necesito gente que sepa comunicarse y jugar en equipo. MP si interesa!"
+          likes="19"
+          comments="8"
+        />
+      </div>
+    </div>
+  </main>
+</Layout>

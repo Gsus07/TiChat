@@ -1,0 +1,165 @@
+---
+// src/pages/minecraft/minigames.astro
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+---
+
+<Layout title="Minecraft - Servidor Minijuegos">
+  <main class="min-h-screen bg-gradient-to-br from-pink-900 to-rose-900 py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header del Servidor -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <a href="/minecraft" class="inline-flex items-center text-pink-300 hover:text-pink-200 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Volver a Minecraft
+          </a>
+        </div>
+        
+        <div class="flex items-center mb-4">
+          <img src="/minecraft-minigames.jpg" alt="Servidor Minijuegos" class="w-16 h-16 rounded-lg mr-4 object-cover">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Servidor Minijuegos</h1>
+            <p class="text-gray-300">Diversión y competencia sin límites</p>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-pink-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              <span class="font-medium">Jugadores</span>
+            </div>
+            <span class="text-lg font-medium">32 En línea</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-yellow-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              <span class="font-medium">Estado</span>
+            </div>
+            <span class="text-lg font-medium">En línea</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-rose-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+              <span class="font-medium">Versión</span>
+            </div>
+            <span class="text-lg font-medium">1.20.1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario para nueva publicación -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8">
+        <h3 class="text-xl font-bold text-white mb-4">Comparte tus victorias</h3>
+        <form class="space-y-4">
+          <textarea 
+            placeholder="¿En qué minijuego ganaste hoy?"
+            class="w-full bg-white/5 border border-white/20 rounded-lg p-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
+            rows="3"
+          ></textarea>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <button type="button" class="flex items-center text-pink-300 hover:text-pink-200 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Imagen
+              </button>
+            </div>
+            <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-lg transition-colors">
+              Publicar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Muro de publicaciones -->
+      <div class="space-y-6">
+        <PostCard 
+          author="SpeedRunner"
+          time="Hace 5 minutos"
+          content="¡Nuevo récord personal en Parkour! Completé el nivel experto en 2:34 minutos 🏃‍♂️💨"
+          image="/minecraft-parkour.jpg"
+          likes="67"
+          comments="24"
+        />
+        
+        <PostCard 
+          author="BuildBattler"
+          time="Hace 30 minutos"
+          content="Gané el Build Battle con mi castillo de arena. El tema era 'vacaciones' y creo que lo clavé 🏰"
+          likes="45"
+          comments="18"
+        />
+        
+        <PostCard 
+          author="SpleefMaster"
+          time="Hace 1 hora"
+          content="Racha de 15 victorias consecutivas en Spleef! Mi estrategia de quedarse en el centro funciona perfectamente ⛏️"
+          image="/minecraft-spleef.jpg"
+          likes="89"
+          comments="32"
+        />
+        
+        <PostCard 
+          author="HideSeeker"
+          time="Hace 2 horas"
+          content="Me escondí como un bloque de hierba durante 10 minutos en Hide and Seek. Nadie me encontró 😂"
+          likes="123"
+          comments="45"
+        />
+        
+        <PostCard 
+          author="TNTRunner"
+          time="Hace 4 horas"
+          content="TNT Run es mi minijuego favorito. La adrenalina de correr mientras todo explota detrás de ti es increíble 💣"
+          image="/minecraft-tnt-run.jpg"
+          likes="56"
+          comments="21"
+        />
+        
+        <PostCard 
+          author="BedWarsPro"
+          time="Hace 6 horas"
+          content="Defendí mi cama contra 3 equipos al mismo tiempo en Bed Wars. Las torres de obsidiana son clave 🛏️"
+          likes="78"
+          comments="29"
+        />
+        
+        <PostCard 
+          author="SkyWarrior"
+          time="Hace 8 horas"
+          content="Sky Wars en el mapa de islas flotantes es épico. Logré hacer un puente de 20 bloques bajo presión"
+          image="/minecraft-skywars.jpg"
+          likes="91"
+          comments="37"
+        />
+        
+        <PostCard 
+          author="TeamCaptain"
+          time="Hace 12 horas"
+          content="Buscando equipo para el torneo de minijuegos del próximo sábado. ¡Hay premios increíbles! 🏆"
+          likes="34"
+          comments="52"
+        />
+        
+        <PostCard 
+          author="LuckyBlocker"
+          time="Hace 1 día"
+          content="Lucky Block Wars me dio una espada de diamante con Sharpness V en el primer bloque. ¡Qué suerte! 🍀"
+          likes="145"
+          comments="63"
+        />
+      </div>
+    </div>
+  </main>
+</Layout>

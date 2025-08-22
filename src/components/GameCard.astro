@@ -1,0 +1,55 @@
+---
+// src/components/GameCard.astro
+---
+<a href={Astro.props.link} class="block group relative">
+  <!-- Glow effect background -->
+  <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl blur opacity-0 group-hover:opacity-75 transition duration-500"></div>
+  
+  <!-- Main card -->
+  <div class="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-purple-500/25 border border-white/10 group-hover:border-purple-500/50">
+    <!-- Image container with overlay effects -->
+    <div class="relative h-56 overflow-hidden">
+      <img 
+        src={Astro.props.image} 
+        alt={Astro.props.title}
+        class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+      />
+      <!-- Gradient overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500"></div>
+      
+      <!-- Floating play icon -->
+      <div class="absolute top-4 right-4 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M8 5v10l8-5-8-5z"/>
+        </svg>
+      </div>
+      
+      <!-- Shimmer effect -->
+      <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
+    </div>
+    
+    <!-- Content section -->
+    <div class="p-6 relative">
+      <!-- Title with gradient -->
+      <h2 class="text-2xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 group-hover:from-purple-300 group-hover:to-blue-300 transition-all duration-500">
+        {Astro.props.title}
+      </h2>
+      
+      <!-- Description -->
+      <p class="text-gray-400 group-hover:text-gray-300 transition-colors duration-300 leading-relaxed">
+        {Astro.props.description}
+      </p>
+      
+      <!-- Action indicator -->
+      <div class="flex items-center mt-4 text-purple-400 group-hover:text-purple-300 transition-colors duration-300">
+        <span class="text-sm font-medium">Explorar</span>
+        <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </div>
+      
+      <!-- Decorative elements -->
+      <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+    </div>
+  </div>
+</a>

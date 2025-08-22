@@ -1,0 +1,160 @@
+---
+// src/pages/pinturillo.astro
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+---
+
+<Layout title="Pinturillo - Muro">
+  <main class="min-h-screen bg-gradient-to-br from-green-900 to-blue-900 py-12 px-4 relative overflow-hidden">
+    <!-- Animated background elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse animation-delay-4000"></div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto relative z-10">
+      <!-- Header del Juego -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8 border border-white/20">
+        <div class="flex items-center justify-between mb-4">
+          <a href="/" class="inline-flex items-center text-green-300 hover:text-green-200 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Volver a juegos
+          </a>
+        </div>
+        
+        <div class="flex items-center mb-4">
+          <img src="/pinturillo.svg" alt="Pinturillo" class="w-16 h-16 rounded-lg mr-4 object-cover">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Pinturillo</h1>
+            <p class="text-gray-300">Dibuja y adivina con amigos</p>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-green-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              <span class="font-medium">Jugadores</span>
+            </div>
+            <span class="text-lg font-medium">8 Dibujando</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-blue-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="font-medium">Aciertos</span>
+            </div>
+            <span class="text-lg font-medium">12 Hoy</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-yellow-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+              </svg>
+              <span class="font-medium">Turno</span>
+            </div>
+            <span class="text-lg font-medium">Tu turno</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario para nuevo post -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8 border border-white/20">
+        <form class="space-y-4">
+          <div>
+            <textarea 
+              placeholder="¿Qué fue lo más difícil de dibujar hoy?"
+              class="w-full bg-white/5 border border-white/20 rounded-lg p-4 text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <label class="flex items-center text-gray-300 hover:text-white cursor-pointer transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z"></path>
+                </svg>
+                Añadir imagen
+                <input type="file" class="hidden" accept="image/*">
+              </label>
+            </div>
+            <button 
+              type="submit"
+              class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-semibold"
+            >
+              Publicar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Posts del muro -->
+      <div class="space-y-6">
+        <PostCard 
+          author="ArtistaPro"
+          time="Hace 10 min"
+          content="¡Nadie adivinó mi dibujo de 'elefante'! Admito que parecía más un ratón gigante 🐭🎨"
+          likes="34"
+          comments="16"
+        />
+        
+        <PostCard 
+          author="AdivinaFácil"
+          time="Hace 30 min"
+          content="Conseguí adivinar 'mariposa' con solo 3 líneas dibujadas. A veces la intuición funciona"
+          image="/pinturillo-butterfly.jpg"
+          likes="28"
+          comments="11"
+        />
+        
+        <PostCard 
+          author="DibujoRápido"
+          time="Hace 1 hora"
+          content="Consejo: cuando no sepas qué dibujar, empieza con formas básicas. Círculos y líneas salvan vidas"
+          likes="45"
+          comments="19"
+        />
+        
+        <PostCard 
+          author="ColorMaster"
+          time="Hace 2 horas"
+          content="¿Por qué siempre elijo el color equivocado? Quería dibujar un tomate y salió una manzana verde 🍅➡️🍏"
+          image="/pinturillo-colors.jpg"
+          likes="52"
+          comments="23"
+        />
+        
+        <PostCard 
+          author="PalabrasDifíciles"
+          time="Hace 4 horas"
+          content="Me tocó dibujar 'otorrinolaringólogo'. ¿En serio? ¿Cómo se dibuja eso? 😅"
+          likes="67"
+          comments="31"
+        />
+        
+        <PostCard 
+          author="TiempoLímite"
+          time="Hace 6 horas"
+          content="5 segundos para dibujar 'casa' y todos adivinaron. A veces menos es más"
+          image="/pinturillo-house.jpg"
+          likes="39"
+          comments="14"
+        />
+        
+        <PostCard 
+          author="ChatDivertido"
+          time="Hace 1 día"
+          content="El chat mientras jugamos es lo mejor. Las respuestas incorrectas son más divertidas que las correctas"
+          likes="73"
+          comments="42"
+        />
+      </div>
+    </div>
+  </main>
+</Layout>

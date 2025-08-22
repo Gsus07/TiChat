@@ -1,11 +1,91 @@
 ---
-import Welcome from '../components/Welcome.astro';
+// src/pages/index.astro
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import GameCard from '../components/GameCard.astro';
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Juegos que Jugamos">
+  <main class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4 relative overflow-hidden">
+    <!-- Animated background elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse animation-delay-4000"></div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto relative z-10">
+      <!-- Hero Section -->
+      <div class="text-center mb-16">
+        <div class="inline-block p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mb-6">
+          <div class="bg-slate-900 rounded-full px-6 py-2">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 font-semibold">🎮 Gaming Memories</span>
+          </div>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-bold text-center mb-6">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-blue-200 drop-shadow-2xl">
+            Juegos que Jugamos
+          </span>
+        </h1>
+        <p class="text-xl md:text-2xl text-center text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+          Revive los <span class="text-purple-400 font-semibold">mejores momentos</span> de juego con tus amigos y 
+          <span class="text-blue-400 font-semibold">comparte nuevas aventuras</span>
+        </p>
+        <div class="flex justify-center space-x-4">
+          <div class="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></div>
+          <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce animation-delay-200"></div>
+          <div class="w-2 h-2 bg-indigo-500 rounded-full animate-bounce animation-delay-400"></div>
+        </div>
+      </div>
+      
+      <!-- Games Grid Section -->
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-3xl blur-3xl"></div>
+        <div class="relative bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10">
+          <h2 class="text-3xl font-bold text-center text-white mb-8">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+              Selecciona tu Juego
+            </span>
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <GameCard 
+          title="Minecraft" 
+          description="Construcción y aventuras infinitas" 
+          image="/minecraft.svg"
+          link="/minecraft"
+        />
+        <GameCard 
+          title="Call of Duty" 
+          description="Acción y estrategia en equipo" 
+          image="/cod.svg"
+          link="/call-of-duty"
+        />
+        <GameCard 
+          title="Pinturillo" 
+          description="Dibujo y adivinanzas divertidas" 
+          image="/pinturillo.svg"
+          link="/pinturillo"
+        />
+        <GameCard 
+          title="Uno" 
+          description="Cartas y estrategia clásica" 
+          image="/uno.svg"
+          link="/uno"
+        />
+        <GameCard 
+          title="Among Us" 
+          description="Engaño y deducción en el espacio" 
+          image="/amongus.svg"
+          link="/among-us"
+        />
+        <GameCard 
+          title="Fortnite" 
+          description="Batalla real y construcciones" 
+          image="/fortnite.svg"
+          link="/fortnite"
+        />
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </Layout>

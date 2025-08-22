@@ -1,0 +1,47 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="canvasGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f3f4f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="#fbbf24"/>
+  
+  <!-- Canvas -->
+  <rect x="50" y="50" width="300" height="200" fill="url(#canvasGrad)" stroke="#374151" stroke-width="3" rx="10"/>
+  
+  <!-- Drawing on canvas -->
+  <circle cx="150" cy="120" r="25" fill="none" stroke="#ef4444" stroke-width="4"/>
+  <circle cx="140" cy="115" r="3" fill="#1f2937"/>
+  <circle cx="160" cy="115" r="3" fill="#1f2937"/>
+  <path d="M 135 135 Q 150 145 165 135" fill="none" stroke="#1f2937" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Simple house drawing -->
+  <rect x="220" y="160" width="60" height="50" fill="none" stroke="#3b82f6" stroke-width="3"/>
+  <polygon points="220,160 250,130 280,160" fill="none" stroke="#dc2626" stroke-width="3"/>
+  <rect x="240" y="180" width="15" height="30" fill="none" stroke="#16a34a" stroke-width="3"/>
+  
+  <!-- Paintbrush -->
+  <rect x="20" y="120" width="8" height="60" fill="#fbbf24" rx="2"/>
+  <ellipse cx="24" cy="115" rx="6" ry="8" fill="#374151"/>
+  <rect x="22" y="105" width="4" height="15" fill="#6b7280"/>
+  
+  <!-- Color palette -->
+  <rect x="320" y="80" width="60" height="40" fill="#ffffff" stroke="#374151" stroke-width="2" rx="5"/>
+  <circle cx="335" cy="95" r="6" fill="#ef4444"/>
+  <circle cx="350" cy="95" r="6" fill="#3b82f6"/>
+  <circle cx="365" cy="95" r="6" fill="#16a34a"/>
+  <circle cx="335" cy="110" r="6" fill="#fbbf24"/>
+  <circle cx="350" cy="110" r="6" fill="#8b5cf6"/>
+  <circle cx="365" cy="110" r="6" fill="#f97316"/>
+  
+  <!-- Pencil strokes -->
+  <path d="M 80 80 Q 90 85 100 80" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 320 180 Q 330 185 340 180" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 60 220 Q 70 225 80 220" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Title -->
+  <text x="200" y="35" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#dc2626">PINTURILLO</text>
+</svg>

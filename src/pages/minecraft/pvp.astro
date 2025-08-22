@@ -1,0 +1,156 @@
+---
+// src/pages/minecraft/pvp.astro
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+---
+
+<Layout title="Minecraft - Servidor PvP">
+  <main class="min-h-screen bg-gradient-to-br from-red-900 to-orange-900 py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header del Servidor -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <a href="/minecraft" class="inline-flex items-center text-red-300 hover:text-red-200 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Volver a Minecraft
+          </a>
+        </div>
+        
+        <div class="flex items-center mb-4">
+          <img src="/minecraft-pvp.jpg" alt="Servidor PvP" class="w-16 h-16 rounded-lg mr-4 object-cover">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Servidor PvP</h1>
+            <p class="text-gray-300">Batallas épicas entre jugadores</p>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-red-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              <span class="font-medium">Jugadores</span>
+            </div>
+            <span class="text-lg font-medium">24 En línea</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-yellow-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              <span class="font-medium">Estado</span>
+            </div>
+            <span class="text-lg font-medium">En línea</span>
+          </div>
+          <div class="bg-white/5 rounded-lg p-3">
+            <div class="flex items-center text-orange-300 mb-1">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+              <span class="font-medium">Versión</span>
+            </div>
+            <span class="text-lg font-medium">1.20.1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario para nueva publicación -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8">
+        <h3 class="text-xl font-bold text-white mb-4">Comparte tus batallas</h3>
+        <form class="space-y-4">
+          <textarea 
+            placeholder="¿Cómo fue tu última batalla?"
+            class="w-full bg-white/5 border border-white/20 rounded-lg p-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+            rows="3"
+          ></textarea>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <button type="button" class="flex items-center text-red-300 hover:text-red-200 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Imagen
+              </button>
+            </div>
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors">
+              Publicar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Muro de publicaciones -->
+      <div class="space-y-6">
+        <PostCard 
+          author="WarriorKing"
+          time="Hace 10 minutos"
+          content="¡Acabo de ganar un 1v3 en la arena! Mi estrategia de hit-and-run funcionó perfectamente ⚔️"
+          image="/minecraft-arena.jpg"
+          likes="56"
+          comments="23"
+        />
+        
+        <PostCard 
+          author="SwordMaster"
+          time="Hace 45 minutos"
+          content="Mi nueva espada de netherite con Sharpness V está destruyendo en las batallas. ¿Alguien quiere un duelo?"
+          likes="34"
+          comments="18"
+        />
+        
+        <PostCard 
+          author="ArcherPro"
+          time="Hace 2 horas"
+          content="Logré un tiro de 50 bloques de distancia con el arco. El otro jugador ni siquiera me vio venir 🏹"
+          image="/minecraft-archery.jpg"
+          likes="78"
+          comments="31"
+        />
+        
+        <PostCard 
+          author="TacticalGamer"
+          time="Hace 4 horas"
+          content="Organicé una emboscada perfecta en el puente. 5 kills seguidos sin morir una sola vez"
+          likes="45"
+          comments="19"
+        />
+        
+        <PostCard 
+          author="BerserkerRage"
+          time="Hace 6 horas"
+          content="¿Quién más piensa que las batallas en el Nether son las más intensas? La lava añade mucha tensión 🔥"
+          image="/minecraft-nether-pvp.jpg"
+          likes="67"
+          comments="28"
+        />
+        
+        <PostCard 
+          author="StealthNinja"
+          time="Hace 8 horas"
+          content="Poción de invisibilidad + TNT = combinación letal. Nadie espera el ataque sorpresa 💣"
+          likes="89"
+          comments="35"
+        />
+        
+        <PostCard 
+          author="TeamLeader"
+          time="Hace 12 horas"
+          content="Buscando equipo para el torneo de este fin de semana. Necesito 3 jugadores experimentados en PvP"
+          likes="23"
+          comments="41"
+        />
+        
+        <PostCard 
+          author="LegendaryFighter"
+          time="Hace 1 día"
+          content="Después de 6 meses practicando, finalmente llegué al top 10 del ranking. ¡El esfuerzo valió la pena!"
+          likes="156"
+          comments="67"
+        />
+      </div>
+    </div>
+  </main>
+</Layout>
