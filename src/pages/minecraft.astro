@@ -265,10 +265,14 @@ import ServerCard from '../components/ServerCard.astro';
   </main>
 
   <script>
-    // Cargar servidores desde localStorage
+    // Cargar servidores desde localStorage - específicos para Minecraft
     function loadCustomServers() {
-      const customServers = JSON.parse(localStorage.getItem('minecraftServers') || '[]');
+      const customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
       const serverGrid = document.querySelector('.grid');
+      
+      // Limpiar servidores personalizados existentes
+      const existingCustomServers = serverGrid?.querySelectorAll('[data-custom-server]');
+      existingCustomServers?.forEach(server => server.remove());
       
       customServers.forEach((server: {
         name: string;
@@ -379,6 +383,7 @@ import ServerCard from '../components/ServerCard.astro';
       const serverCard = document.createElement('a');
       serverCard.href = server.link;
       serverCard.className = 'block group relative';
+      serverCard.setAttribute('data-custom-server', 'true');
       serverCard.innerHTML = `
         <!-- Glow effect background -->
         <div class="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur opacity-0 group-hover:opacity-75 transition duration-500"></div>
@@ -485,15 +490,22 @@ import ServerCard from '../components/ServerCard.astro';
     // Eliminar servidor
     function deleteServer(serverId: string) {
       if (confirm('¿Estás seguro de que quieres eliminar este servidor?')) {
-        let customServers = JSON.parse(localStorage.getItem('minecraftServers') || '[]');
+        let customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
         customServers = customServers.filter((server: { id: string }) => server.id !== serverId);
-        localStorage.setItem('minecraftServers', JSON.stringify(customServers));
+        localStorage.setItem('minecraft_customServers', JSON.stringify(customServers));
         location.reload();
       }
     }
     
-    // Event listeners
-    document.addEventListener('DOMContentLoaded', function() {
+    // Variables globales para cleanup
+    let cleanupFunctions: (() => void)[] = [];
+    
+    // Función de inicialización
+    function initMinecraftPage() {
+      // Limpiar event listeners anteriores
+      cleanupFunctions.forEach(cleanup => cleanup());
+      cleanupFunctions = [];
+      
       loadCustomServers();
       restoreHiddenServers();
       
@@ -503,75 +515,94 @@ import ServerCard from '../components/ServerCard.astro';
       const cancelBtn = document.getElementById('cancelBtn');
       const serverForm = document.getElementById('serverForm');
       
-      addServerBtn?.addEventListener('click', () => {
+      // Event listener para abrir modal
+      const openModalHandler = () => {
         modal?.classList.remove('hidden');
-      });
+      };
+      addServerBtn?.addEventListener('click', openModalHandler);
+      cleanupFunctions.push(() => addServerBtn?.removeEventListener('click', openModalHandler));
+      
+      // Event listeners para cerrar modal
+      const closeModalHandler = () => {
+        modal?.classList.add('hidden');
+        (serverForm as HTMLFormElement)?.reset();
+      };
       
       [closeModal, cancelBtn].forEach(btn => {
-        btn?.addEventListener('click', () => {
+        btn?.addEventListener('click', closeModalHandler);
+        cleanupFunctions.push(() => btn?.removeEventListener('click', closeModalHandler));
+      });
+      
+      // Event listener para cerrar modal al hacer click fuera
+      const modalClickHandler = (e: Event) => {
+        if (e.target === modal) {
           modal?.classList.add('hidden');
           (serverForm as HTMLFormElement)?.reset();
-        });
-      });
-      
-      modal?.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.classList.add('hidden');
-(serverForm as HTMLFormElement)?.reset();
         }
-      });
+      };
+      modal?.addEventListener('click', modalClickHandler);
+      cleanupFunctions.push(() => modal?.removeEventListener('click', modalClickHandler));
       
-      serverForm?.addEventListener('submit', (e) => {
+      // Event listener para envío del formulario
+      const formSubmitHandler = (e: Event) => {
         e.preventDefault();
+        
+        const serverName = (document.getElementById('serverName') as HTMLInputElement)?.value || '';
+        const serverSlug = serverName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
         
         const serverData = {
           id: Date.now().toString(),
-          name: (document.getElementById('serverName') as HTMLInputElement)?.value || '',
+          name: serverName,
           description: (document.getElementById('serverDescription') as HTMLInputElement)?.value || '',
           ip: (document.getElementById('serverIP') as HTMLInputElement)?.value || '',
           port: (document.getElementById('serverPort') as HTMLInputElement)?.value || '',
           version: (document.getElementById('serverVersion') as HTMLInputElement)?.value || '',
           image: (document.getElementById('serverImage') as HTMLInputElement)?.value || '',
-          link: `/minecraft/custom-${Date.now()}`
+          link: `/minecraft/custom-${serverSlug}`
         };
         
-        // Guardar en localStorage
-        const customServers = JSON.parse(localStorage.getItem('minecraftServers') || '[]');
+        // Guardar en localStorage - específico para Minecraft
+        const customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
         customServers.push(serverData);
-        localStorage.setItem('minecraftServers', JSON.stringify(customServers));
+        localStorage.setItem('minecraft_customServers', JSON.stringify(customServers));
         
-        // Crear página del servidor
-        createServerPage(serverData);
+        // El servidor ya está guardado en la lista principal
         
-modal?.classList.add('hidden');
-(serverForm as HTMLFormElement).reset();
-        location.reload();
-      });
+        modal?.classList.add('hidden');
+        (serverForm as HTMLFormElement)?.reset();
+        
+        // Recargar servidores sin recargar la página
+        loadCustomServers();
+      };
+      serverForm?.addEventListener('submit', formSubmitHandler);
+      cleanupFunctions.push(() => serverForm?.removeEventListener('submit', formSubmitHandler));
+    }
+    
+    // Cleanup antes de transiciones
+    function cleanup() {
+      cleanupFunctions.forEach(cleanup => cleanup());
+      cleanupFunctions = [];
+    }
+    
+    // Event listeners para View Transitions - solo en página de Minecraft
+    document.addEventListener('astro:page-load', () => {
+      if (window.location.pathname === '/minecraft') {
+        initMinecraftPage();
+      }
     });
+    document.addEventListener('astro:before-preparation', cleanup);
+    
+    // Inicialización inicial - solo en página de Minecraft
+    if (window.location.pathname === '/minecraft') {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMinecraftPage);
+      } else {
+        initMinecraftPage();
+      }
+    }
     
     // Crear página del servidor dinámicamente
-    function createServerPage(serverData: {
-      id: string;
-      name: string;
-      description: string;
-      ip: string;
-      port: string;
-      version: string;
-      image: string;
-      link: string;
-    }) {
-      // Guardar datos del servidor para la página dinámica
-      const serverPageData = {
-        ...serverData,
-        createdAt: new Date().toISOString()
-      };
-      
-      // Guardar datos específicos del servidor
-      localStorage.setItem(`server_${serverData.id}`, JSON.stringify(serverPageData));
-      
-      console.log('Servidor creado:', serverData);
-      console.log('Página del servidor disponible en:', serverData.link);
-    }
+    // Función eliminada - los datos se manejan directamente en la lista principal
     
     // Funciones para la galería de imágenes
     function openImageGallery() {

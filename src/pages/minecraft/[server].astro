@@ -2,6 +2,16 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 
+// Función requerida para rutas dinámicas
+export async function getStaticPaths() {
+  // Retornamos rutas vacías ya que los servidores se crean dinámicamente
+  // Las páginas se generarán en el cliente
+  return [];
+}
+
+// Configurar para renderizado en el cliente
+export const prerender = false;
+
 // Esta página maneja servidores dinámicos creados por el usuario
 const { server } = Astro.params;
 
@@ -170,13 +180,15 @@ if (server && server.startsWith('custom-')) {
     // Cargar datos del servidor personalizado desde localStorage
     document.addEventListener('DOMContentLoaded', function() {
       const currentPath = window.location.pathname;
-      const serverMatch = currentPath.match(/\/minecraft\/(custom-\d+)/);
+      const serverMatch = currentPath.match(/\/minecraft\/(custom-.+)/);
       
       if (serverMatch) {
-        const serverId = serverMatch[1].replace('custom-', '');
-        const serverData = JSON.parse(localStorage.getItem(`server_${serverId}`) || '{}');
+        const serverSlug = serverMatch[1];
+        // Buscar el servidor en la lista de servidores personalizados
+        const customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
+        const serverData = customServers.find(server => server.link === `/minecraft/${serverSlug}`);
         
-        if (serverData.name) {
+        if (serverData && serverData.name) {
           // Actualizar título de la página
           document.title = `${serverData.name} - Minecraft Server`;
           

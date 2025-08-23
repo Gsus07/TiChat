@@ -1,6 +1,6 @@
 ---
 // src/layouts/Layout.astro
-import { ClientRouter } from "astro:transitions";
+import { ViewTransitions } from "astro:transitions";
 import '../styles/global.css';
 import Navigation from '../components/Navigation.astro';
 const { title } = Astro.props;
@@ -8,12 +8,25 @@ const { title } = Astro.props;
 <!doctype html>
 <html lang="es">
 	<head>
-		<ClientRouter />
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<ViewTransitions />
+		<!-- Preload critical resources -->
+		<link rel="preload" href="/minecraft.svg" as="image" type="image/svg+xml">
+		<link rel="preload" href="/cod.svg" as="image" type="image/svg+xml">
+		<link rel="preload" href="/amongus.svg" as="image" type="image/svg+xml">
+		<link rel="preload" href="/uno.svg" as="image" type="image/svg+xml">
+		<link rel="preload" href="/pinturillo.svg" as="image" type="image/svg+xml">
+		<link rel="preload" href="/fortnite.svg" as="image" type="image/svg+xml">
+		<!-- Preload fonts and critical CSS -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<!-- DNS prefetch for better performance -->
+		<link rel="dns-prefetch" href="//fonts.googleapis.com">
+		<link rel="dns-prefetch" href="//fonts.gstatic.com">
 	</head>
 	<body class="font-sans bg-gray-100">
 		<Navigation />

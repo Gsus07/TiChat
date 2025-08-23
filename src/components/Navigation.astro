@@ -92,10 +92,11 @@
 	</div>
 </nav>
 
-<script is:inline>
+<script>
 	// Global variables to track event listeners
 	let navigationInitialized = false;
 	let eventListenersAdded = false;
+	let cleanupFunctions = [];
 
 	// Check authentication status
 	function checkAuthStatus() {
@@ -133,6 +134,13 @@
 		}
 	}
 
+	// Clean up previous event listeners
+	function cleanup() {
+		cleanupFunctions.forEach(fn => fn());
+		cleanupFunctions = [];
+		navigationInitialized = false;
+	}
+
 	// Initialize navigation functionality
 	function initNavigation() {
 		if (navigationInitialized) return;
@@ -143,31 +151,37 @@
 		const userDropdown = document.getElementById('userDropdown');
 
 		if (userMenuButton && userDropdown) {
-			userMenuButton.addEventListener('click', (e) => {
+			const handleUserMenuClick = (e) => {
 				e.stopPropagation();
 				userDropdown.classList.toggle('hidden');
-			});
+			};
+			userMenuButton.addEventListener('click', handleUserMenuClick);
+			cleanupFunctions.push(() => userMenuButton.removeEventListener('click', handleUserMenuClick));
 		}
 
 		// Close dropdown when clicking outside
-		document.addEventListener('click', () => {
+		const handleDocumentClick = () => {
 			if (userDropdown) userDropdown.classList.add('hidden');
-		});
+		};
+		document.addEventListener('click', handleDocumentClick);
+		cleanupFunctions.push(() => document.removeEventListener('click', handleDocumentClick));
 
 		// Mobile menu toggle
 		const mobileMenuButton = document.getElementById('mobileMenuButton');
 		const mobileMenu = document.getElementById('mobileMenu');
 
 		if (mobileMenuButton && mobileMenu) {
-			mobileMenuButton.addEventListener('click', () => {
+			const handleMobileMenuClick = () => {
 				mobileMenu.classList.toggle('hidden');
-			});
+			};
+			mobileMenuButton.addEventListener('click', handleMobileMenuClick);
+			cleanupFunctions.push(() => mobileMenuButton.removeEventListener('click', handleMobileMenuClick));
 		}
 
 		// Logout functionality
 		const logoutButton = document.getElementById('logoutButton');
 		if (logoutButton) {
-			logoutButton.addEventListener('click', () => {
+			const handleLogout = () => {
 				// Clear session data
 				localStorage.removeItem('userSession');
 				sessionStorage.removeItem('userSession');
@@ -179,7 +193,9 @@
 				setTimeout(() => {
 					window.location.href = '/';
 				}, 1000);
-			});
+			};
+			logoutButton.addEventListener('click', handleLogout);
+			cleanupFunctions.push(() => logoutButton.removeEventListener('click', handleLogout));
 		}
 	}
 
@@ -238,19 +254,24 @@
 	if (!eventListenersAdded) {
 		eventListenersAdded = true;
 		
+		// Listen for astro:before-preparation (before navigation starts)
+		document.addEventListener('astro:before-preparation', () => {
+			cleanup();
+		});
+		
 		// Listen for astro:page-load event (after navigation)
 		document.addEventListener('astro:page-load', () => {
-			// Reset navigation state for new page
-			navigationInitialized = false;
-			// Reinitialize authentication
-			setTimeout(initializeAuth, 100);
+			// Reinitialize authentication with a small delay
+			setTimeout(initializeAuth, 50);
 		});
 
 		// Listen for storage changes (for cross-tab logout)
-		window.addEventListener('storage', (e) => {
+		const handleStorageChange = (e) => {
 			if (e.key === 'userSession' && !e.newValue) {
 				checkAuthStatus();
 			}
-		});
+		};
+		window.addEventListener('storage', handleStorageChange);
+		cleanupFunctions.push(() => window.removeEventListener('storage', handleStorageChange));
 	}
 </script>
