@@ -79,33 +79,81 @@ import ServerCard from '../components/ServerCard.astro';
             </div>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <ServerCard 
-          name="Servidor Survival"
-          description="Modo supervivencia clásico con amigos"
-          image="/minecraft-survival.jpg"
-          ip="survival.miserver.com"
-          port="25565"
-          version="1.20.1"
-          link="/minecraft/survival"
-        />
-        <ServerCard 
-          name="Servidor Creativo"
-          description="Construcciones épicas sin límites"
-          image="/minecraft-creative.jpg"
-          ip="creative.miserver.com"
-          port="25566"
-          version="1.20.1"
-          link="/minecraft/creative"
-        />
-        <ServerCard 
-          name="Servidor Modded"
-          description="Aventuras con mods increíbles"
-          image="/minecraft-modded.jpg"
-          ip="modded.miserver.com"
-          port="25567"
-          version="1.19.2 + Forge"
-          link="/minecraft/modded"
-        />
+        <!-- Servidor Survival -->
+        <div class="relative group">
+          <ServerCard 
+            name="Servidor Survival"
+            description="Modo supervivencia clásico con amigos"
+            image="/minecraft-survival.jpg"
+            ip="survival.miserver.com"
+            port="25565"
+            version="1.20.1"
+            link="/minecraft/survival"
+          />
+          <!-- Edit/Delete buttons for default servers -->
+          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
+            <button onclick="editDefaultServer('survival')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </button>
+            <button onclick="deleteDefaultServer('survival')" class="bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- Servidor Creativo -->
+        <div class="relative group">
+          <ServerCard 
+            name="Servidor Creativo"
+            description="Construcciones épicas sin límites"
+            image="/minecraft-creative.jpg"
+            ip="creative.miserver.com"
+            port="25566"
+            version="1.20.1"
+            link="/minecraft/creative"
+          />
+          <!-- Edit/Delete buttons for default servers -->
+          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
+            <button onclick="editDefaultServer('creative')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </button>
+            <button onclick="deleteDefaultServer('creative')" class="bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- Servidor Modded -->
+        <div class="relative group">
+          <ServerCard 
+            name="Servidor Modded"
+            description="Aventuras con mods increíbles"
+            image="/minecraft-modded.jpg"
+            ip="modded.miserver.com"
+            port="25567"
+            version="1.19.2 + Forge"
+            link="/minecraft/modded"
+          />
+          <!-- Edit/Delete buttons for default servers -->
+          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
+            <button onclick="editDefaultServer('modded')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </button>
+            <button onclick="deleteDefaultServer('modded')" class="bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
         <!-- Servidor PvP -->
         <div class="relative group">
           <ServerCard 
@@ -118,7 +166,7 @@ import ServerCard from '../components/ServerCard.astro';
             link="/minecraft/pvp"
           />
           <!-- Edit/Delete buttons for default servers -->
-          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
             <button onclick="editDefaultServer('pvp')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -144,7 +192,7 @@ import ServerCard from '../components/ServerCard.astro';
             link="/minecraft/skyblock"
           />
           <!-- Edit/Delete buttons for default servers -->
-          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
             <button onclick="editDefaultServer('skyblock')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -170,7 +218,7 @@ import ServerCard from '../components/ServerCard.astro';
             link="/minecraft/minigames"
           />
           <!-- Edit/Delete buttons for default servers -->
-          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
             <button onclick="editDefaultServer('minijuegos')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -287,11 +335,38 @@ import ServerCard from '../components/ServerCard.astro';
         const serverCard = createServerCard(server);
         serverGrid?.appendChild(serverCard);
       });
+      
+      // Actualizar visibilidad de botones de administración
+      toggleAdminButtons();
     }
     
     // Funciones para manejar servidores predeterminados
     function editDefaultServer(serverType: string) {
       const serverData = {
+        survival: {
+          name: 'Servidor Survival',
+          description: 'Modo supervivencia clásico con amigos',
+          image: '/minecraft-survival.jpg',
+          ip: 'survival.miserver.com',
+          port: '25565',
+          version: '1.20.1'
+        },
+        creative: {
+          name: 'Servidor Creativo',
+          description: 'Construcciones épicas sin límites',
+          image: '/minecraft-creative.jpg',
+          ip: 'creative.miserver.com',
+          port: '25566',
+          version: '1.20.1'
+        },
+        modded: {
+          name: 'Servidor Modded',
+          description: 'Aventuras con mods increíbles',
+          image: '/minecraft-modded.jpg',
+          ip: 'modded.miserver.com',
+          port: '25567',
+          version: '1.19.2 + Forge'
+        },
         pvp: {
           name: 'Servidor PvP',
           description: 'Batallas épicas entre jugadores',
@@ -396,8 +471,15 @@ import ServerCard from '../components/ServerCard.astro';
             <span class="text-green-300 text-xs font-medium">En línea</span>
           </div>
           
+          <!-- Edit button for custom servers -->
+          <button onclick="event.preventDefault(); editServer('${server.name}')" class="admin-buttons absolute top-4 left-4 z-10 text-blue-400 hover:text-blue-300 transition-colors opacity-0 group-hover:opacity-100 bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+          </button>
+          
           <!-- Delete button for custom servers -->
-          <button onclick="event.preventDefault(); deleteServer('${server.id}')" class="absolute top-4 right-4 z-10 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100 bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30">
+          <button onclick="event.preventDefault(); deleteServer('${server.name}')" class="admin-buttons absolute top-4 right-4 z-10 text-red-400 hover:text-red-300 transition-colors opacity-0 group-hover:opacity-100 bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
             </svg>
@@ -487,15 +569,7 @@ import ServerCard from '../components/ServerCard.astro';
       return serverCard;
     }
     
-    // Eliminar servidor
-    function deleteServer(serverId: string) {
-      if (confirm('¿Estás seguro de que quieres eliminar este servidor?')) {
-        let customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
-        customServers = customServers.filter((server: { id: string }) => server.id !== serverId);
-        localStorage.setItem('minecraft_customServers', JSON.stringify(customServers));
-        location.reload();
-      }
-    }
+    // Función eliminada - se usa la nueva implementación más abajo
     
     // Variables globales para cleanup
     let cleanupFunctions: (() => void)[] = [];
@@ -508,6 +582,7 @@ import ServerCard from '../components/ServerCard.astro';
       
       loadCustomServers();
       restoreHiddenServers();
+      toggleAdminButtons();
       
       const addServerBtn = document.getElementById('addServerBtn');
       const modal = document.getElementById('addServerModal');
@@ -521,6 +596,25 @@ import ServerCard from '../components/ServerCard.astro';
       };
       addServerBtn?.addEventListener('click', openModalHandler);
       cleanupFunctions.push(() => addServerBtn?.removeEventListener('click', openModalHandler));
+      
+      // Escuchar cambios en el estado de autenticación
+      const storageHandler = (e: StorageEvent) => {
+        if (e.key === 'userSession') {
+          toggleAdminButtons();
+        }
+      };
+      
+      // También escuchar cambios en la página actual
+      const checkAuthHandler = () => {
+        toggleAdminButtons();
+      };
+      window.addEventListener('focus', checkAuthHandler);
+      cleanupFunctions.push(() => window.removeEventListener('focus', checkAuthHandler));
+      
+      // Verificar autenticación cada vez que se carga la página
+      setTimeout(toggleAdminButtons, 100);
+      window.addEventListener('storage', storageHandler);
+      cleanupFunctions.push(() => window.removeEventListener('storage', storageHandler));
       
       // Event listeners para cerrar modal
       const closeModalHandler = () => {
@@ -547,11 +641,14 @@ import ServerCard from '../components/ServerCard.astro';
       const formSubmitHandler = (e: Event) => {
         e.preventDefault();
         
+        const submitBtn = serverForm?.querySelector('button[type="submit"]') as HTMLButtonElement;
+        const editingServerId = submitBtn?.getAttribute('data-editing');
+        
         const serverName = (document.getElementById('serverName') as HTMLInputElement)?.value || '';
         const serverSlug = serverName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
         
         const serverData = {
-          id: Date.now().toString(),
+          id: editingServerId || Date.now().toString(),
           name: serverName,
           description: (document.getElementById('serverDescription') as HTMLInputElement)?.value || '',
           ip: (document.getElementById('serverIP') as HTMLInputElement)?.value || '',
@@ -562,11 +659,26 @@ import ServerCard from '../components/ServerCard.astro';
         };
         
         // Guardar en localStorage - específico para Minecraft
-        const customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
-        customServers.push(serverData);
-        localStorage.setItem('minecraft_customServers', JSON.stringify(customServers));
+        let customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
         
-        // El servidor ya está guardado en la lista principal
+        if (editingServerId) {
+          // Modo edición
+          const serverIndex = customServers.findIndex((s: {id: string}) => s.id === editingServerId);
+          if (serverIndex !== -1) {
+            customServers[serverIndex] = serverData;
+            showNotification('Servidor actualizado correctamente', 'success');
+          }
+          
+          // Resetear el botón
+          submitBtn.textContent = 'Crear Servidor';
+          submitBtn.removeAttribute('data-editing');
+        } else {
+          // Modo creación
+          customServers.push(serverData);
+          showNotification('Servidor agregado correctamente', 'success');
+        }
+        
+        localStorage.setItem('minecraft_customServers', JSON.stringify(customServers));
         
         modal?.classList.add('hidden');
         (serverForm as HTMLFormElement)?.reset();
@@ -621,6 +733,104 @@ import ServerCard from '../components/ServerCard.astro';
         imageInput.value = imageUrl;
       }
       closeImageGallery();
+    }
+
+    // Funciones para editar y eliminar servidores
+    function editServer(serverName: string) {
+      // Buscar el servidor en los servidores personalizados
+      const customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
+      const server = customServers.find((s: any) => s.name === serverName);
+      if (!server) return;
+
+      // Rellenar el formulario con los datos del servidor
+      const nameInput = document.getElementById('serverName') as HTMLInputElement;
+      const descInput = document.getElementById('serverDescription') as HTMLTextAreaElement;
+      const imageInput = document.getElementById('serverImage') as HTMLInputElement;
+      const ipInput = document.getElementById('serverIP') as HTMLInputElement;
+      const portInput = document.getElementById('serverPort') as HTMLInputElement;
+      const versionInput = document.getElementById('serverVersion') as HTMLInputElement;
+      const linkInput = document.getElementById('serverLink') as HTMLInputElement;
+
+      if (nameInput) nameInput.value = server.name;
+      if (descInput) descInput.value = server.description;
+      if (imageInput) imageInput.value = server.image;
+      if (ipInput) ipInput.value = server.ip;
+      if (portInput) portInput.value = server.port.toString();
+      if (versionInput) versionInput.value = server.version;
+      if (linkInput) linkInput.value = server.link;
+
+      // Cambiar el texto del botón a "Actualizar Servidor"
+      const submitBtn = document.querySelector('#serverModal button[type="submit"]') as HTMLButtonElement;
+      if (submitBtn) {
+        submitBtn.textContent = 'Actualizar Servidor';
+        submitBtn.setAttribute('data-editing', server.id);
+      }
+
+      // Abrir el modal
+      const modal = document.getElementById('serverModal');
+      modal?.classList.remove('hidden');
+    }
+
+    function deleteServer(serverName: string) {
+      if (confirm(`¿Estás seguro de que quieres eliminar el servidor "${serverName}"?`)) {
+        // Eliminar el servidor de los servidores personalizados
+        let customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
+        customServers = customServers.filter((server: any) => server.name !== serverName);
+        
+        // Guardar en localStorage
+        localStorage.setItem('minecraft_customServers', JSON.stringify(customServers));
+        
+        // Recargar la página para actualizar la vista
+        location.reload();
+        
+        // Mostrar notificación
+        showNotification('Servidor eliminado correctamente', 'success');
+      }
+    }
+
+    // Función para mostrar/ocultar botones de administración
+    function toggleAdminButtons() {
+      const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+      const isLoggedIn = !!userSession;
+      const adminButtons = document.querySelectorAll('.admin-buttons');
+      
+      adminButtons.forEach(button => {
+        if (isLoggedIn) {
+          (button as HTMLElement).style.display = 'flex';
+        } else {
+          (button as HTMLElement).style.display = 'none';
+        }
+      });
+    }
+
+    // Función para mostrar notificaciones
+    function showNotification(message: string, type: string = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+      
+      if (type === 'success') {
+        notification.classList.add('bg-green-500', 'text-white');
+      } else if (type === 'error') {
+        notification.classList.add('bg-red-500', 'text-white');
+      } else {
+        notification.classList.add('bg-blue-500', 'text-white');
+      }
+      
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      // Animar entrada
+      setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+      }, 100);
+      
+      // Remover después de 3 segundos
+      setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
     }
   </script>
   
