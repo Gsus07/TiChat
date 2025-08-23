@@ -23,6 +23,7 @@
 				<div class="ml-10 flex items-baseline space-x-4">
 					<a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Inicio</a>
 					<a href="/minecraft" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Minecraft</a>
+					<a href="/call-of-duty" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Call of Duty</a>
 					<a href="/among-us" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Among Us</a>
 					<a href="/uno" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">UNO</a>
 				</div>
@@ -86,6 +87,7 @@
 		<div class="px-2 pt-2 pb-3 space-y-1">
 			<a href="/" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">Inicio</a>
 			<a href="/minecraft" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">Minecraft</a>
+			<a href="/call-of-duty" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">Call of Duty</a>
 			<a href="/among-us" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">Among Us</a>
 			<a href="/uno" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">UNO</a>
 		</div>
@@ -96,7 +98,7 @@
 	// Global variables to track event listeners
 	let navigationInitialized = false;
 	let eventListenersAdded = false;
-	let cleanupFunctions = [];
+	let cleanupFunctions: (() => void)[] = [];
 
 	// Check authentication status
 	function checkAuthStatus() {
@@ -136,7 +138,7 @@
 
 	// Clean up previous event listeners
 	function cleanup() {
-		cleanupFunctions.forEach(fn => fn());
+		cleanupFunctions.forEach((fn: () => void) => fn());
 		cleanupFunctions = [];
 		navigationInitialized = false;
 	}
@@ -151,7 +153,7 @@
 		const userDropdown = document.getElementById('userDropdown');
 
 		if (userMenuButton && userDropdown) {
-			const handleUserMenuClick = (e) => {
+			const handleUserMenuClick = (e: Event) => {
 				e.stopPropagation();
 				userDropdown.classList.toggle('hidden');
 			};
@@ -200,7 +202,7 @@
 	}
 
 	// Notification system
-	function showNotification(message, type) {
+	function showNotification(message: string, type: string) {
 		const notification = document.createElement('div');
 		notification.className = 'fixed top-20 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full ' +
 			(type === 'success' 
@@ -266,7 +268,7 @@
 		});
 
 		// Listen for storage changes (for cross-tab logout)
-		const handleStorageChange = (e) => {
+		const handleStorageChange = (e: StorageEvent) => {
 			if (e.key === 'userSession' && !e.newValue) {
 				checkAuthStatus();
 			}

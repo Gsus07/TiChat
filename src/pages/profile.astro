@@ -425,6 +425,13 @@ import Layout from '../layouts/Layout.astro';
     }
 
     // Initialize profile on page load
-    document.addEventListener('DOMContentLoaded', loadProfile);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadProfile);
+    } else {
+      loadProfile();
+    }
+    
+    // También cargar en transiciones de Astro
+    document.addEventListener('astro:page-load', loadProfile);
   </script>
 </Layout>

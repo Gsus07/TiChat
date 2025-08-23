@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 export const prerender = false;
 
 // Esta página maneja servidores dinámicos creados por el usuario
-const { server } = Astro.params;
+const { server } = Astro.params as { server?: string };
 
 // Datos por defecto para servidores personalizados
 const defaultServerData = {
@@ -32,16 +32,18 @@ const defaultServerData = {
 let serverData = defaultServerData;
 
 // Si el servidor es personalizado, intentar cargar datos específicos
-if (server && server.startsWith('custom-')) {
-  // En el cliente, los datos se cargarán desde localStorage
-  // Aquí usamos datos por defecto que se actualizarán en el cliente
-  const serverId = server.replace('custom-', '');
-  serverData = {
-    ...defaultServerData,
-    name: 'Servidor Personalizado',
-    description: 'Cargando datos del servidor...',
-    id: serverId
-  };
+if (server && typeof server === 'string') {
+  if (server.startsWith('custom-')) {
+    // En el cliente, los datos se cargarán desde localStorage
+    // Aquí usamos datos por defecto que se actualizarán en el cliente
+    const serverId = server.replace('custom-', '');
+    serverData = {
+      ...defaultServerData,
+      name: 'Servidor Personalizado',
+      description: 'Cargando datos del servidor...',
+      id: serverId
+    };
+  }
 }
 ---
 
@@ -177,63 +179,85 @@ if (server && server.startsWith('custom-')) {
   </main>
 
   <script>
-    // Cargar datos del servidor personalizado desde localStorage
-    document.addEventListener('DOMContentLoaded', function() {
-      const currentPath = window.location.pathname;
-      const serverMatch = currentPath.match(/\/minecraft\/(custom-.+)/);
-      
-      if (serverMatch) {
-        const serverSlug = serverMatch[1];
-        // Buscar el servidor en la lista de servidores personalizados
-        const customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
-        const serverData = customServers.find(server => server.link === `/minecraft/${serverSlug}`);
+    // Función para cargar datos del servidor
+    function loadServerData() {
+      // Pequeño delay para asegurar que el DOM esté listo
+      setTimeout(() => {
+        const currentPath = window.location.pathname;
+        const serverMatch = currentPath.match(/\/minecraft\/(custom-.+)/);
         
-        if (serverData && serverData.name) {
-          // Actualizar título de la página
-          document.title = `${serverData.name} - Minecraft Server`;
+        if (serverMatch) {
+          const serverSlug = serverMatch[1];
           
-          // Actualizar elementos de la página con datos del servidor
-          const nameElement = document.querySelector('h1');
-          if (nameElement) nameElement.textContent = serverData.name;
+          // Buscar el servidor en la lista de servidores personalizados
+          const customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
           
-          const descElement = document.querySelector('h1 + p');
-          if (descElement) descElement.textContent = serverData.description;
+          const serverData = customServers.find((s: any) => s.link === `/minecraft/${serverSlug}` || s.link.endsWith(`/${serverSlug}`));
           
-          const ipElement = document.querySelector('.font-mono');
-          if (ipElement) ipElement.textContent = `${serverData.ip}:${serverData.port}`;
-          
-          const versionElement = document.querySelector('.text-xl.font-bold.text-white');
-          if (versionElement) versionElement.textContent = serverData.version;
-          
-          const imageElement = document.querySelector('img[alt]') as HTMLImageElement;
-          if (imageElement) {
-            imageElement.src = serverData.image;
-            imageElement.alt = serverData.name;
+          if (serverData && serverData.name) {
+            // Actualizar título de la página
+            document.title = `${serverData.name} - Minecraft Server`;
+            
+            // Actualizar elementos de la página con datos del servidor
+            const nameElement = document.querySelector('h1');
+            if (nameElement) nameElement.textContent = serverData.name;
+            
+            const descElement = document.querySelector('h1 + p');
+            if (descElement) descElement.textContent = serverData.description;
+            
+            const ipElement = document.querySelector('.font-mono');
+            if (ipElement) ipElement.textContent = `${serverData.ip}:${serverData.port}`;
+            
+            // Actualizar jugadores, estado y versión usando selectores más específicos
+            const playersElement = document.querySelector('.text-xl.font-bold.text-green-400');
+            if (playersElement) playersElement.textContent = serverData.players || '0/50';
+            
+            const statusElements = document.querySelectorAll('.text-xl.font-bold.text-green-400');
+            if (statusElements[1]) statusElements[1].textContent = serverData.status || 'En línea';
+            
+            const versionElement = document.querySelector('.text-xl.font-bold.text-white');
+            if (versionElement) versionElement.textContent = serverData.version || '1.20.1';
+            
+            const imageElement = document.querySelector('img[alt]') as HTMLImageElement;
+            if (imageElement) {
+              imageElement.src = serverData.image || '/minecraft-custom.jpg';
+              imageElement.alt = serverData.name;
+            }
           }
         }
-      }
-      
-      // Funcionalidad para copiar IP del servidor
-      const copyButtons = document.querySelectorAll('button');
-      copyButtons.forEach(button => {
-        if (button.textContent && button.textContent.includes('Copiar IP')) {
-          button.addEventListener('click', function() {
-            const serverIPElement = this.parentElement?.querySelector('.font-mono') as HTMLElement;
-            const serverIP = serverIPElement?.textContent || '';
-            navigator.clipboard.writeText(serverIP).then(function() {
-              // Cambiar texto del boton temporalmente
-              const originalText = button.textContent;
-              button.textContent = 'Copiado!';
-              button.classList.add('bg-green-700');
-              
-              setTimeout(function() {
-                button.textContent = originalText;
-                button.classList.remove('bg-green-700');
-              }, 2000);
+        
+        // Funcionalidad para copiar IP del servidor
+        const copyButtons = document.querySelectorAll('button');
+        copyButtons.forEach(button => {
+          if (button.textContent && button.textContent.includes('Copiar IP')) {
+            button.addEventListener('click', function() {
+              const serverIPElement = this.parentElement?.querySelector('.font-mono');
+              const serverIP = serverIPElement?.textContent || '';
+              navigator.clipboard.writeText(serverIP).then(function() {
+                // Cambiar texto del boton temporalmente
+                const originalText = button.textContent;
+                button.textContent = 'Copiado!';
+                button.classList.add('bg-green-700');
+                
+                setTimeout(function() {
+                  button.textContent = originalText;
+                  button.classList.remove('bg-green-700');
+                }, 2000);
+              });
             });
-          });
-        }
-      });
-    });
+          }
+        });
+      }, 100);
+    }
+    
+    // Cargar datos cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadServerData);
+    } else {
+      loadServerData();
+    }
+    
+    // También cargar en transiciones de Astro
+    document.addEventListener('astro:page-load', loadServerData);
   </script>
 </Layout>
