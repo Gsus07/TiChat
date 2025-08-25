@@ -216,42 +216,51 @@ import Layout from '../layouts/Layout.astro';
       const rememberMe = (document.getElementById('rememberMe') as HTMLInputElement)?.checked;
       
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Call login API
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password
+          })
+        });
         
-        // Check credentials (simple validation for demo)
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const user = users.find((u: any) => u.email === email && u.password === password);
+        const result = await response.json();
         
-        if (user) {
-          // Store session
-          const sessionData = {
-            user: {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              avatar: user.avatar || '/default-avatar.png'
-            },
-            loginTime: new Date().toISOString(),
-            rememberMe
-          };
-          
-          if (rememberMe) {
-            localStorage.setItem('userSession', JSON.stringify(sessionData));
-          } else {
-            sessionStorage.setItem('userSession', JSON.stringify(sessionData));
-          }
-          
-          // Show success message
-          showNotification('¡Bienvenido de vuelta!', 'success');
-          
-          // Redirect to home
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 1000);
-        } else {
-          throw new Error('Credenciales incorrectas');
+        if (!response.ok) {
+          throw new Error(result.error || 'Error al iniciar sesión');
         }
+        
+        // Store session data
+        const sessionData = {
+          user: {
+            id: result.user.id,
+            email: result.user.email,
+            username: result.profile?.username || result.user.user_metadata?.username,
+            full_name: result.profile?.full_name || result.user.user_metadata?.full_name,
+            avatar: result.profile?.avatar_url || '/default-avatar.png'
+          },
+          session: result.session,
+          loginTime: new Date().toISOString(),
+          rememberMe
+        };
+        
+        if (rememberMe) {
+          localStorage.setItem('userSession', JSON.stringify(sessionData));
+        } else {
+          sessionStorage.setItem('userSession', JSON.stringify(sessionData));
+        }
+        
+        // Show success message
+        showNotification('¡Bienvenido de vuelta!', 'success');
+        
+        // Redirect to home
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
       } catch (error) {
         console.error('Login error:', error);
         showNotification('Email o contraseña incorrectos', 'error');

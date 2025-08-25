@@ -58,6 +58,30 @@ import Layout from '../layouts/Layout.astro';
                 </div>
               </div>
 
+              <!-- Username field -->
+              <div class="space-y-2">
+                <label for="username" class="block text-sm font-medium text-gray-300">Nombre de Usuario</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                  </div>
+                  <input 
+                    type="text" 
+                    id="username" 
+                    name="username"
+                    placeholder="tu_usuario"
+                    class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
+                    required
+                    minlength="3"
+                    maxlength="50"
+                    pattern="[a-zA-Z0-9_]+"
+                    title="Solo letras, números y guiones bajos"
+                  />
+                </div>
+              </div>
+
               <!-- Email field -->
               <div class="space-y-2">
                 <label for="email" class="block text-sm font-medium text-gray-300">Correo Electrónico</label>
@@ -275,6 +299,7 @@ import Layout from '../layouts/Layout.astro';
       // Get form data
       const formData = new FormData(registerForm as HTMLFormElement);
       const name = formData.get('name') as string;
+      const username = formData.get('username') as string;
       const email = formData.get('email') as string;
       const password = formData.get('password') as string;
       const confirmPassword = formData.get('confirmPassword') as string;
@@ -291,51 +316,32 @@ import Layout from '../layouts/Layout.astro';
           throw new Error('Debes aceptar los términos y condiciones');
         }
         
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Call registration API
+        const response = await fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            username,
+            full_name: name
+          })
+        });
         
-        // Check if email already exists
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const existingUser = users.find((u: any) => u.email === email);
+        const result = await response.json();
         
-        if (existingUser) {
-          throw new Error('Este email ya está registrado');
+        if (!response.ok) {
+          throw new Error(result.error || 'Error al crear la cuenta');
         }
         
-        // Create new user
-        const newUser = {
-          id: Date.now().toString(),
-          name,
-          email,
-          password, // In a real app, this would be hashed
-          avatar: '/default-avatar.png',
-          createdAt: new Date().toISOString()
-        };
-        
-        // Save user
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        
-        // Auto-login the user
-        const sessionData = {
-          user: {
-            id: newUser.id,
-            email: newUser.email,
-            name: newUser.name,
-            avatar: newUser.avatar
-          },
-          loginTime: new Date().toISOString(),
-          rememberMe: true
-        };
-        
-        localStorage.setItem('userSession', JSON.stringify(sessionData));
-        
         // Show success message
-        showNotification('¡Cuenta creada exitosamente! Bienvenido a Gaming Hub', 'success');
+        showNotification('¡Cuenta creada exitosamente! Ahora puedes iniciar sesión', 'success');
         
-        // Redirect to home
+        // Redirect to login
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = '/login';
         }, 1500);
         
       } catch (error: any) {
