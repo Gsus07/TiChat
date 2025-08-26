@@ -3,6 +3,16 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import PostForm from '../../components/react/PostForm.tsx';
+import { getPostsByServerId } from '../../utils/posts';
+import { supabase } from '../../utils/supabaseClient';
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Obtener posts del servidor (usando ID fijo para survival)
+const serverId = 'survival';
+const posts = await getPostsByServerId(serverId, currentUserId);
 ---
 
 <Layout title="Minecraft - Servidor Survival">
@@ -68,39 +78,19 @@ import PostForm from '../../components/react/PostForm.tsx';
 
       <!-- Posts del muro -->
       <div class="space-y-6">
-        <PostCard 
-          author="Alex"
-          time="Hace 2 horas"
-          content="¡Finalmente terminé mi castillo medieval! Me tomó 3 semanas pero valió la pena. Las torres quedaron increíbles 🏰"
-          image="/minecraft-castle.jpg"
-          likes="12"
-          comments="5"
-        />
-        
-        <PostCard 
-          author="María"
-          time="Hace 5 horas"
-          content="Encontré una mina de diamantes súper grande cerca del spawn. ¡Vamos todos a minar juntos mañana!"
-          likes="8"
-          comments="3"
-        />
-        
-        <PostCard 
-          author="Carlos"
-          time="Hace 1 día"
-          content="Construí una granja automática de trigo que produce 1000 items por hora. Si alguien necesita comida, ya saben dónde encontrarme 🌾"
-          image="/minecraft-farm.jpg"
-          likes="15"
-          comments="7"
-        />
-        
-        <PostCard 
-          author="Sofia"
-          time="Hace 2 días"
-          content="¿Alguien quiere hacer una expedición al End? Necesitamos derrotar al dragón y conseguir elytras para todos"
-          likes="6"
-          comments="9"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este servidor.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

@@ -1,134 +1,301 @@
 ---
 // ProfileCard.astro - Component for displaying user profile information
+import { supabase } from '../utils/supabaseClient';
+import { getUserFollowCounts } from '../utils/follows';
+import { getUserFavoriteGames } from '../utils/favorites';
 
 interface Props {
-  user?: {
-    id: string;
-    username: string;
-    email: string;
-    full_name?: string;
-    avatar?: string;
-  };
+  userId: string;
+  currentUserId?: string;
 }
 
-const { user } = Astro.props;
+const { userId, currentUserId } = Astro.props;
 
-// This line was causing the TypeScript error - fixing the import path
-// Original error: Cannot find module '../lib/supabase'
-// Fixed: Using the correct path to supabaseClient
-import { supabase } from '../utils/supabaseClient';
+// Obtener datos del perfil del usuario
+const { data: profile, error: profileError } = await supabase
+  .from('profiles')
+  .select('*')
+  .eq('id', userId)
+  .single();
 
-// Example usage of supabase client
-let profileData = null;
-if (user?.id) {
-  try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-    
-    if (!error) {
-      profileData = data;
-    }
-  } catch (err) {
-    console.error('Error fetching profile:', err);
-  }
+if (profileError || !profile) {
+  throw new Error('Usuario no encontrado');
 }
+
+// Obtener conteos de seguidores y seguidos
+const followCounts = await getUserFollowCounts(userId);
+
+// Obtener juegos favoritos del usuario
+const favoriteGames = await getUserFavoriteGames(userId);
+
+// Obtener conteo de posts del usuario
+const { count: postCount } = await supabase
+  .from('posts')
+  .select('id', { count: 'exact', head: true })
+  .eq('user_id', userId)
+  .eq('is_active', true);
+
+// Verificar si el usuario actual sigue a este usuario
+let isFollowing = false;
+if (currentUserId && currentUserId !== userId) {
+  const { data: followData } = await supabase
+    .from('user_follows')
+    .select('id')
+    .eq('follower_id', currentUserId)
+    .eq('following_id', userId)
+    .single();
+  
+  isFollowing = !!followData;
+}
+
+// Formatear fecha de registro
+const joinDate = new Date(profile.created_at).toLocaleDateString('es-ES', {
+  year: 'numeric',
+  month: 'long'
+});
 ---
 
-<div class="profile-card">
-  {user ? (
-    <div class="profile-content">
-      <div class="profile-header">
-        {user.avatar ? (
-          <img src={user.avatar} alt={`${user.username}'s avatar`} class="avatar" />
+<div class="profile-card bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+  <!-- Header del perfil -->
+  <div class="bg-gradient-to-r from-purple-600/20 to-blue-600/20 p-6 border-b border-white/10">
+    <div class="flex items-center space-x-4">
+      <!-- Avatar -->
+      <div class="relative">
+        {profile.avatar_url ? (
+          <img 
+            src={profile.avatar_url} 
+            alt={profile.username}
+            class="w-20 h-20 rounded-full object-cover border-4 border-white/20"
+          />
         ) : (
-          <div class="avatar-placeholder">
-            {user.username.charAt(0).toUpperCase()}
+          <div class="w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-2xl border-4 border-white/20">
+            {profile.username.charAt(0).toUpperCase()}
           </div>
         )}
-        <div class="profile-info">
-          <h3>{user.full_name || user.username}</h3>
-          <p class="username">@{user.username}</p>
-          <p class="email">{user.email}</p>
-        </div>
+        
+        <!-- Indicador de estado online (simulado) -->
+        <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-800"></div>
       </div>
       
-      {profileData && (
-        <div class="profile-details">
-          <p>Additional profile information loaded from Supabase</p>
+      <!-- Información del usuario -->
+      <div class="flex-1">
+        <h2 class="text-2xl font-bold text-white mb-1">
+          {profile.full_name || profile.username}
+        </h2>
+        <p class="text-gray-300 mb-2">@{profile.username}</p>
+        
+        {profile.bio && (
+          <p class="text-gray-400 text-sm leading-relaxed">{profile.bio}</p>
+        )}
+      </div>
+      
+      <!-- Botón de seguir (si no es el usuario actual) -->
+      {currentUserId && currentUserId !== userId && (
+        <button 
+          onclick={`toggleFollow('${userId}')`}
+          data-user-id={userId}
+          data-following={isFollowing}
+          class={`px-6 py-2 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
+            isFollowing 
+              ? 'bg-gray-600 hover:bg-red-600 text-white' 
+              : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white'
+          }`}
+        >
+          {isFollowing ? 'Siguiendo' : 'Seguir'}
+        </button>
+      )}
+    </div>
+  </div>
+  
+  <!-- Estadísticas -->
+  <div class="p-6">
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="text-center">
+        <div class="text-2xl font-bold text-white">{postCount || 0}</div>
+        <div class="text-sm text-gray-400">Posts</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-white">{followCounts.data?.follower_count || 0}</div>
+        <div class="text-sm text-gray-400">Seguidores</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-white">{followCounts.data?.following_count || 0}</div>
+        <div class="text-sm text-gray-400">Siguiendo</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-white">{favoriteGames.data?.length || 0}</div>
+        <div class="text-sm text-gray-400">Juegos</div>
+      </div>
+    </div>
+    
+    <!-- Información adicional -->
+    <div class="space-y-3">
+      <div class="flex items-center text-gray-400 text-sm">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        Se unió en {joinDate}
+      </div>
+      
+      {profile.user_role === 'admin' && (
+        <div class="flex items-center text-yellow-400 text-sm">
+          <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM15.657 6.343a1 1 0 011.414 0A9.972 9.972 0 0119 12a9.972 9.972 0 01-1.929 5.657 1 1 0 11-1.414-1.414A7.971 7.971 0 0017 12c0-1.636-.49-3.154-1.343-4.243a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+          Administrador
         </div>
       )}
     </div>
-  ) : (
-    <div class="no-profile">
-      <p>No user profile available</p>
-    </div>
-  )}
+    
+    <!-- Juegos favoritos -->
+    {favoriteGames.data && favoriteGames.data.length > 0 && (
+      <div class="mt-6">
+        <h3 class="text-lg font-semibold text-white mb-3">Juegos Favoritos</h3>
+        <div class="grid grid-cols-2 gap-3">
+          {favoriteGames.data?.slice(0, 4).map((game: any) => (
+            <div class="flex items-center space-x-3 p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+              <img 
+                src={game.games.image_url || '/default-game.png'} 
+                alt={game.games.name}
+                class="w-8 h-8 rounded-lg object-cover"
+              />
+              <div class="flex-1 min-w-0">
+                <p class="text-white font-medium text-sm truncate">{game.games.name}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {favoriteGames.data && favoriteGames.data.length > 4 && (
+          <div class="mt-3 text-center">
+            <span class="text-gray-400 text-sm">+{favoriteGames.data.length - 4} juegos más</span>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
 </div>
+
+<script>
+  // Declarar tipos para window
+  declare global {
+    interface Window {
+      toggleFollow: (userId: string) => Promise<void>;
+    }
+  }
+
+  // Función para alternar seguimiento de usuario
+  async function toggleFollow(userId: string) {
+    try {
+      const token = localStorage.getItem('supabase_token');
+      if (!token) {
+        alert('Debes iniciar sesión para seguir usuarios');
+        return;
+      }
+
+      const response = await fetch(`/api/users/${userId}/follow`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const button = document.querySelector(`[data-user-id="${userId}"]`);
+        
+        if (button) {
+          // Actualizar estado visual del botón
+          if (data.following) {
+            button.textContent = 'Siguiendo';
+            button.className = button.className.replace(
+              'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700',
+              'bg-gray-600 hover:bg-red-600'
+            );
+          } else {
+            button.textContent = 'Seguir';
+            button.className = button.className.replace(
+              'bg-gray-600 hover:bg-red-600',
+              'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
+            );
+          }
+          
+          button.setAttribute('data-following', data.following);
+        }
+        
+        // Mostrar notificación
+        showNotification(data.following ? 'Ahora sigues a este usuario' : 'Has dejado de seguir a este usuario');
+      }
+    } catch (error) {
+      console.error('Error al seguir/dejar de seguir usuario:', error);
+      showNotification('Error al procesar la solicitud', 'error');
+    }
+  }
+
+  // Función para mostrar notificaciones
+  function showNotification(message: string, type = 'success') {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300 ${
+      type === 'error' ? 'bg-red-600' : 'bg-green-600'
+    } text-white`;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300);
+    }, 3000);
+  }
+
+  // Hacer la función global
+  window.toggleFollow = toggleFollow;
+</script>
 
 <style>
   .profile-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
+    max-width: 500px;
+    margin: 0 auto;
   }
   
-  .profile-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+  /* Animaciones personalizadas */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
   }
   
-  .avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
   
-  .avatar-placeholder {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #6366f1;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: bold;
+  /* Efectos hover mejorados */
+  .profile-card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease;
   }
   
-  .profile-info h3 {
-    margin: 0 0 0.25rem 0;
-    color: #1f2937;
+  /* Scrollbar personalizado para la sección de juegos */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
   }
   
-  .username {
-    color: #6b7280;
-    margin: 0 0 0.25rem 0;
-    font-size: 0.9rem;
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
   }
   
-  .email {
-    color: #9ca3af;
-    margin: 0;
-    font-size: 0.85rem;
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
   }
   
-  .profile-details {
-    border-top: 1px solid #e5e7eb;
-    padding-top: 1rem;
-    color: #6b7280;
-  }
-  
-  .no-profile {
-    text-align: center;
-    color: #9ca3af;
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
   }
 </style>

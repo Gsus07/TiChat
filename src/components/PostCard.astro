@@ -1,33 +1,110 @@
 ---
 // src/components/PostCard.astro
-const { author, time, content, image, likes, comments } = Astro.props;
+import { supabase } from '../utils/supabaseClient';
+
+interface Props {
+  post: {
+    id: string;
+    content: string;
+    image_url?: string;
+    created_at: string;
+    user_id: string;
+    game_id?: string;
+    server_id?: string;
+    is_active: boolean;
+    profiles: {
+      username: string;
+      full_name?: string;
+      avatar_url?: string;
+    };
+    games?: {
+      name: string;
+    };
+    game_servers?: {
+      name: string;
+    };
+    like_count: number;
+    comment_count: number;
+    user_has_liked: boolean;
+  };
+  currentUserId?: string;
+}
+
+const { post, currentUserId } = Astro.props;
+
+// Formatear fecha
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  
+  if (diffInHours < 1) {
+    return 'Hace unos minutos';
+  } else if (diffInHours < 24) {
+    return `Hace ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
+  } else {
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return `Hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
+    } else {
+      return date.toLocaleDateString('es-ES');
+    }
+  }
+};
+
+const timeAgo = formatDate(post.created_at);
+const authorInitial = post.profiles.username.charAt(0).toUpperCase();
 ---
 
-<div class="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg">
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg post-card" data-post-id={post.id}>
   <!-- Header del post -->
   <div class="flex items-center mb-4">
-    <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-      {author.charAt(0).toUpperCase()}
-    </div>
-    <div class="ml-3">
-      <h3 class="font-semibold text-white">{author}</h3>
-      <p class="text-sm text-gray-400">{time}</p>
+    {post.profiles.avatar_url ? (
+      <img 
+        src={post.profiles.avatar_url} 
+        alt={post.profiles.username}
+        class="w-10 h-10 rounded-full object-cover"
+      />
+    ) : (
+      <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+        {authorInitial}
+      </div>
+    )}
+    <div class="ml-3 flex-1">
+      <div class="flex items-center gap-2">
+        <h3 class="font-semibold text-white">{post.profiles.full_name || post.profiles.username}</h3>
+        {post.profiles.username !== (post.profiles.full_name || post.profiles.username) && (
+          <span class="text-sm text-gray-400">@{post.profiles.username}</span>
+        )}
+      </div>
+      <div class="flex items-center gap-2 text-sm text-gray-400">
+        <span>{timeAgo}</span>
+        {(post.games || post.game_servers) && (
+          <>
+            <span>•</span>
+            <span class="text-green-400">
+              {post.game_servers ? `${post.game_servers.name}` : post.games?.name}
+            </span>
+          </>
+        )}
+      </div>
     </div>
   </div>
   
   <!-- Contenido del post -->
   <div class="mb-4">
-    <p class="text-gray-200 leading-relaxed">{content}</p>
+    <p class="text-gray-200 leading-relaxed whitespace-pre-wrap">{post.content}</p>
   </div>
   
   <!-- Imagen del post (si existe) -->
-  {image && (
+  {post.image_url && (
     <div class="mb-4 rounded-lg overflow-hidden">
       <img 
-        src={image} 
+        src={post.image_url} 
         alt="Post image" 
-        class="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-      >
+        class="w-full h-64 object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
+        onclick="openImageModal(this.src)"
+      />
     </div>
   )}
   
@@ -35,47 +112,388 @@ const { author, time, content, image, likes, comments } = Astro.props;
   <div class="flex items-center justify-between pt-4 border-t border-white/10">
     <div class="flex items-center space-x-6">
       <!-- Likes -->
-      <button class="flex items-center space-x-2 text-gray-400 hover:text-red-400 transition-colors group">
-        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button 
+        onclick={`togglePostLike('${post.id}')`}
+        class={`flex items-center space-x-2 transition-colors group ${
+          post.user_has_liked 
+            ? 'text-red-400 hover:text-red-300' 
+            : 'text-gray-400 hover:text-red-400'
+        }`}
+        data-post-id={post.id}
+        data-liked={post.user_has_liked}
+      >
+        <svg 
+          class={`w-5 h-5 group-hover:scale-110 transition-transform ${
+            post.user_has_liked ? 'fill-current' : ''
+          }`} 
+          fill={post.user_has_liked ? 'currentColor' : 'none'} 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
         </svg>
-        <span class="text-sm font-medium">{likes}</span>
+        <span class="text-sm font-medium like-count">{post.like_count}</span>
       </button>
       
       <!-- Comentarios -->
-      <button class="flex items-center space-x-2 text-gray-400 hover:text-blue-400 transition-colors group">
+      <button 
+        onclick={`toggleComments('${post.id}')`}
+        class="flex items-center space-x-2 text-gray-400 hover:text-blue-400 transition-colors group"
+      >
         <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
         </svg>
-        <span class="text-sm font-medium">{comments}</span>
+        <span class="text-sm font-medium comment-count">{post.comment_count}</span>
       </button>
       
       <!-- Compartir -->
-      <button class="flex items-center space-x-2 text-gray-400 hover:text-green-400 transition-colors group">
+      <button 
+        onclick={`sharePost('${post.id}')`}
+        class="flex items-center space-x-2 text-gray-400 hover:text-green-400 transition-colors group"
+      >
         <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
         </svg>
         <span class="text-sm font-medium">Compartir</span>
       </button>
     </div>
+    
+    <!-- Opciones del post (solo para el autor) -->
+    {currentUserId === post.user_id && (
+      <div class="relative">
+        <button 
+          onclick={`togglePostOptions('${post.id}')`}
+          class="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+          </svg>
+        </button>
+        <div id={`post-options-${post.id}`} class="hidden absolute right-0 top-8 bg-slate-800 rounded-lg shadow-lg border border-white/10 py-2 min-w-[120px] z-10">
+          <button 
+            onclick={`editPost('${post.id}')`}
+            class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+          >
+            Editar
+          </button>
+          <button 
+            onclick={`deletePost('${post.id}')`}
+            class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+    )}
   </div>
   
   <!-- Sección de comentarios rápidos -->
-  <div class="mt-4 pt-4 border-t border-white/10">
-    <div class="flex items-center space-x-3">
-      <div class="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
-        T
+  {currentUserId && (
+    <div class="mt-4 pt-4 border-t border-white/10">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+          {currentUserId.charAt(0).toUpperCase()}
+        </div>
+        <input 
+          type="text" 
+          placeholder="Escribe un comentario..." 
+          class="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-full text-white placeholder-gray-500 text-sm focus:outline-none focus:border-white/30 transition-colors"
+          id={`comment-input-${post.id}`}
+          onkeypress={`handleCommentKeyPress(event, '${post.id}')`}
+        />
+        <button 
+          onclick={`submitComment('${post.id}')`}
+          class="text-green-400 hover:text-green-300 transition-colors p-2 rounded-full hover:bg-green-500/10"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg>
+        </button>
       </div>
-      <input 
-        type="text" 
-        placeholder="Escribe un comentario..." 
-        class="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-full text-white placeholder-gray-500 text-sm focus:outline-none focus:border-white/30 transition-colors"
-      >
-      <button class="text-green-400 hover:text-green-300 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-        </svg>
-      </button>
+    </div>
+  )}
+  
+  <!-- Sección de comentarios expandida (inicialmente oculta) -->
+  <div id={`comments-section-${post.id}`} class="hidden mt-4 pt-4 border-t border-white/10">
+    <div class="space-y-3 max-h-60 overflow-y-auto" id={`comments-list-${post.id}`}>
+      <!-- Los comentarios se cargarán dinámicamente aquí -->
     </div>
   </div>
 </div>
+
+<script>
+  // Declarar tipos para window
+  declare global {
+    interface Window {
+      togglePostLike: (postId: string) => Promise<void>;
+      toggleComments: (postId: string) => void;
+      submitComment: (postId: string) => Promise<void>;
+      handleCommentKeyPress: (event: KeyboardEvent, postId: string) => void;
+      sharePost: (postId: string) => void;
+      togglePostOptions: (postId: string) => void;
+      editPost: (postId: string) => void;
+      deletePost: (postId: string) => Promise<void>;
+      openImageModal: (imageSrc: string) => void;
+    }
+  }
+
+  // Función para alternar like en post
+  async function togglePostLike(postId: string) {
+    try {
+      const token = localStorage.getItem('supabase_token');
+      if (!token) {
+        alert('Debes iniciar sesión para dar like');
+        return;
+      }
+
+      const response = await fetch(`/api/posts/${postId}/like`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const button = document.querySelector(`[data-post-id="${postId}"]`) as HTMLElement;
+        const likeCount = button?.querySelector('.like-count') as HTMLElement;
+        const svg = button?.querySelector('svg') as SVGElement;
+        
+        // Actualizar estado visual
+        if (button && svg && likeCount) {
+          if (data.liked) {
+            button.classList.remove('text-gray-400', 'hover:text-red-400');
+            button.classList.add('text-red-400', 'hover:text-red-300');
+            svg.setAttribute('fill', 'currentColor');
+            svg.classList.add('fill-current');
+          } else {
+            button.classList.remove('text-red-400', 'hover:text-red-300');
+            button.classList.add('text-gray-400', 'hover:text-red-400');
+            svg.setAttribute('fill', 'none');
+            svg.classList.remove('fill-current');
+          }
+          
+          likeCount.textContent = data.like_count;
+          button.setAttribute('data-liked', data.liked);
+        }
+      }
+    } catch (error) {
+      console.error('Error al dar like:', error);
+    }
+  }
+
+  // Función para alternar comentarios
+  function toggleComments(postId: string) {
+    const commentsSection = document.getElementById(`comments-section-${postId}`);
+    
+    if (commentsSection && commentsSection.classList.contains('hidden')) {
+      commentsSection.classList.remove('hidden');
+      loadComments(postId);
+    } else if (commentsSection) {
+      commentsSection.classList.add('hidden');
+    }
+  }
+
+  // Función para cargar comentarios
+  async function loadComments(postId: string) {
+    try {
+      const response = await fetch(`/api/posts/${postId}/comments`);
+      if (response.ok) {
+        const comments = await response.json();
+        const commentsList = document.getElementById(`comments-list-${postId}`);
+        
+        if (commentsList) {
+          commentsList.innerHTML = comments.map((comment: any) => `
+          <div class="flex items-start space-x-3 p-3 bg-white/5 rounded-lg">
+            <div class="w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+              ${comment.profiles.username.charAt(0).toUpperCase()}
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-sm font-medium text-white">${comment.profiles.username}</span>
+                <span class="text-xs text-gray-400">${formatTimeAgo(comment.created_at)}</span>
+              </div>
+              <p class="text-sm text-gray-200">${comment.content}</p>
+            </div>
+          </div>
+        `).join('');
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar comentarios:', error);
+    }
+  }
+
+  // Función para enviar comentario
+  async function submitComment(postId: string) {
+    const input = document.getElementById(`comment-input-${postId}`) as HTMLInputElement;
+    const content = input?.value.trim();
+    
+    if (!content) return;
+    
+    try {
+      const token = localStorage.getItem('supabase_token');
+      if (!token) {
+        alert('Debes iniciar sesión para comentar');
+        return;
+      }
+
+      const response = await fetch(`/api/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content })
+      });
+
+      if (response.ok) {
+        input.value = '';
+        loadComments(postId);
+        
+        // Actualizar contador de comentarios
+        const commentCount = document.querySelector(`[onclick="toggleComments('${postId}')"] .comment-count`) as HTMLElement;
+        if (commentCount && commentCount.textContent) {
+          commentCount.textContent = (parseInt(commentCount.textContent) + 1).toString();
+        }
+      }
+    } catch (error) {
+      console.error('Error al enviar comentario:', error);
+    }
+  }
+
+  // Función para manejar Enter en input de comentario
+  function handleCommentKeyPress(event: KeyboardEvent, postId: string) {
+    if (event.key === 'Enter') {
+      submitComment(postId);
+    }
+  }
+
+  // Función para compartir post
+  function sharePost(postId: string) {
+    const url = `${window.location.origin}/posts/${postId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      showNotification('Enlace copiado al portapapeles');
+    }).catch(() => {
+      // Fallback para navegadores que no soportan clipboard API
+      prompt('Copia este enlace:', url);
+    });
+  }
+
+  // Función para alternar opciones del post
+  function togglePostOptions(postId: string) {
+    const options = document.getElementById(`post-options-${postId}`);
+    if (options) {
+      options.classList.toggle('hidden');
+    }
+    
+    // Cerrar al hacer click fuera
+    document.addEventListener('click', function closeOptions(e: Event) {
+      const target = e.target as HTMLElement;
+      if (options && !target.closest(`#post-options-${postId}`) && !target.closest(`[onclick="togglePostOptions('${postId}')"]`)) {
+        options.classList.add('hidden');
+        document.removeEventListener('click', closeOptions);
+      }
+    });
+  }
+
+  // Función para editar post
+  function editPost(postId: string) {
+    console.log('Editar post:', postId);
+    // TODO: Implementar modal de edición
+  }
+
+  // Función para eliminar post
+  async function deletePost(postId: string) {
+    if (confirm('¿Estás seguro de que quieres eliminar este post?')) {
+      try {
+        const token = localStorage.getItem('supabase_token');
+        const response = await fetch(`/api/posts/${postId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const postCard = document.querySelector(`[data-post-id="${postId}"]`) as HTMLElement;
+          if (postCard) {
+            postCard.remove();
+            showNotification('Post eliminado');
+          }
+        }
+      } catch (error) {
+        console.error('Error al eliminar post:', error);
+      }
+    }
+  }
+
+  // Función para abrir modal de imagen
+  function openImageModal(imageSrc: string) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+      <div class="relative max-w-4xl max-h-full">
+        <img src="${imageSrc}" class="max-w-full max-h-full object-contain rounded-lg" />
+        <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    `;
+    
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.remove();
+      }
+    });
+    
+    document.body.appendChild(modal);
+  }
+
+  // Función para mostrar notificaciones
+  function showNotification(message: string) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          document.body.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
+  }
+
+  // Función para formatear tiempo
+  function formatTimeAgo(dateString: string) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) {
+      return 'Hace unos minutos';
+    } else if (diffInHours < 24) {
+      return `Hace ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `Hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
+    }
+  }
+
+  // Hacer las funciones globales
+  window.togglePostLike = togglePostLike;
+  window.toggleComments = toggleComments;
+  window.submitComment = submitComment;
+  window.handleCommentKeyPress = handleCommentKeyPress;
+  window.sharePost = sharePost;
+  window.togglePostOptions = togglePostOptions;
+  window.editPost = editPost;
+  window.deletePost = deletePost;
+  window.openImageModal = openImageModal;
+</script>

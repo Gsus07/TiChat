@@ -3,6 +3,16 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import PostForm from '../../components/react/PostForm.tsx';
+import { getPostsByServerId } from '../../utils/posts';
+import { supabase } from '../../utils/supabaseClient';
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Obtener posts del servidor (usando ID fijo para skyblock)
+const serverId = 'skyblock';
+const posts = await getPostsByServerId(serverId, currentUserId);
 ---
 
 <Layout title="Minecraft - Servidor Skyblock">
@@ -68,72 +78,19 @@ import PostForm from '../../components/react/PostForm.tsx';
 
       <!-- Muro de publicaciones -->
       <div class="space-y-6">
-        <PostCard 
-          author="SkyMaster"
-          time="Hace 20 minutos"
-          content="¡Finalmente logré hacer un generador de cobblestone automático! Ya no tendré que expandir mi isla bloque por bloque ⛏️"
-          image="/minecraft-cobble-gen.jpg"
-          likes="42"
-          comments="16"
-        />
-        
-        <PostCard 
-          author="CloudWalker"
-          time="Hace 1 hora"
-          content="Mi granja de árboles ya está produciendo suficiente madera. Próximo objetivo: granja de animales en el cielo 🌳"
-          likes="28"
-          comments="12"
-        />
-        
-        <PostCard 
-          author="IslandBuilder"
-          time="Hace 3 horas"
-          content="¿Alguien más se cayó al vacío mientras construía? Perdí 2 horas de progreso pero ya estoy de vuelta 😅"
-          likes="67"
-          comments="34"
-        />
-        
-        <PostCard 
-          author="ResourceGatherer"
-          time="Hace 5 horas"
-          content="Logré conseguir mi primer diamante del cofre de recompensas. ¡Ahora puedo hacer herramientas mejores! 💎"
-          image="/minecraft-diamond.jpg"
-          likes="89"
-          comments="27"
-        />
-        
-        <PostCard 
-          author="FarmExpert"
-          time="Hace 8 horas"
-          content="Mi granja de trigo automatizada está funcionando perfectamente. 64 panes cada 10 minutos 🍞"
-          likes="35"
-          comments="19"
-        />
-        
-        <PostCard 
-          author="SkyArchitect"
-          time="Hace 12 horas"
-          content="Construí un puente hacia otra isla flotante. ¡Encontré un cofre con items raros!"
-          image="/minecraft-sky-bridge.jpg"
-          likes="73"
-          comments="25"
-        />
-        
-        <PostCard 
-          author="ChallengeSeeker"
-          time="Hace 1 día"
-          content="Completé el desafío de hacer un portal al Nether en Skyblock. Fue más difícil de lo que pensaba 🔥"
-          likes="156"
-          comments="48"
-        />
-        
-        <PostCard 
-          author="TeamPlayer"
-          time="Hace 1 día"
-          content="¿Alguien quiere formar equipo? Podemos conectar nuestras islas y hacer proyectos más grandes juntos"
-          likes="45"
-          comments="23"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este servidor.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

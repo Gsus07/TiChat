@@ -3,6 +3,22 @@
 import Layout from '../layouts/Layout.astro';
 import ServerCard from '../components/ServerCard.astro';
 import AddServerModal from '../components/react/AddServerModal.tsx';
+import { getGameByName, getServersByGameId } from '../utils/games';
+import { supabase } from '../utils/supabaseClient';
+
+// Obtener el juego de Minecraft
+const { data: game, error: gameError } = await getGameByName('Minecraft');
+
+// Obtener el usuario actual si está autenticado
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Obtener servidores de Minecraft
+let servers = [];
+if (game) {
+  const { data: serverData, error: serverError } = await getServersByGameId(game.id);
+  servers = serverData || [];
+}
 ---
 
 <Layout title="Minecraft - Servidores">
@@ -80,158 +96,19 @@ import AddServerModal from '../components/react/AddServerModal.tsx';
             </div>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Servidor Survival -->
-        <div class="relative group">
-          <ServerCard 
-            name="Servidor Survival"
-            description="Modo supervivencia clásico con amigos"
-            image="/minecraft-survival.jpg"
-            ip="survival.miserver.com"
-            port="25565"
-            version="1.20.1"
-            link="/minecraft/survival"
-          />
-          <!-- Edit/Delete buttons for default servers -->
-          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
-            <button onclick="editDefaultServer('survival')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            <button onclick="deleteDefaultServer('survival')" class="bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <!-- Servidor Creativo -->
-        <div class="relative group">
-          <ServerCard 
-            name="Servidor Creativo"
-            description="Construcciones épicas sin límites"
-            image="/minecraft-creative.jpg"
-            ip="creative.miserver.com"
-            port="25566"
-            version="1.20.1"
-            link="/minecraft/creative"
-          />
-          <!-- Edit/Delete buttons for default servers -->
-          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
-            <button onclick="editDefaultServer('creative')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            <button onclick="deleteDefaultServer('creative')" class="bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <!-- Servidor Modded -->
-        <div class="relative group">
-          <ServerCard 
-            name="Servidor Modded"
-            description="Aventuras con mods increíbles"
-            image="/minecraft-modded.jpg"
-            ip="modded.miserver.com"
-            port="25567"
-            version="1.19.2 + Forge"
-            link="/minecraft/modded"
-          />
-          <!-- Edit/Delete buttons for default servers -->
-          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
-            <button onclick="editDefaultServer('modded')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            <button onclick="deleteDefaultServer('modded')" class="bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <!-- Servidor PvP -->
-        <div class="relative group">
-          <ServerCard 
-            name="Servidor PvP"
-            description="Batallas épicas entre jugadores"
-            image="/minecraft-pvp.jpg"
-            ip="pvp.miserver.com"
-            port="25568"
-            version="1.20.1"
-            link="/minecraft/pvp"
-          />
-          <!-- Edit/Delete buttons for default servers -->
-          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
-            <button onclick="editDefaultServer('pvp')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            <button onclick="deleteDefaultServer('pvp')" class="bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        
-        <!-- Servidor Skyblock -->
-        <div class="relative group">
-          <ServerCard 
-            name="Servidor Skyblock"
-            description="Supervivencia en las alturas"
-            image="/minecraft-skyblock.jpg"
-            ip="skyblock.miserver.com"
-            port="25569"
-            version="1.20.1"
-            link="/minecraft/skyblock"
-          />
-          <!-- Edit/Delete buttons for default servers -->
-          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
-            <button onclick="editDefaultServer('skyblock')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            <button onclick="deleteDefaultServer('skyblock')" class="bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        
-        <!-- Servidor Minijuegos -->
-        <div class="relative group">
-          <ServerCard 
-            name="Servidor Minijuegos"
-            description="Diversión con minijuegos variados"
-            image="/minecraft-minigames.jpg"
-            ip="minigames.miserver.com"
-            port="25570"
-            version="1.20.1"
-            link="/minecraft/minigames"
-          />
-          <!-- Edit/Delete buttons for default servers -->
-          <div class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 admin-buttons">
-            <button onclick="editDefaultServer('minijuegos')" class="bg-blue-500/20 backdrop-blur-sm rounded-full p-2 border border-blue-500/30 text-blue-400 hover:text-blue-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            <button onclick="deleteDefaultServer('minijuegos')" class="bg-red-500/20 backdrop-blur-sm rounded-full p-2 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
+            {servers && servers.length > 0 ? (
+              servers.map((server) => (
+                <ServerCard 
+                  server={server}
+                  currentUserId={currentUserId}
+                />
+              ))
+            ) : (
+              <div class="col-span-full text-center text-gray-400">
+                <p>No hay servidores disponibles para Minecraft en este momento.</p>
+                <p class="text-sm mt-2">¡Sé el primero en agregar un servidor!</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

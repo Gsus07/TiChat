@@ -2,6 +2,15 @@
 // src/pages/index.astro
 import Layout from '../layouts/Layout.astro';
 import GameCard from '../components/GameCard.astro';
+import { getAllGames } from '../utils/games';
+import { supabase } from '../utils/supabaseClient';
+
+// Obtener todos los juegos activos
+const { data: games, error } = await getAllGames();
+
+// Obtener el usuario actual si está autenticado
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
 ---
 
 <Layout title="Juegos que Jugamos">
@@ -48,43 +57,19 @@ import GameCard from '../components/GameCard.astro';
             </span>
           </h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        <GameCard 
-          title="Minecraft" 
-          description="Construcción y aventuras infinitas" 
-          image="/minecraft.svg"
-          link="/minecraft"
-        />
-        <GameCard 
-          title="Call of Duty" 
-          description="Acción y estrategia en equipo" 
-          image="/cod.svg"
-          link="/call-of-duty"
-        />
-        <GameCard 
-          title="Pinturillo" 
-          description="Dibujo y adivinanzas divertidas" 
-          image="/pinturillo.svg"
-          link="/pinturillo"
-        />
-        <GameCard 
-          title="Uno" 
-          description="Cartas y estrategia clásica" 
-          image="/uno.svg"
-          link="/uno"
-        />
-        <GameCard 
-          title="Among Us" 
-          description="Engaño y deducción en el espacio" 
-          image="/amongus.svg"
-          link="/among-us"
-        />
-        <GameCard 
-          title="Fortnite" 
-          description="Batalla real y construcciones" 
-          image="/fortnite.svg"
-          link="/fortnite"
-        />
-          </div>
+            {games && games.length > 0 ? (
+               games.map((game) => (
+                 <GameCard 
+                   game={game}
+                   userId={currentUserId}
+                 />
+               ))
+             ) : (
+               <div class="col-span-full text-center text-gray-400">
+                 <p>No hay juegos disponibles en este momento.</p>
+               </div>
+             )}
+           </div>
         </div>
       </div>
     </div>

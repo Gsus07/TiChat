@@ -2,6 +2,24 @@
 // src/pages/call-of-duty.astro
 import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
+import PostForm from '../components/react/PostForm.tsx';
+import { getPostsByGame } from '../utils/posts';
+import { supabase } from '../utils/supabaseClient';
+import { getGameByName } from '../utils/games';
+
+// Obtener el juego Call of Duty
+const gameResult = await getGameByName('Call of Duty');
+if (!gameResult.data) {
+  throw new Error('Juego no encontrado');
+}
+const game = gameResult.data;
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Obtener posts del juego
+const posts = await getPostsByGame(game.id, currentUserId);
 ---
 
 <Layout title="Call of Duty - Muro">
@@ -65,79 +83,28 @@ import PostCard from '../components/PostCard.astro';
       </div>
 
       <!-- Formulario para nuevo post -->
-      <div class="bg-slate-800/90 backdrop-blur-md rounded-xl p-6 mb-8 border border-slate-600/50 shadow-xl">
-        <form class="space-y-4">
-          <div>
-            <textarea 
-              placeholder="¿Qué estrategia usaste en tu última partida?"
-              class="w-full bg-slate-700/70 border border-slate-600/50 rounded-lg p-4 text-white placeholder-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all"
-              rows="3"
-            ></textarea>
-          </div>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-              <label class="flex items-center text-slate-300 hover:text-white cursor-pointer transition-colors">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                Añadir imagen
-                <input type="file" class="hidden" accept="image/*">
-              </label>
-            </div>
-            <button 
-              type="submit"
-              class="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors font-semibold shadow-lg hover:shadow-xl"
-            >
-              Publicar
-            </button>
-          </div>
-        </form>
-      </div>
+      <PostForm 
+        client:load
+        serverName="call-of-duty"
+        placeholder="¿Qué estrategia usaste en tu última partida?"
+        showNameField={false}
+      />
 
       <!-- Posts del muro -->
       <div class="space-y-6">
-        <PostCard 
-          author="Miguel"
-          time="Hace 1 hora"
-          content="¡Acabo de conseguir mi primera victoria en Warzone! El círculo final fue épico, tuve que usar todas mis granadas 💣"
-          image="/cod-victory.jpg"
-          likes="18"
-          comments="7"
-        />
-        
-        <PostCard 
-          author="Ana"
-          time="Hace 3 horas"
-          content="¿Alguien quiere hacer un squad para Search & Destroy? Necesito gente que sepa comunicarse bien"
-          likes="12"
-          comments="9"
-        />
-        
-        <PostCard 
-          author="David"
-          time="Hace 6 horas"
-          content="Mi nueva configuración de armas está funcionando increíble. AK-47 con mira holográfica y silenciador 🔫"
-          image="/cod-loadout.jpg"
-          likes="25"
-          comments="14"
-        />
-        
-        <PostCard 
-          author="Laura"
-          time="Hace 1 día"
-          content="Finalmente llegué a Prestige 5! Ha sido un camino largo pero cada partida valió la pena"
-          likes="31"
-          comments="12"
-        />
-        
-        <PostCard 
-          author="Carlos"
-          time="Hace 2 días"
-          content="¿Quién más piensa que el nuevo mapa está increíble? Los puntos de francotirador son perfectos"
-          image="/cod-map.jpg"
-          likes="19"
-          comments="8"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este juego.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

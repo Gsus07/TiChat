@@ -3,6 +3,16 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import PostForm from '../../components/react/PostForm.tsx';
+import { getPostsByServerId } from '../../utils/posts';
+import { supabase } from '../../utils/supabaseClient';
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Obtener posts del servidor (usando ID fijo para creative)
+const serverId = 'creative';
+const posts = await getPostsByServerId(serverId, currentUserId);
 ---
 
 <Layout title="Minecraft - Servidor Creativo">
@@ -68,56 +78,19 @@ import PostForm from '../../components/react/PostForm.tsx';
 
       <!-- Muro de publicaciones -->
       <div class="space-y-6">
-        <PostCard 
-          author="ArquitectoMaster"
-          time="Hace 30 minutos"
-          content="¡Terminé mi réplica del Coliseo Romano! Me tomó 3 semanas pero cada bloque valió la pena. ¿Qué les parece?"
-          image="/minecraft-coliseum.jpg"
-          likes="45"
-          comments="18"
-        />
-        
-        <PostCard 
-          author="CityBuilder"
-          time="Hace 2 horas"
-          content="Estoy trabajando en una ciudad futurista con rascacielos de cristal. ¿Alguien quiere ayudarme con los detalles?"
-          likes="23"
-          comments="12"
-        />
-        
-        <PostCard 
-          author="PixelArtist"
-          time="Hace 4 horas"
-          content="Mi nuevo pixel art de 128x128 bloques está casi listo. Es un retrato de mi gato 🐱"
-          image="/minecraft-pixelart.jpg"
-          likes="67"
-          comments="25"
-        />
-        
-        <PostCard 
-          author="RedstoneGenius"
-          time="Hace 6 horas"
-          content="Construí una calculadora funcional usando solo redstone. ¡Puede hacer operaciones básicas!"
-          likes="89"
-          comments="34"
-        />
-        
-        <PostCard 
-          author="CastleBuilder"
-          time="Hace 8 horas"
-          content="Mi castillo medieval ya tiene 5 torres y un foso con agua. Próximamente añadiré dragones con command blocks"
-          image="/minecraft-castle.jpg"
-          likes="56"
-          comments="21"
-        />
-        
-        <PostCard 
-          author="ModernArchitect"
-          time="Hace 1 día"
-          content="Casa moderna minimalista completada. Vidrio, concreto blanco y mucha iluminación LED"
-          likes="34"
-          comments="15"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este servidor.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

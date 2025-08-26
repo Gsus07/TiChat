@@ -3,6 +3,20 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import PostForm from '../../components/react/PostForm.tsx';
+import { getPostsByServerId } from '../../utils/posts';
+import { supabase } from '../../utils/supabaseClient';
+import { getServersByGameId } from '../../utils/games';
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Para este ejemplo, usaremos un ID de servidor fijo para 'modded'
+// En una implementación real, obtendrías esto de la base de datos
+const serverId = 'modded-server-id';
+
+// Obtener posts del servidor
+const posts = await getPostsByServerId(serverId, currentUserId);
 ---
 
 <Layout title="Minecraft - Servidor Modded">
@@ -68,64 +82,19 @@ import PostForm from '../../components/react/PostForm.tsx';
 
       <!-- Muro de publicaciones -->
       <div class="space-y-6">
-        <PostCard 
-          author="TechMaster"
-          time="Hace 15 minutos"
-          content="¡El mod de Industrial Craft es increíble! Ya tengo una fábrica automática de energía solar funcionando 24/7 ⚡"
-          image="/minecraft-industrial.jpg"
-          likes="32"
-          comments="14"
-        />
-        
-        <PostCard 
-          author="MagicUser"
-          time="Hace 1 hora"
-          content="Thaumcraft me tiene obsesionado. Acabo de crear mi primera varita mágica y los efectos son espectaculares ✨"
-          likes="28"
-          comments="11"
-        />
-        
-        <PostCard 
-          author="ExplorerPro"
-          time="Hace 3 horas"
-          content="Biomes O' Plenty añadió tantos biomas nuevos que no sé por dónde empezar a explorar. ¡El bioma de cristales es hermoso!"
-          image="/minecraft-biomes.jpg"
-          likes="45"
-          comments="19"
-        />
-        
-        <PostCard 
-          author="BuildCrafter"
-          time="Hace 5 horas"
-          content="Chisel and Bits me permite hacer detalles increíbles. Estoy construyendo una estatua pixel por pixel"
-          likes="67"
-          comments="23"
-        />
-        
-        <PostCard 
-          author="FarmingGuru"
-          time="Hace 8 horas"
-          content="Agricraft transformó completamente mi forma de hacer granjas. Ahora puedo crear cultivos súper eficientes 🌾"
-          image="/minecraft-agricraft.jpg"
-          likes="39"
-          comments="16"
-        />
-        
-        <PostCard 
-          author="TinkerExpert"
-          time="Hace 12 horas"
-          content="Tinkers' Construct es el mejor mod para herramientas. Mi pico de manyullyn con fortuna III es imparable"
-          likes="54"
-          comments="21"
-        />
-        
-        <PostCard 
-          author="DimensionWalker"
-          time="Hace 1 día"
-          content="¿Alguien más se perdió en el Twilight Forest? Llevo 2 horas buscando la salida del laberinto del minotauro 😅"
-          likes="73"
-          comments="28"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este servidor.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

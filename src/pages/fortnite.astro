@@ -2,6 +2,24 @@
 // src/pages/fortnite.astro
 import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
+import PostForm from '../components/react/PostForm.tsx';
+import { getPostsByGame } from '../utils/posts';
+import { supabase } from '../utils/supabaseClient';
+import { getGameByName } from '../utils/games';
+
+// Obtener el juego de Fortnite
+const gameResult = await getGameByName('Fortnite');
+if (!gameResult.data) {
+  throw new Error('Juego no encontrado');
+}
+const game = gameResult.data;
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Obtener posts del juego
+const posts = await getPostsByGame(game.id, currentUserId);
 ---
 
 <Layout title="Fortnite - Muro">
@@ -65,95 +83,28 @@ import PostCard from '../components/PostCard.astro';
       </div>
 
       <!-- Formulario para nuevo post -->
-      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8 border border-white/20">
-        <form class="space-y-4">
-          <div>
-            <textarea 
-              placeholder="¿Conseguiste tu Victoria Royale hoy?"
-              class="w-full bg-white/5 border border-white/20 rounded-lg p-4 text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows="3"
-            ></textarea>
-          </div>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-              <label class="flex items-center text-gray-300 hover:text-white cursor-pointer transition-colors">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z"></path>
-                </svg>
-                Añadir imagen
-                <input type="file" class="hidden" accept="image/*">
-              </label>
-            </div>
-            <button 
-              type="submit"
-              class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
-            >
-              Publicar
-            </button>
-          </div>
-        </form>
-      </div>
+      <PostForm 
+        client:load
+        serverName="Fortnite"
+        placeholder="¿Conseguiste tu Victoria Royale hoy?"
+        showNameField={false}
+      />
 
       <!-- Posts del muro -->
       <div class="space-y-6">
-        <PostCard 
-          author="NinjaGamer"
-          time="Hace 15 min"
-          content="¡VICTORIA ROYALE! 🏆 Conseguí mi primera victoria de la temporada con 12 eliminaciones. El nuevo loot pool está increíble!"
-          likes="42"
-          comments="18"
-        />
-        
-        <PostCard 
-          author="BuildMaster"
-          time="Hace 45 min"
-          content="¿Alguien más extraña las construcciones en Zero Build? Me encanta el modo pero a veces quiero hacer una torre rápida"
-          image="/fortnite-build.jpg"
-          likes="28"
-          comments="15"
-        />
-        
-        <PostCard 
-          author="SkinCollector"
-          time="Hace 1 hora"
-          content="El nuevo skin de la tienda está BRUTAL 🔥 Ya sé en qué me voy a gastar mis V-Bucks"
-          likes="35"
-          comments="22"
-        />
-        
-        <PostCard 
-          author="ProPlayer"
-          time="Hace 3 horas"
-          content="Consejo del día: siempre lleven materiales de curación. Me salvaron en el top 5 cuando tenía solo 1 HP"
-          image="/fortnite-healing.jpg"
-          likes="67"
-          comments="31"
-        />
-        
-        <PostCard 
-          author="CreativeBuilder"
-          time="Hace 5 horas"
-          content="Terminé mi nuevo mapa creativo! Es un parkour con temática futurista. Código: 1234-5678-9012"
-          likes="89"
-          comments="45"
-        />
-        
-        <PostCard 
-          author="StormChaser"
-          time="Hace 8 horas"
-          content="La tormenta me pilló construyendo y tuve que correr como loco. Casi no llego a la zona segura 😅"
-          image="/fortnite-storm.jpg"
-          likes="23"
-          comments="12"
-        />
-        
-        <PostCard 
-          author="SquadLeader"
-          time="Hace 1 día"
-          content="Buscando squad para ranked. Necesito gente que sepa comunicarse y jugar en equipo. MP si interesa!"
-          likes="19"
-          comments="8"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este juego.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

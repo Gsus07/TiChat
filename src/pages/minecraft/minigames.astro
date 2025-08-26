@@ -3,6 +3,16 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import PostForm from '../../components/react/PostForm.tsx';
+import { getPostsByServerId } from '../../utils/posts';
+import { supabase } from '../../utils/supabaseClient';
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Obtener posts del servidor (usando ID fijo para minigames)
+const serverId = 'minigames';
+const posts = await getPostsByServerId(serverId, currentUserId);
 ---
 
 <Layout title="Minecraft - Servidor Minijuegos">
@@ -68,81 +78,19 @@ import PostForm from '../../components/react/PostForm.tsx';
 
       <!-- Muro de publicaciones -->
       <div class="space-y-6">
-        <PostCard 
-          author="SpeedRunner"
-          time="Hace 5 minutos"
-          content="¡Nuevo récord personal en Parkour! Completé el nivel experto en 2:34 minutos 🏃‍♂️💨"
-          image="/minecraft-parkour.jpg"
-          likes="67"
-          comments="24"
-        />
-        
-        <PostCard 
-          author="BuildBattler"
-          time="Hace 30 minutos"
-          content="Gané el Build Battle con mi castillo de arena. El tema era 'vacaciones' y creo que lo clavé 🏰"
-          likes="45"
-          comments="18"
-        />
-        
-        <PostCard 
-          author="SpleefMaster"
-          time="Hace 1 hora"
-          content="Racha de 15 victorias consecutivas en Spleef! Mi estrategia de quedarse en el centro funciona perfectamente ⛏️"
-          image="/minecraft-spleef.jpg"
-          likes="89"
-          comments="32"
-        />
-        
-        <PostCard 
-          author="HideSeeker"
-          time="Hace 2 horas"
-          content="Me escondí como un bloque de hierba durante 10 minutos en Hide and Seek. Nadie me encontró 😂"
-          likes="123"
-          comments="45"
-        />
-        
-        <PostCard 
-          author="TNTRunner"
-          time="Hace 4 horas"
-          content="TNT Run es mi minijuego favorito. La adrenalina de correr mientras todo explota detrás de ti es increíble 💣"
-          image="/minecraft-tnt-run.jpg"
-          likes="56"
-          comments="21"
-        />
-        
-        <PostCard 
-          author="BedWarsPro"
-          time="Hace 6 horas"
-          content="Defendí mi cama contra 3 equipos al mismo tiempo en Bed Wars. Las torres de obsidiana son clave 🛏️"
-          likes="78"
-          comments="29"
-        />
-        
-        <PostCard 
-          author="SkyWarrior"
-          time="Hace 8 horas"
-          content="Sky Wars en el mapa de islas flotantes es épico. Logré hacer un puente de 20 bloques bajo presión"
-          image="/minecraft-skywars.jpg"
-          likes="91"
-          comments="37"
-        />
-        
-        <PostCard 
-          author="TeamCaptain"
-          time="Hace 12 horas"
-          content="Buscando equipo para el torneo de minijuegos del próximo sábado. ¡Hay premios increíbles! 🏆"
-          likes="34"
-          comments="52"
-        />
-        
-        <PostCard 
-          author="LuckyBlocker"
-          time="Hace 1 día"
-          content="Lucky Block Wars me dio una espada de diamante con Sharpness V en el primer bloque. ¡Qué suerte! 🍀"
-          likes="145"
-          comments="63"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este servidor.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

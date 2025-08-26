@@ -2,6 +2,24 @@
 // src/pages/among-us.astro
 import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
+import PostForm from '../components/react/PostForm.tsx';
+import { getPostsByGame } from '../utils/posts';
+import { supabase } from '../utils/supabaseClient';
+import { getGameByName } from '../utils/games';
+
+// Obtener el juego Among Us
+const gameResult = await getGameByName('Among Us');
+if (!gameResult.data) {
+  throw new Error('Juego no encontrado');
+}
+const game = gameResult.data;
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Obtener posts del juego
+const posts = await getPostsByGame(game.id, currentUserId);
 ---
 
 <Layout title="Among Us - Muro">
@@ -65,87 +83,28 @@ import PostCard from '../components/PostCard.astro';
       </div>
 
       <!-- Formulario para nuevo post -->
-      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8 border border-white/20">
-        <form class="space-y-4">
-          <div>
-            <textarea 
-              placeholder="¿Quién crees que es el impostor esta vez?"
-              class="w-full bg-white/5 border border-white/20 rounded-lg p-4 text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              rows="3"
-            ></textarea>
-          </div>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-              <label class="flex items-center text-gray-300 hover:text-white cursor-pointer transition-colors">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                Añadir imagen
-                <input type="file" class="hidden" accept="image/*">
-              </label>
-            </div>
-            <button 
-              type="submit"
-              class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-semibold"
-            >
-              Publicar
-            </button>
-          </div>
-        </form>
-      </div>
+      <PostForm 
+        client:load
+        serverName="among-us"
+        placeholder="¿Quién crees que es el impostor esta vez?"
+        showNameField={false}
+      />
 
       <!-- Posts del muro -->
       <div class="space-y-6">
-        <PostCard 
-          author="Rojo"
-          time="Hace 30 min"
-          content="¡Era Verde todo el tiempo! Me tuvo engañado toda la partida fingiendo hacer tareas 😤"
-          likes="15"
-          comments="8"
-        />
-        
-        <PostCard 
-          author="Azul"
-          time="Hace 1 hora"
-          content="Alguien vio a Amarillo salir de ventilación en electrical? Creo que tenemos a nuestro impostor"
-          image="/amongus-vent.jpg"
-          likes="22"
-          comments="12"
-        />
-        
-        <PostCard 
-          author="Rosa"
-          time="Hace 2 horas"
-          content="¿Por qué siempre me votan primero? Solo porque soy nueva no significa que sea el impostor 😭"
-          likes="18"
-          comments="6"
-        />
-        
-        <PostCard 
-          author="Negro"
-          time="Hace 4 horas"
-          content="Partida épica! Logré ganar como impostor eliminando a todos sin que me descubrieran. La clave está en fingir bien las tareas"
-          image="/amongus-victory.jpg"
-          likes="31"
-          comments="15"
-        />
-        
-        <PostCard 
-          author="Blanco"
-          time="Hace 6 horas"
-          content="¿Alguien más piensa que el mapa de Polus es el más difícil? Siempre me pierdo en esos pasillos"
-          likes="14"
-          comments="9"
-        />
-        
-        <PostCard 
-          author="Morado"
-          time="Hace 1 día"
-          content="Consejo: siempre vigilen las cámaras de seguridad. Me salvaron de ser eliminado varias veces"
-          image="/amongus-security.jpg"
-          likes="27"
-          comments="11"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este juego.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

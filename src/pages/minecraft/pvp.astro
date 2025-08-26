@@ -3,6 +3,20 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import PostForm from '../../components/react/PostForm.tsx';
+import { getPostsByServerId } from '../../utils/posts';
+import { supabase } from '../../utils/supabaseClient';
+import { getServersByGameId } from '../../utils/games';
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id;
+
+// Para este ejemplo, usaremos un ID de servidor fijo para 'pvp'
+// En una implementación real, obtendrías esto de la base de datos
+const serverId = 'pvp-server-id';
+
+// Obtener posts del servidor
+const posts = await getPostsByServerId(serverId, currentUserId);
 ---
 
 <Layout title="Minecraft - Servidor PvP">
@@ -68,72 +82,19 @@ import PostForm from '../../components/react/PostForm.tsx';
 
       <!-- Muro de publicaciones -->
       <div class="space-y-6">
-        <PostCard 
-          author="WarriorKing"
-          time="Hace 10 minutos"
-          content="¡Acabo de ganar un 1v3 en la arena! Mi estrategia de hit-and-run funcionó perfectamente ⚔️"
-          image="/minecraft-arena.jpg"
-          likes="56"
-          comments="23"
-        />
-        
-        <PostCard 
-          author="SwordMaster"
-          time="Hace 45 minutos"
-          content="Mi nueva espada de netherite con Sharpness V está destruyendo en las batallas. ¿Alguien quiere un duelo?"
-          likes="34"
-          comments="18"
-        />
-        
-        <PostCard 
-          author="ArcherPro"
-          time="Hace 2 horas"
-          content="Logré un tiro de 50 bloques de distancia con el arco. El otro jugador ni siquiera me vio venir 🏹"
-          image="/minecraft-archery.jpg"
-          likes="78"
-          comments="31"
-        />
-        
-        <PostCard 
-          author="TacticalGamer"
-          time="Hace 4 horas"
-          content="Organicé una emboscada perfecta en el puente. 5 kills seguidos sin morir una sola vez"
-          likes="45"
-          comments="19"
-        />
-        
-        <PostCard 
-          author="BerserkerRage"
-          time="Hace 6 horas"
-          content="¿Quién más piensa que las batallas en el Nether son las más intensas? La lava añade mucha tensión 🔥"
-          image="/minecraft-nether-pvp.jpg"
-          likes="67"
-          comments="28"
-        />
-        
-        <PostCard 
-          author="StealthNinja"
-          time="Hace 8 horas"
-          content="Poción de invisibilidad + TNT = combinación letal. Nadie espera el ataque sorpresa 💣"
-          likes="89"
-          comments="35"
-        />
-        
-        <PostCard 
-          author="TeamLeader"
-          time="Hace 12 horas"
-          content="Buscando equipo para el torneo de este fin de semana. Necesito 3 jugadores experimentados en PvP"
-          likes="23"
-          comments="41"
-        />
-        
-        <PostCard 
-          author="LegendaryFighter"
-          time="Hace 1 día"
-          content="Después de 6 meses practicando, finalmente llegué al top 10 del ranking. ¡El esfuerzo valió la pena!"
-          likes="156"
-          comments="67"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este servidor.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

@@ -2,6 +2,24 @@
 // src/pages/pinturillo.astro
 import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
+import PostForm from '../components/react/PostForm.tsx';
+import { getPostsByGame } from '../utils/posts';
+import { supabase } from '../utils/supabaseClient';
+import { getGameByName } from '../utils/games';
+
+// Obtener el juego "Pinturillo"
+const gameResult = await getGameByName('Pinturillo');
+if (!gameResult.data) {
+  throw new Error('Juego "Pinturillo" no encontrado');
+}
+const game = gameResult.data;
+
+// Obtener el usuario actual
+const { data: { user } } = await supabase.auth.getUser();
+const currentUserId = user?.id || undefined;
+
+// Obtener los posts del juego
+const posts = await getPostsByGame(game.id);
 ---
 
 <Layout title="Pinturillo - Muro">
@@ -65,95 +83,28 @@ import PostCard from '../components/PostCard.astro';
       </div>
 
       <!-- Formulario para nuevo post -->
-      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8 border border-white/20">
-        <form class="space-y-4">
-          <div>
-            <textarea 
-              placeholder="¿Qué fue lo más difícil de dibujar hoy?"
-              class="w-full bg-white/5 border border-white/20 rounded-lg p-4 text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              rows="3"
-            ></textarea>
-          </div>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-              <label class="flex items-center text-gray-300 hover:text-white cursor-pointer transition-colors">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z"></path>
-                </svg>
-                Añadir imagen
-                <input type="file" class="hidden" accept="image/*">
-              </label>
-            </div>
-            <button 
-              type="submit"
-              class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-semibold"
-            >
-              Publicar
-            </button>
-          </div>
-        </form>
-      </div>
+      <PostForm 
+        client:load
+        serverName="pinturillo"
+        placeholder="¿Qué fue lo más difícil de dibujar hoy?"
+        showNameField={false}
+      />
 
       <!-- Posts del muro -->
       <div class="space-y-6">
-        <PostCard 
-          author="ArtistaPro"
-          time="Hace 10 min"
-          content="¡Nadie adivinó mi dibujo de 'elefante'! Admito que parecía más un ratón gigante 🐭🎨"
-          likes="34"
-          comments="16"
-        />
-        
-        <PostCard 
-          author="AdivinaFácil"
-          time="Hace 30 min"
-          content="Conseguí adivinar 'mariposa' con solo 3 líneas dibujadas. A veces la intuición funciona"
-          image="/pinturillo-butterfly.jpg"
-          likes="28"
-          comments="11"
-        />
-        
-        <PostCard 
-          author="DibujoRápido"
-          time="Hace 1 hora"
-          content="Consejo: cuando no sepas qué dibujar, empieza con formas básicas. Círculos y líneas salvan vidas"
-          likes="45"
-          comments="19"
-        />
-        
-        <PostCard 
-          author="ColorMaster"
-          time="Hace 2 horas"
-          content="¿Por qué siempre elijo el color equivocado? Quería dibujar un tomate y salió una manzana verde 🍅➡️🍏"
-          image="/pinturillo-colors.jpg"
-          likes="52"
-          comments="23"
-        />
-        
-        <PostCard 
-          author="PalabrasDifíciles"
-          time="Hace 4 horas"
-          content="Me tocó dibujar 'otorrinolaringólogo'. ¿En serio? ¿Cómo se dibuja eso? 😅"
-          likes="67"
-          comments="31"
-        />
-        
-        <PostCard 
-          author="TiempoLímite"
-          time="Hace 6 horas"
-          content="5 segundos para dibujar 'casa' y todos adivinaron. A veces menos es más"
-          image="/pinturillo-house.jpg"
-          likes="39"
-          comments="14"
-        />
-        
-        <PostCard 
-          author="ChatDivertido"
-          time="Hace 1 día"
-          content="El chat mientras jugamos es lo mejor. Las respuestas incorrectas son más divertidas que las correctas"
-          likes="73"
-          comments="42"
-        />
+        {posts.data && posts.data.length > 0 ? (
+          posts.data.map((post: any) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))
+        ) : (
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
+            <p class="text-gray-300 text-lg">No hay posts aún en este juego.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        )}
       </div>
     </div>
   </main>

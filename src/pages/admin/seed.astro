@@ -1,0 +1,144 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Admin - Seeders">
+  <main class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div class="container mx-auto px-4 py-8">
+      <div class="max-w-2xl mx-auto">
+        <h1 class="text-4xl font-bold text-white mb-8 text-center">
+          🌱 Database Seeders
+        </h1>
+        
+        <div class="bg-white/10 backdrop-blur-md rounded-xl p-8 border border-white/20">
+          <div class="mb-6">
+            <h2 class="text-2xl font-semibold text-white mb-4">Poblar Base de Datos</h2>
+            <p class="text-gray-300 mb-4">
+              Este proceso creará datos iniciales en la base de datos incluyendo:
+            </p>
+            <ul class="text-gray-300 space-y-2 mb-6">
+              <li>• 🎮 Juegos (Minecraft, Among Us, Call of Duty, etc.)</li>
+              <li>• 🖥️ Servidores de Minecraft</li>
+              <li>• 👥 Usuarios de demostración</li>
+              <li>• 📝 Posts de ejemplo</li>
+            </ul>
+            <div class="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 mb-6">
+              <p class="text-yellow-200 text-sm">
+                ⚠️ <strong>Advertencia:</strong> Solo ejecutar si la base de datos está vacía. 
+                Los seeders verificarán si ya existen datos antes de insertar.
+              </p>
+            </div>
+          </div>
+          
+          <div class="space-y-4">
+            <div>
+              <label for="authorization" class="block text-white font-medium mb-2">
+                Clave de Autorización:
+              </label>
+              <input 
+                type="password" 
+                id="authorization" 
+                placeholder="Ingresa la clave de autorización"
+                class="w-full bg-white/5 border border-white/20 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+            </div>
+            
+            <button 
+              id="runSeeders"
+              class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              🌱 Ejecutar Seeders
+            </button>
+          </div>
+          
+          <div id="result" class="mt-6 hidden">
+            <div id="loading" class="hidden text-center py-4">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+              <p class="text-white mt-2">Ejecutando seeders...</p>
+            </div>
+            
+            <div id="success" class="hidden bg-green-500/20 border border-green-500/50 rounded-lg p-4">
+              <p class="text-green-200">
+                ✅ <strong>Éxito:</strong> Seeders ejecutados correctamente.
+              </p>
+            </div>
+            
+            <div id="error" class="hidden bg-red-500/20 border border-red-500/50 rounded-lg p-4">
+              <p class="text-red-200">
+                ❌ <strong>Error:</strong> <span id="errorMessage"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-center mt-8">
+          <a 
+            href="/"
+            class="text-purple-300 hover:text-white transition-colors"
+          >
+            ← Volver al inicio
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const runButton = document.getElementById('runSeeders') as HTMLButtonElement;
+    const authInput = document.getElementById('authorization') as HTMLInputElement;
+    const resultDiv = document.getElementById('result');
+    const loadingDiv = document.getElementById('loading');
+    const successDiv = document.getElementById('success');
+    const errorDiv = document.getElementById('error');
+    const errorMessage = document.getElementById('errorMessage');
+    
+    runButton?.addEventListener('click', async () => {
+      const authorization = authInput?.value;
+      
+      if (!authorization) {
+        alert('Por favor ingresa la clave de autorización');
+        return;
+      }
+      
+      // Mostrar loading
+      resultDiv?.classList.remove('hidden');
+      loadingDiv?.classList.remove('hidden');
+      successDiv?.classList.add('hidden');
+      errorDiv?.classList.add('hidden');
+      if (runButton) runButton.disabled = true;
+      
+      try {
+        const response = await fetch('/api/seed', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ authorization })
+        });
+        
+        const data = await response.json();
+        
+        loadingDiv?.classList.add('hidden');
+        
+        if (data.success) {
+          successDiv?.classList.remove('hidden');
+        } else {
+          errorDiv?.classList.remove('hidden');
+          if (errorMessage) {
+            errorMessage.textContent = data.error || 'Error desconocido';
+          }
+        }
+      } catch (error) {
+        loadingDiv?.classList.add('hidden');
+        errorDiv?.classList.remove('hidden');
+        if (errorMessage) {
+          errorMessage.textContent = 'Error de conexión';
+        }
+      } finally {
+        if (runButton) runButton.disabled = false;
+      }
+    });
+  });
+</script>

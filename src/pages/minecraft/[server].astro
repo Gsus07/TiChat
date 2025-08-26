@@ -110,48 +110,98 @@ if (server && typeof server === 'string') {
         
         <!-- Publicaciones de ejemplo para servidores personalizados -->
         <PostCard 
-          author="Administrador"
-          time="Hace 2 horas"
-          content="¡Bienvenidos al servidor! Esperamos que disfruten su experiencia aqui. Recuerden seguir las reglas y divertirse."
-          image=""
-          likes={15}
-          comments={3}
+          post={{
+            id: "1",
+            content: "¡Bienvenidos al servidor! Esperamos que disfruten su experiencia aqui. Recuerden seguir las reglas y divertirse.",
+            image_url: "",
+            created_at: "2024-01-15T10:00:00Z",
+            user_id: "admin",
+            is_active: true,
+            profiles: {
+              username: "Administrador",
+              full_name: "Administrador del Servidor",
+              avatar_url: "/default-avatar.png"
+            },
+            like_count: 15,
+            comment_count: 3,
+            user_has_liked: false
+          }}
         />
         
         <PostCard 
-          author="Jugador_Pro"
-          time="Hace 4 horas"
-          content="Este servidor esta increible! La comunidad es muy amigable y hay muchas cosas que hacer."
-          image=""
-          likes={8}
-          comments={2}
+          post={{
+            id: "2",
+            content: "Este servidor esta increible! La comunidad es muy amigable y hay muchas cosas que hacer.",
+            image_url: "",
+            created_at: "2024-01-15T08:00:00Z",
+            user_id: "player1",
+            is_active: true,
+            profiles: {
+              username: "Jugador_Pro",
+              full_name: "Jugador Profesional",
+              avatar_url: "/default-avatar.png"
+            },
+            like_count: 8,
+            comment_count: 2,
+            user_has_liked: false
+          }}
         />
         
         <PostCard 
-          author="Constructor_Master"
-          time="Hace 6 horas"
-          content="Termine mi nueva construccion en el servidor. ¡Vengan a verla en las coordenadas X:250 Z:180!"
-          image="/minecraft-build.jpg"
-          likes={23}
-          comments={7}
+          post={{
+            id: "3",
+            content: "Termine mi nueva construccion en el servidor. ¡Vengan a verla en las coordenadas X:250 Z:180!",
+            image_url: "/minecraft-build.jpg",
+            created_at: "2024-01-15T06:00:00Z",
+            user_id: "builder1",
+            is_active: true,
+            profiles: {
+              username: "Constructor_Master",
+              full_name: "Maestro Constructor",
+              avatar_url: "/default-avatar.png"
+            },
+            like_count: 23,
+            comment_count: 7,
+            user_has_liked: false
+          }}
         />
         
         <PostCard 
-          author="Explorador_2023"
-          time="Hace 8 horas"
-          content="Encontre una cueva super grande llena de diamantes. ¿Alguien quiere venir a explorar conmigo?"
-          image=""
-          likes={12}
-          comments={5}
+          post={{
+            id: "4",
+            content: "Encontre una cueva super grande llena de diamantes. ¿Alguien quiere venir a explorar conmigo?",
+            image_url: "",
+            created_at: "2024-01-15T04:00:00Z",
+            user_id: "explorer1",
+            is_active: true,
+            profiles: {
+              username: "Explorador_2023",
+              full_name: "Explorador Aventurero",
+              avatar_url: "/default-avatar.png"
+            },
+            like_count: 12,
+            comment_count: 5,
+            user_has_liked: false
+          }}
         />
         
         <PostCard 
-          author="Granjero_Feliz"
-          time="Hace 1 día"
-          content="Mi granja automatica de trigo ya esta funcionando perfectamente. ¡Comida gratis para todos!"
-          image="/minecraft-farm.jpg"
-          likes={18}
-          comments={4}
+          post={{
+            id: "5",
+            content: "Mi granja automatica de trigo ya esta funcionando perfectamente. ¡Comida gratis para todos!",
+            image_url: "/minecraft-farm.jpg",
+            created_at: "2024-01-14T12:00:00Z",
+            user_id: "farmer1",
+            is_active: true,
+            profiles: {
+              username: "Granjero_Feliz",
+              full_name: "Granjero Feliz",
+              avatar_url: "/default-avatar.png"
+            },
+            like_count: 18,
+            comment_count: 4,
+            user_has_liked: false
+          }}
         />
       </div>
     </div>
