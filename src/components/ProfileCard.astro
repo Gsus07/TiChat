@@ -1,0 +1,134 @@
+---
+// ProfileCard.astro - Component for displaying user profile information
+
+interface Props {
+  user?: {
+    id: string;
+    username: string;
+    email: string;
+    full_name?: string;
+    avatar?: string;
+  };
+}
+
+const { user } = Astro.props;
+
+// This line was causing the TypeScript error - fixing the import path
+// Original error: Cannot find module '../lib/supabase'
+// Fixed: Using the correct path to supabaseClient
+import { supabase } from '../utils/supabaseClient';
+
+// Example usage of supabase client
+let profileData = null;
+if (user?.id) {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+    
+    if (!error) {
+      profileData = data;
+    }
+  } catch (err) {
+    console.error('Error fetching profile:', err);
+  }
+}
+---
+
+<div class="profile-card">
+  {user ? (
+    <div class="profile-content">
+      <div class="profile-header">
+        {user.avatar ? (
+          <img src={user.avatar} alt={`${user.username}'s avatar`} class="avatar" />
+        ) : (
+          <div class="avatar-placeholder">
+            {user.username.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <div class="profile-info">
+          <h3>{user.full_name || user.username}</h3>
+          <p class="username">@{user.username}</p>
+          <p class="email">{user.email}</p>
+        </div>
+      </div>
+      
+      {profileData && (
+        <div class="profile-details">
+          <p>Additional profile information loaded from Supabase</p>
+        </div>
+      )}
+    </div>
+  ) : (
+    <div class="no-profile">
+      <p>No user profile available</p>
+    </div>
+  )}
+</div>
+
+<style>
+  .profile-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .avatar-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #6366f1;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .profile-info h3 {
+    margin: 0 0 0.25rem 0;
+    color: #1f2937;
+  }
+  
+  .username {
+    color: #6b7280;
+    margin: 0 0 0.25rem 0;
+    font-size: 0.9rem;
+  }
+  
+  .email {
+    color: #9ca3af;
+    margin: 0;
+    font-size: 0.85rem;
+  }
+  
+  .profile-details {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 1rem;
+    color: #6b7280;
+  }
+  
+  .no-profile {
+    text-align: center;
+    color: #9ca3af;
+  }
+</style>

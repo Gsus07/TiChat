@@ -2,6 +2,7 @@
 // src/pages/minecraft/minigames.astro
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
+import PostForm from '../../components/react/PostForm.tsx';
 ---
 
 <Layout title="Minecraft - Servidor Minijuegos">
@@ -58,29 +59,12 @@ import PostCard from '../../components/PostCard.astro';
       </div>
 
       <!-- Formulario para nueva publicación -->
-      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8">
-        <h3 class="text-xl font-bold text-white mb-4">Comparte tus victorias</h3>
-        <form class="space-y-4">
-          <textarea 
-            placeholder="¿En qué minijuego ganaste hoy?"
-            class="w-full bg-white/5 border border-white/20 rounded-lg p-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
-            rows="3"
-          ></textarea>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-              <button type="button" class="flex items-center text-pink-300 hover:text-pink-200 transition-colors">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                Imagen
-              </button>
-            </div>
-            <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-lg transition-colors">
-              Publicar
-            </button>
-          </div>
-        </form>
-      </div>
+      <PostForm 
+        client:load
+        serverName="minigames"
+        placeholder="¿En qué minijuego ganaste hoy?"
+        showNameField={false}
+      />
 
       <!-- Muro de publicaciones -->
       <div class="space-y-6">

@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
 ---
 
 <Layout title="Perfil de Usuario - Gaming Hub">
@@ -218,42 +219,8 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </div>
 
-    <!-- Edit Profile Modal -->
-    <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div class="bg-slate-800/95 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl w-full max-w-md">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-white">Editar Perfil</h3>
-            <button id="closeModalBtn" class="text-gray-400 hover:text-white transition-colors">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-          
-          <form id="editProfileForm" class="space-y-4">
-            <div>
-              <label for="editName" class="block text-sm font-medium text-gray-300 mb-2">Nombre</label>
-              <input type="text" id="editName" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300">
-            </div>
-            
-            <div>
-              <label for="editEmail" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
-              <input type="email" id="editEmail" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300">
-            </div>
-            
-            <div class="flex space-x-3 pt-4">
-              <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 px-4 rounded-xl transition-all duration-300 font-medium">
-                Guardar Cambios
-              </button>
-              <button type="button" id="cancelEditBtn" class="flex-1 bg-white/10 hover:bg-white/20 text-gray-300 py-3 px-4 rounded-xl transition-all duration-300 font-medium border border-white/20">
-                Cancelar
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <!-- React Profile Edit Modal -->
+    <ProfileEditModal client:load isOpen={false} onClose={() => {}} />
   </main>
 
   <script>
@@ -288,7 +255,7 @@ import Layout from '../layouts/Layout.astro';
       const profileEmail = document.getElementById('profileEmail');
       const profileAvatar = document.getElementById('profileAvatar') as HTMLImageElement;
       
-      if (profileName) profileName.textContent = user.name;
+      if (profileName) profileName.textContent = user.full_name || user.username || 'Usuario';
       if (profileEmail) profileEmail.textContent = user.email;
       if (profileAvatar) profileAvatar.src = user.avatar || '/default-avatar.png';
       
@@ -298,131 +265,30 @@ import Layout from '../layouts/Layout.astro';
       if (memberSince) memberSince.textContent = createdDate.getFullYear().toString();
     }
 
-    // Edit profile modal
+    // React Profile Edit Modal integration handled via custom events
+    
+    // Edit profile button handler
     const editProfileBtn = document.getElementById('editProfileBtn');
-    const editModal = document.getElementById('editModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
-    const editProfileForm = document.getElementById('editProfileForm');
-
     editProfileBtn?.addEventListener('click', () => {
       const session = checkAuth();
       if (!session) return;
       
-      // Populate form with current data
-      const editName = document.getElementById('editName') as HTMLInputElement;
-      const editEmail = document.getElementById('editEmail') as HTMLInputElement;
-      
-      if (editName) editName.value = session.user.name;
-      if (editEmail) editEmail.value = session.user.email;
-      
-      editModal?.classList.remove('hidden');
+      // Trigger React modal open
+      const event = new CustomEvent('openProfileEditModal');
+      window.dispatchEvent(event);
     });
 
-    closeModalBtn?.addEventListener('click', () => {
-      editModal?.classList.add('hidden');
-    });
-
-    cancelEditBtn?.addEventListener('click', () => {
-      editModal?.classList.add('hidden');
-    });
-
-    // Close modal when clicking outside
-    editModal?.addEventListener('click', (e) => {
-      if (e.target === editModal) {
-        editModal.classList.add('hidden');
-      }
-    });
-
-    // Handle profile update
-    editProfileForm?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const session = checkAuth();
-      if (!session) return;
-      
-      const editName = document.getElementById('editName') as HTMLInputElement;
-      const editEmail = document.getElementById('editEmail') as HTMLInputElement;
-      
-      if (!editName || !editEmail) return;
-      
-      const newName = editName.value;
-      const newEmail = editEmail.value;
-      
-      // Update user data
-      session.user.name = newName;
-      session.user.email = newEmail;
-      
-      // Update in storage
-      if (localStorage.getItem('userSession')) {
-        localStorage.setItem('userSession', JSON.stringify(session));
-      } else {
-        sessionStorage.setItem('userSession', JSON.stringify(session));
-      }
-      
-      // Update users array
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const userIndex = users.findIndex((u: any) => u.id === session.user.id);
-      if (userIndex !== -1) {
-        users[userIndex].name = newName;
-        users[userIndex].email = newEmail;
-        localStorage.setItem('users', JSON.stringify(users));
-      }
-      
-      // Reload profile
+    // Listen for profile updates from React component
+    window.addEventListener('profileUpdated', () => {
       loadProfile();
-      
-      // Close modal
-      editModal?.classList.add('hidden');
-      
-      // Show success notification
-      showNotification('Perfil actualizado exitosamente', 'success');
     });
 
     // Avatar change (placeholder)
     document.getElementById('changeAvatarBtn')?.addEventListener('click', () => {
-      showNotification('Función de cambio de avatar próximamente', 'info');
+      console.log('Función de cambio de avatar próximamente');
     });
 
-    // Notification system
-    function showNotification(message: string, type: string) {
-      const notification = document.createElement('div');
-      notification.className = `fixed top-20 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full ${
-        type === 'success' 
-          ? 'bg-green-500/90 text-white border border-green-400/50' 
-          : type === 'info'
-          ? 'bg-blue-500/90 text-white border border-blue-400/50'
-          : 'bg-red-500/90 text-white border border-red-400/50'
-      }`;
-      notification.innerHTML = `
-        <div class="flex items-center">
-          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            ${type === 'success' 
-              ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
-              : type === 'info'
-              ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
-              : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
-            }
-          </svg>
-          <span>${message}</span>
-        </div>
-      `;
-      
-      document.body.appendChild(notification);
-      
-      // Animate in
-      setTimeout(() => {
-        notification.classList.remove('translate-x-full');
-      }, 100);
-      
-      // Remove after 3 seconds
-      setTimeout(() => {
-        notification.classList.add('translate-x-full');
-        setTimeout(() => {
-          document.body.removeChild(notification);
-        }, 300);
-      }, 3000);
-    }
+    // Notification function is now handled by the global NotificationProvider
 
     // Initialize profile on page load
     if (document.readyState === 'loading') {

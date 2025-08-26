@@ -1,8 +1,9 @@
 ---
 // src/layouts/Layout.astro
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import '../styles/global.css';
-import Navigation from '../components/Navigation.astro';
+import Navigation from '../components/react/Navigation.tsx';
+import NotificationProvider from '../components/react/NotificationProvider.tsx';
 const { title } = Astro.props;
 ---
 <!doctype html>
@@ -13,7 +14,7 @@ const { title } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		<ViewTransitions />
+		<ClientRouter />
 		<!-- Preload critical resources -->
 		<link rel="preload" href="/minecraft.svg" as="image" type="image/svg+xml">
 		<link rel="preload" href="/cod.svg" as="image" type="image/svg+xml">
@@ -29,13 +30,14 @@ const { title } = Astro.props;
 		<link rel="dns-prefetch" href="//fonts.gstatic.com">
 	</head>
 	<body class="font-sans bg-gray-100">
-		<Navigation />
+		<NotificationProvider client:load>
+			<Navigation client:load />
 
-		<!-- Main content with top padding to account for fixed navbar -->
-		<div class="pt-16">
-			<slot />
-		</div>
-
+			<!-- Main content with top padding to account for fixed navbar -->
+			<div class="pt-16">
+				<slot />
+			</div>
+		</NotificationProvider>
 
 	</body>
 </html>

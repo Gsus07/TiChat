@@ -1,0 +1,252 @@
+---
+// SupabaseDiagnostic.astro - Component for testing and diagnosing Supabase connection
+
+interface Props {
+  showDetails?: boolean;
+}
+
+const { showDetails = false } = Astro.props;
+
+// Test Supabase connection and functionality
+let connectionStatus = 'unknown';
+let userCount = 0;
+let profiles: any[] = [];
+let errorMessage = '';
+
+try {
+  // Fixed import path - was '../lib/supabase', now using correct path
+  const { supabase } = await import('../utils/supabaseClient');
+  
+  // Test basic connection
+  const { data: testData, error: testError } = await supabase
+    .from('profiles')
+    .select('count', { count: 'exact', head: true });
+  
+  if (testError) {
+    connectionStatus = 'error';
+    errorMessage = testError.message;
+  } else {
+    connectionStatus = 'connected';
+    userCount = testData?.length || 0;
+  }
+  
+  // Get sample profiles if details are requested
+  if (showDetails && connectionStatus === 'connected') {
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .limit(5);
+    
+    if (!profileError && profileData) {
+      profiles = profileData;
+    }
+  }
+} catch (err) {
+  connectionStatus = 'error';
+  errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+}
+
+// Function to format profile data
+// Fixed: Added explicit type annotation to avoid implicit 'any' type
+function formatProfile(profile: {
+  id: string;
+  username?: string;
+  email?: string;
+  full_name?: string;
+  created_at?: string;
+  [key: string]: any;
+}) {
+  return {
+    id: profile.id,
+    username: profile.username || 'N/A',
+    email: profile.email || 'N/A',
+    fullName: profile.full_name || 'N/A',
+    createdAt: profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'
+  };
+}
+
+// Get current timestamp
+const timestamp = new Date().toISOString();
+---
+
+<div class="supabase-diagnostic">
+  <div class="diagnostic-header">
+    <h2>Supabase Connection Diagnostic</h2>
+    <p class="timestamp">Last checked: {timestamp}</p>
+  </div>
+  
+  <div class="status-section">
+    <div class={`status-indicator ${connectionStatus}`}>
+      <span class="status-dot"></span>
+      <span class="status-text">
+        {connectionStatus === 'connected' ? 'Connected' : 
+         connectionStatus === 'error' ? 'Connection Error' : 'Unknown'}
+      </span>
+    </div>
+    
+    {connectionStatus === 'connected' && (
+      <p class="user-count">Total profiles: {userCount}</p>
+    )}
+    
+    {errorMessage && (
+      <div class="error-message">
+        <strong>Error:</strong> {errorMessage}
+      </div>
+    )}
+  </div>
+  
+  {showDetails && connectionStatus === 'connected' && profiles.length > 0 && (
+    <div class="profiles-section">
+      <h3>Sample Profiles</h3>
+      <div class="profiles-grid">
+        {profiles.map((profile) => {
+          const formatted = formatProfile(profile);
+          return (
+            <div class="profile-item">
+              <div class="profile-id">ID: {formatted.id}</div>
+              <div class="profile-username">Username: {formatted.username}</div>
+              <div class="profile-email">Email: {formatted.email}</div>
+              <div class="profile-name">Name: {formatted.fullName}</div>
+              <div class="profile-date">Created: {formatted.createdAt}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  )}
+  
+  <div class="diagnostic-info">
+    <h3>Diagnostic Information</h3>
+    <ul>
+      <li>Supabase Client: {connectionStatus === 'connected' ? '✅ Loaded' : '❌ Failed'}</li>
+      <li>Database Access: {connectionStatus === 'connected' ? '✅ Working' : '❌ Failed'}</li>
+      <li>Profiles Table: {connectionStatus === 'connected' ? '✅ Accessible' : '❌ Not accessible'}</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .supabase-diagnostic {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .diagnostic-header {
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .diagnostic-header h2 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+  }
+  
+  .timestamp {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  
+  .status-section {
+    margin-bottom: 2rem;
+  }
+  
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #9ca3af;
+  }
+  
+  .status-indicator.connected .status-dot {
+    background: #10b981;
+  }
+  
+  .status-indicator.error .status-dot {
+    background: #ef4444;
+  }
+  
+  .status-text {
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .user-count {
+    color: #6b7280;
+    margin: 0;
+  }
+  
+  .error-message {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 4px;
+    padding: 0.75rem;
+    color: #dc2626;
+    margin-top: 1rem;
+  }
+  
+  .profiles-section {
+    margin-bottom: 2rem;
+  }
+  
+  .profiles-section h3 {
+    margin: 0 0 1rem 0;
+    color: #1f2937;
+  }
+  
+  .profiles-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  .profile-item {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 1rem;
+  }
+  
+  .profile-item > div {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .profile-id {
+    font-family: monospace;
+    color: #6b7280;
+  }
+  
+  .diagnostic-info {
+    background: #f3f4f6;
+    border-radius: 6px;
+    padding: 1.5rem;
+  }
+  
+  .diagnostic-info h3 {
+    margin: 0 0 1rem 0;
+    color: #1f2937;
+  }
+  
+  .diagnostic-info ul {
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+  
+  .diagnostic-info li {
+    margin-bottom: 0.5rem;
+    color: #4b5563;
+  }
+</style>

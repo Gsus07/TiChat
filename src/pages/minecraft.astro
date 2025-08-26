@@ -2,6 +2,7 @@
 // src/pages/minecraft.astro
 import Layout from '../layouts/Layout.astro';
 import ServerCard from '../components/ServerCard.astro';
+import AddServerModal from '../components/react/AddServerModal.tsx';
 ---
 
 <Layout title="Minecraft - Servidores">
@@ -236,80 +237,8 @@ import ServerCard from '../components/ServerCard.astro';
       </div>
     </div>
 
-    <!-- Modal para añadir servidor -->
-    <div id="addServerModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50">
-      <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-slate-800 rounded-xl p-6 w-full max-w-md border border-white/10">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-white">Añadir Nuevo Servidor</h3>
-            <button id="closeModal" class="text-gray-400 hover:text-white transition-colors">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-          
-          <form id="serverForm" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">Nombre del Servidor</label>
-              <input type="text" id="serverName" required class="w-full bg-white/5 border border-white/20 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ej: Mi Servidor Personalizado">
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">Descripción</label>
-              <input type="text" id="serverDescription" required class="w-full bg-white/5 border border-white/20 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ej: Servidor de aventuras épicas">
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">Dirección IP</label>
-              <input type="text" id="serverIP" required class="w-full bg-white/5 border border-white/20 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ej: miservidor.com">
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">Puerto</label>
-              <input type="text" id="serverPort" required class="w-full bg-white/5 border border-white/20 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ej: 25565" value="25565">
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">Versión</label>
-              <input type="text" id="serverVersion" required class="w-full bg-white/5 border border-white/20 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ej: 1.20.1" value="1.20.1">
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">Imagen (URL)</label>
-              <div class="flex gap-2">
-                <input 
-                  type="text" 
-                  id="serverImage" 
-                  placeholder="Ej: /mi-servidor.jpg" 
-                  class="flex-1 bg-white/5 border border-white/20 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value="/minecraft-custom.jpg"
-                />
-                <button 
-                  type="button" 
-                  onclick="openImageGallery()" 
-                  class="px-4 py-3 bg-purple-500/20 border border-purple-500/30 rounded-lg text-purple-400 hover:text-purple-300 hover:bg-purple-500/30 transition-colors"
-                  title="Seleccionar de galería"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            
-            <div class="flex space-x-3 pt-4">
-              <button type="button" id="cancelBtn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors">
-                Cancelar
-              </button>
-              <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
-                Crear Servidor
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <!-- React Add Server Modal -->
+    <AddServerModal client:load isOpen={false} onClose={() => {}} />
   </main>
 
   <script>
@@ -340,98 +269,7 @@ import ServerCard from '../components/ServerCard.astro';
       toggleAdminButtons();
     }
     
-    // Funciones para manejar servidores predeterminados
-    function editDefaultServer(serverType: string) {
-      const serverData = {
-        survival: {
-          name: 'Servidor Survival',
-          description: 'Modo supervivencia clásico con amigos',
-          image: '/minecraft-survival.jpg',
-          ip: 'survival.miserver.com',
-          port: '25565',
-          version: '1.20.1'
-        },
-        creative: {
-          name: 'Servidor Creativo',
-          description: 'Construcciones épicas sin límites',
-          image: '/minecraft-creative.jpg',
-          ip: 'creative.miserver.com',
-          port: '25566',
-          version: '1.20.1'
-        },
-        modded: {
-          name: 'Servidor Modded',
-          description: 'Aventuras con mods increíbles',
-          image: '/minecraft-modded.jpg',
-          ip: 'modded.miserver.com',
-          port: '25567',
-          version: '1.19.2 + Forge'
-        },
-        pvp: {
-          name: 'Servidor PvP',
-          description: 'Batallas épicas entre jugadores',
-          image: '/minecraft-pvp.jpg',
-          ip: 'pvp.miserver.com',
-          port: '25568',
-          version: '1.20.1'
-        },
-        skyblock: {
-          name: 'Servidor Skyblock',
-          description: 'Supervivencia en las alturas',
-          image: '/minecraft-skyblock.jpg',
-          ip: 'skyblock.miserver.com',
-          port: '25569',
-          version: '1.20.1'
-        },
-        minijuegos: {
-          name: 'Servidor Minijuegos',
-          description: 'Diversión con minijuegos variados',
-          image: '/minecraft-minigames.jpg',
-          ip: 'minigames.miserver.com',
-          port: '25570',
-          version: '1.20.1'
-        }
-      };
-      
-      const server = serverData[serverType as keyof typeof serverData];
-      if (server) {
-        // Rellenar el formulario con los datos del servidor
-        const nameInput = document.getElementById('serverName') as HTMLInputElement;
-        const descInput = document.getElementById('serverDescription') as HTMLInputElement;
-        const ipInput = document.getElementById('serverIP') as HTMLInputElement;
-        const portInput = document.getElementById('serverPort') as HTMLInputElement;
-        const versionInput = document.getElementById('serverVersion') as HTMLInputElement;
-        const imageInput = document.getElementById('serverImage') as HTMLInputElement;
-        
-        if (nameInput) nameInput.value = server.name;
-        if (descInput) descInput.value = server.description;
-        if (ipInput) ipInput.value = server.ip;
-        if (portInput) portInput.value = server.port;
-        if (versionInput) versionInput.value = server.version;
-        if (imageInput) imageInput.value = server.image;
-        
-        // Mostrar el modal
-        const modal = document.getElementById('addServerModal');
-        modal?.classList.remove('hidden');
-      }
-    }
-    
-    function deleteDefaultServer(serverType: string) {
-      if (confirm(`¿Estás seguro de que quieres eliminar el ${serverType} servidor? Esta acción no se puede deshacer.`)) {
-        // Ocultar el servidor
-        const serverElement = document.querySelector(`[onclick="deleteDefaultServer('${serverType}')"]`)?.closest('.relative');
-        if (serverElement) {
-          (serverElement as HTMLElement).style.display = 'none';
-          
-          // Guardar en localStorage que este servidor fue eliminado
-          const hiddenServers = JSON.parse(localStorage.getItem('hiddenDefaultServers') || '[]');
-          if (!hiddenServers.includes(serverType)) {
-            hiddenServers.push(serverType);
-            localStorage.setItem('hiddenDefaultServers', JSON.stringify(hiddenServers));
-          }
-        }
-      }
-    }
+    // Removed unused functions: editDefaultServer and deleteDefaultServer
     
     // Función para restaurar servidores ocultos (opcional)
     function restoreHiddenServers() {
@@ -585,14 +423,21 @@ import ServerCard from '../components/ServerCard.astro';
       toggleAdminButtons();
       
       const addServerBtn = document.getElementById('addServerBtn');
-      const modal = document.getElementById('addServerModal');
-      const closeModal = document.getElementById('closeModal');
-      const cancelBtn = document.getElementById('cancelBtn');
-      const serverForm = document.getElementById('serverForm');
+      // Modal elements are now handled by React component
       
-      // Event listener para abrir modal
+      // Event listener para abrir modal React
       const openModalHandler = () => {
-        modal?.classList.remove('hidden');
+        // Wait for React component to be available
+        const checkReactComponent = () => {
+          const reactModal = document.querySelector('[data-react-modal="add-server"]');
+          if (reactModal) {
+            // Dispatch custom event to open React modal
+            window.dispatchEvent(new CustomEvent('openAddServerModal'));
+          } else {
+            setTimeout(checkReactComponent, 100);
+          }
+        };
+        checkReactComponent();
       };
       addServerBtn?.addEventListener('click', openModalHandler);
       cleanupFunctions.push(() => addServerBtn?.removeEventListener('click', openModalHandler));
@@ -616,78 +461,24 @@ import ServerCard from '../components/ServerCard.astro';
       window.addEventListener('storage', storageHandler);
       cleanupFunctions.push(() => window.removeEventListener('storage', storageHandler));
       
-      // Event listeners para cerrar modal
-      const closeModalHandler = () => {
-        modal?.classList.add('hidden');
-        (serverForm as HTMLFormElement)?.reset();
+      // Listen for React component events
+      const serverAddedHandler = () => {
+        // Reload the page to show the new server
+        location.reload();
       };
       
-      [closeModal, cancelBtn].forEach(btn => {
-        btn?.addEventListener('click', closeModalHandler);
-        cleanupFunctions.push(() => btn?.removeEventListener('click', closeModalHandler));
-      });
+      window.addEventListener('serverAdded', serverAddedHandler as EventListener);
+      cleanupFunctions.push(() => window.removeEventListener('serverAdded', serverAddedHandler as EventListener));
       
-      // Event listener para cerrar modal al hacer click fuera
-      const modalClickHandler = (e: Event) => {
-        if (e.target === modal) {
-          modal?.classList.add('hidden');
-          (serverForm as HTMLFormElement)?.reset();
-        }
+      const serverUpdatedHandler = () => {
+        // Reload the page to show the updated server
+        location.reload();
       };
-      modal?.addEventListener('click', modalClickHandler);
-      cleanupFunctions.push(() => modal?.removeEventListener('click', modalClickHandler));
       
-      // Event listener para envío del formulario
-      const formSubmitHandler = (e: Event) => {
-        e.preventDefault();
-        
-        const submitBtn = serverForm?.querySelector('button[type="submit"]') as HTMLButtonElement;
-        const editingServerId = submitBtn?.getAttribute('data-editing');
-        
-        const serverName = (document.getElementById('serverName') as HTMLInputElement)?.value || '';
-        const serverSlug = serverName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-        
-        const serverData = {
-          id: editingServerId || Date.now().toString(),
-          name: serverName,
-          description: (document.getElementById('serverDescription') as HTMLInputElement)?.value || '',
-          ip: (document.getElementById('serverIP') as HTMLInputElement)?.value || '',
-          port: (document.getElementById('serverPort') as HTMLInputElement)?.value || '',
-          version: (document.getElementById('serverVersion') as HTMLInputElement)?.value || '',
-          image: (document.getElementById('serverImage') as HTMLInputElement)?.value || '',
-          link: `/minecraft/custom-${serverSlug}`
-        };
-        
-        // Guardar en localStorage - específico para Minecraft
-        let customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
-        
-        if (editingServerId) {
-          // Modo edición
-          const serverIndex = customServers.findIndex((s: {id: string}) => s.id === editingServerId);
-          if (serverIndex !== -1) {
-            customServers[serverIndex] = serverData;
-            showNotification('Servidor actualizado correctamente', 'success');
-          }
-          
-          // Resetear el botón
-          submitBtn.textContent = 'Crear Servidor';
-          submitBtn.removeAttribute('data-editing');
-        } else {
-          // Modo creación
-          customServers.push(serverData);
-          showNotification('Servidor agregado correctamente', 'success');
-        }
-        
-        localStorage.setItem('minecraft_customServers', JSON.stringify(customServers));
-        
-        modal?.classList.add('hidden');
-        (serverForm as HTMLFormElement)?.reset();
-        
-        // Recargar servidores sin recargar la página
-        loadCustomServers();
-      };
-      serverForm?.addEventListener('submit', formSubmitHandler);
-      cleanupFunctions.push(() => serverForm?.removeEventListener('submit', formSubmitHandler));
+      window.addEventListener('serverUpdated', serverUpdatedHandler as EventListener);
+      cleanupFunctions.push(() => window.removeEventListener('serverUpdated', serverUpdatedHandler as EventListener));
+      
+      // Form submission is now handled by the React component
     }
     
     // Cleanup antes de transiciones
@@ -716,77 +507,7 @@ import ServerCard from '../components/ServerCard.astro';
     // Crear página del servidor dinámicamente
     // Función eliminada - los datos se manejan directamente en la lista principal
     
-    // Funciones para la galería de imágenes
-    function openImageGallery() {
-      const modal = document.getElementById('imageGalleryModal');
-      modal?.classList.remove('hidden');
-    }
-    
-    function closeImageGallery() {
-      const modal = document.getElementById('imageGalleryModal');
-      modal?.classList.add('hidden');
-    }
-    
-    function selectImage(imageUrl: string) {
-      const imageInput = document.getElementById('serverImage') as HTMLInputElement;
-      if (imageInput) {
-        imageInput.value = imageUrl;
-      }
-      closeImageGallery();
-    }
-
-    // Funciones para editar y eliminar servidores
-    function editServer(serverName: string) {
-      // Buscar el servidor en los servidores personalizados
-      const customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
-      const server = customServers.find((s: any) => s.name === serverName);
-      if (!server) return;
-
-      // Rellenar el formulario con los datos del servidor
-      const nameInput = document.getElementById('serverName') as HTMLInputElement;
-      const descInput = document.getElementById('serverDescription') as HTMLTextAreaElement;
-      const imageInput = document.getElementById('serverImage') as HTMLInputElement;
-      const ipInput = document.getElementById('serverIP') as HTMLInputElement;
-      const portInput = document.getElementById('serverPort') as HTMLInputElement;
-      const versionInput = document.getElementById('serverVersion') as HTMLInputElement;
-      const linkInput = document.getElementById('serverLink') as HTMLInputElement;
-
-      if (nameInput) nameInput.value = server.name;
-      if (descInput) descInput.value = server.description;
-      if (imageInput) imageInput.value = server.image;
-      if (ipInput) ipInput.value = server.ip;
-      if (portInput) portInput.value = server.port.toString();
-      if (versionInput) versionInput.value = server.version;
-      if (linkInput) linkInput.value = server.link;
-
-      // Cambiar el texto del botón a "Actualizar Servidor"
-      const submitBtn = document.querySelector('#serverModal button[type="submit"]') as HTMLButtonElement;
-      if (submitBtn) {
-        submitBtn.textContent = 'Actualizar Servidor';
-        submitBtn.setAttribute('data-editing', server.id);
-      }
-
-      // Abrir el modal
-      const modal = document.getElementById('serverModal');
-      modal?.classList.remove('hidden');
-    }
-
-    function deleteServer(serverName: string) {
-      if (confirm(`¿Estás seguro de que quieres eliminar el servidor "${serverName}"?`)) {
-        // Eliminar el servidor de los servidores personalizados
-        let customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
-        customServers = customServers.filter((server: any) => server.name !== serverName);
-        
-        // Guardar en localStorage
-        localStorage.setItem('minecraft_customServers', JSON.stringify(customServers));
-        
-        // Recargar la página para actualizar la vista
-        location.reload();
-        
-        // Mostrar notificación
-        showNotification('Servidor eliminado correctamente', 'success');
-      }
-    }
+    // Image gallery and server editing functions removed - now handled by React components
 
     // Función para mostrar/ocultar botones de administración
     function toggleAdminButtons() {
@@ -803,35 +524,7 @@ import ServerCard from '../components/ServerCard.astro';
       });
     }
 
-    // Función para mostrar notificaciones
-    function showNotification(message: string, type: string = 'info') {
-      const notification = document.createElement('div');
-      notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
-      
-      if (type === 'success') {
-        notification.classList.add('bg-green-500', 'text-white');
-      } else if (type === 'error') {
-        notification.classList.add('bg-red-500', 'text-white');
-      } else {
-        notification.classList.add('bg-blue-500', 'text-white');
-      }
-      
-      notification.textContent = message;
-      document.body.appendChild(notification);
-      
-      // Animar entrada
-      setTimeout(() => {
-        notification.classList.remove('translate-x-full');
-      }, 100);
-      
-      // Remover después de 3 segundos
-      setTimeout(() => {
-        notification.classList.add('translate-x-full');
-        setTimeout(() => {
-          document.body.removeChild(notification);
-        }, 300);
-      }, 3000);
-    }
+    // Notification function is now handled by the global NotificationProvider
   </script>
   
   <!-- Modal de galería de imágenes -->

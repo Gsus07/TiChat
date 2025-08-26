@@ -1,0 +1,292 @@
+import React, { useState, useEffect } from 'react';
+import { useNotifications } from './NotificationProvider';
+
+interface LoginFormProps {
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
+}
+
+interface FormData {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+  general?: string;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
+  const [formData, setFormData] = useState<FormData>({
+    email: '',
+    password: '',
+    rememberMe: false
+  });
+  
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { addNotification } = useNotifications();
+
+  // Verificar si ya hay una sesión activa
+  useEffect(() => {
+    const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+    if (userSession) {
+      window.location.href = '/';
+    }
+  }, []);
+
+  // Validación en tiempo real
+  const validateEmail = (email: string): string | undefined => {
+    if (!email) return 'El email es requerido';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return 'Formato de email inválido';
+    return undefined;
+  };
+
+  const validatePassword = (password: string): string | undefined => {
+    if (!password) return 'La contraseña es requerida';
+    if (password.length < 6) return 'La contraseña debe tener al menos 6 caracteres';
+    return undefined;
+  };
+
+  // Manejar cambios en los inputs
+  const handleInputChange = (field: keyof FormData, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Limpiar errores cuando el usuario empiece a escribir
+    if (errors[field as keyof FormErrors]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+    
+    // Validación en tiempo real
+    if (field === 'email' && typeof value === 'string') {
+      const emailError = validateEmail(value);
+      if (emailError) {
+        setErrors(prev => ({ ...prev, email: emailError }));
+      }
+    }
+    
+    if (field === 'password' && typeof value === 'string') {
+      const passwordError = validatePassword(value);
+      if (passwordError) {
+        setErrors(prev => ({ ...prev, password: passwordError }));
+      }
+    }
+  };
+
+
+
+  // Manejar envío del formulario
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validar todos los campos
+    const emailError = validateEmail(formData.email);
+    const passwordError = validatePassword(formData.password);
+    
+    if (emailError || passwordError) {
+      setErrors({
+        email: emailError,
+        password: passwordError
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al iniciar sesión');
+      }
+
+      // Crear datos de sesión
+      const sessionData = {
+        user: {
+          id: result.user.id,
+          email: result.user.email,
+          username: result.profile?.username || result.user.user_metadata?.username || 'Usuario',
+          full_name: result.profile?.full_name || result.user.user_metadata?.full_name || 'Usuario',
+          avatar: result.profile?.avatar_url || '/default-avatar.png'
+        }
+      };
+
+      // Guardar sesión
+      const storage = formData.rememberMe ? localStorage : sessionStorage;
+      storage.setItem('userSession', JSON.stringify(sessionData));
+
+      addNotification('¡Bienvenido de vuelta!', 'success');
+      
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1500);
+      }
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      setErrors({ general: errorMessage });
+      addNotification(errorMessage, 'error');
+      
+      if (onError) {
+        onError(errorMessage);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Email Field */}
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+            Correo Electrónico
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={formData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
+              errors.email 
+                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                : 'border-white/20 focus:border-purple-500 focus:ring-purple-500/20'
+            }`}
+            placeholder="tu@email.com"
+            disabled={isLoading}
+          />
+          {errors.email && (
+            <p className="text-red-400 text-sm flex items-center">
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {errors.email}
+            </p>
+          )}
+        </div>
+
+        {/* Password Field */}
+        <div className="space-y-2">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+            Contraseña
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              id="password"
+              value={formData.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+              className={`w-full px-4 py-3 pr-12 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
+                errors.password 
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                  : 'border-white/20 focus:border-purple-500 focus:ring-purple-500/20'
+              }`}
+              placeholder="Tu contraseña"
+              disabled={isLoading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              disabled={isLoading}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {showPassword ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                )}
+              </svg>
+            </button>
+          </div>
+          {errors.password && (
+            <p className="text-red-400 text-sm flex items-center">
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {errors.password}
+            </p>
+          )}
+        </div>
+
+        {/* Remember Me */}
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="rememberMe"
+            checked={formData.rememberMe}
+            onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
+            className="w-4 h-4 text-purple-600 bg-white/5 border-white/20 rounded focus:ring-purple-500 focus:ring-2"
+            disabled={isLoading}
+          />
+          <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-300">
+            Recordarme
+          </label>
+        </div>
+
+        {/* General Error */}
+        {errors.general && (
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p className="text-red-400 text-sm flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {errors.general}
+            </p>
+          </div>
+        )}
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isLoading || !!errors.email || !!errors.password}
+          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white py-3 px-4 rounded-xl transition-all duration-300 font-medium flex items-center justify-center"
+        >
+          {isLoading ? (
+            <>
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Iniciando sesión...
+            </>
+          ) : (
+            'Iniciar Sesión'
+          )}
+        </button>
+
+        {/* Register Link */}
+        <div className="text-center">
+          <p className="text-gray-400">
+            ¿No tienes cuenta?{' '}
+            <a href="/register" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
+              Regístrate aquí
+            </a>
+          </p>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default LoginForm;
