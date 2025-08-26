@@ -1,0 +1,116 @@
+---
+// Test environment page for debugging
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Test Environment">
+	<main>
+		<h1>Test Environment</h1>
+		<div id="test-container">
+			<button id="test-btn">Run Test</button>
+			<div id="result"></div>
+		</div>
+	</main>
+
+	<script>
+		// Test script with TypeScript errors to fix
+		const testBtn = document.getElementById('test-btn');
+		const resultDiv = document.getElementById('result');
+
+		if (testBtn) {
+			testBtn.addEventListener('click', async () => {
+				try {
+					// Test environment variables
+					const envVar1 = process.env.PUBLIC_SUPABASE_URL;
+					const envVar2 = process.env.PUBLIC_SUPABASE_ANON_KEY;
+					
+					// Test DOM elements
+					const element1 = document.querySelector('.test-class');
+					const element2 = document.querySelector('#test-id');
+					
+					// Test API calls
+					const response = await fetch('/api/test');
+					const data = await response.json();
+					
+					// Line 42: Fixed null check
+					const testEl = document.querySelector('.test');
+					if (testEl) console.log(testEl.innerHTML);
+					// Line 43: Fixed null check
+					const test2El = document.querySelector('.test2');
+					if (test2El) console.log(test2El.innerHTML);
+					
+					// Test more elements
+					const testElement = document.querySelector('.another-test');
+					// Line 47: Fixed null check
+					if (testElement && testElement.classList.contains('active')) {
+						console.log('Element is active');
+					}
+					// Line 50: Fixed module path
+					const { supabase } = await import('../utils/supabaseClient.ts');
+					
+					// Line 52: Fixed null check
+					const userInfoEl = document.querySelector('.user-info');
+					const userElement = userInfoEl ? userInfoEl.textContent : null;
+					
+					// More tests
+					// Line 55: Fixed null check
+					const navEl = document.querySelector('nav');
+					if (navEl) navEl.style.display = 'block';
+					
+					// Line 57: Fixed null check for resultDiv
+					if (resultDiv) resultDiv.innerHTML = '<p>Test completed successfully!</p>';
+					
+					// Additional test logic
+					for (let i = 0; i < 10; i++) {
+						console.log(`Test iteration ${i}`);
+					}
+					
+					// More DOM manipulations
+					const items = document.querySelectorAll('.item');
+					items.forEach(item => {
+						item.addEventListener('click', () => {
+							console.log('Item clicked');
+						});
+					});
+					
+					// Test async operations
+					const asyncTest = async () => {
+						try {
+							const result = await fetch('/api/data');
+							const json = await result.json();
+							// Line 78: Fixed null check for resultDiv
+							if (resultDiv) resultDiv.innerHTML += `<p>Async result: ${json.message}</p>`;
+							
+							// Line 81: Fixed null check for resultDiv
+							if (resultDiv) resultDiv.classList.add('success');
+							
+						} catch (err) {
+							// Line 85: Fixed null check for resultDiv and unknown type for err
+							if (resultDiv) {
+								const errorMessage = err instanceof Error ? err.message : String(err);
+								resultDiv.innerHTML = `<p>Error: ${errorMessage}</p>`;
+							}
+						}
+					};
+					
+					await asyncTest();
+					// Line 90: Fixed null check
+					const finalEl = document.querySelector('.final');
+					const finalElement = finalEl ? finalEl.textContent : null;
+					
+					// Line 93: Fixed null check
+					const statusEl = document.querySelector('.status') as HTMLElement;
+					if (statusEl && statusEl.dataset.active === 'true') {
+						console.log('Status is active');
+					}
+					
+				} catch (error) {
+					console.error('Test failed:', error);
+					if (resultDiv) {
+						resultDiv.innerHTML = '<p>Test failed!</p>';
+					}
+				}
+			});
+		}
+	</script>
+</Layout>
