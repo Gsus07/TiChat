@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNotifications } from './NotificationProvider';
+import { getGameByName, getServerByName } from '../../utils/games';
+import { getCurrentUserClient } from '../../utils/auth';
+import { supabase } from '../../utils/supabaseClient';
 
 interface ServerFormData {
   name: string;
@@ -8,6 +11,8 @@ interface ServerFormData {
   port: string;
   version: string;
   image: string;
+  serverType: 'survival' | 'creative' | 'pvp' | 'roleplay' | 'minigames' | 'custom';
+  maxPlayers: string;
 }
 
 interface ServerFormErrors {
@@ -17,6 +22,7 @@ interface ServerFormErrors {
   port?: string;
   version?: string;
   image?: string;
+  maxPlayers?: string;
 }
 
 interface AddServerModalProps {
@@ -34,7 +40,9 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
     ip: '',
     port: '25565',
     version: '1.20.1',
-    image: '/minecraft-custom.jpg'
+    image: '/minecraft-custom.jpg',
+    serverType: 'custom',
+    maxPlayers: '50'
   });
 
   const [errors, setErrors] = useState<ServerFormErrors>({});
@@ -61,6 +69,20 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
     return () => window.removeEventListener('openAddServerModal', handleOpenModal);
   }, []);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isModalOpen]);
+
   // Update modal state when prop changes
   useEffect(() => {
     setIsModalOpen(isOpen);
@@ -76,7 +98,9 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
           ip: editingServer.ip || '',
           port: editingServer.port || '25565',
           version: editingServer.version || '1.20.1',
-          image: editingServer.image || '/minecraft-custom.jpg'
+          image: editingServer.image || '/minecraft-custom.jpg',
+          serverType: editingServer.serverType || 'custom',
+          maxPlayers: editingServer.maxPlayers || '50'
         });
       } else {
         setFormData({
@@ -85,7 +109,9 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
           ip: '',
           port: '25565',
           version: '1.20.1',
-          image: '/minecraft-custom.jpg'
+          image: '/minecraft-custom.jpg',
+          serverType: 'custom',
+          maxPlayers: '50'
         });
       }
       setErrors({});
@@ -97,16 +123,26 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
 
     if (!formData.name.trim()) {
       newErrors.name = 'El nombre del servidor es requerido';
+    } else if (formData.name.length < 3) {
+      newErrors.name = 'El nombre debe tener al menos 3 caracteres';
+    } else if (formData.name.length > 50) {
+      newErrors.name = 'El nombre no puede exceder 50 caracteres';
     }
 
     if (!formData.description.trim()) {
       newErrors.description = 'La descripción es requerida';
+    } else if (formData.description.length < 10) {
+      newErrors.description = 'La descripción debe tener al menos 10 caracteres';
+    } else if (formData.description.length > 500) {
+      newErrors.description = 'La descripción no puede exceder 500 caracteres';
     }
 
     if (!formData.ip.trim()) {
       newErrors.ip = 'La dirección IP es requerida';
     } else if (!/^[a-zA-Z0-9.-]+$/.test(formData.ip)) {
-      newErrors.ip = 'Formato de IP inválido';
+      newErrors.ip = 'Formato de IP inválido (solo letras, números, puntos y guiones)';
+    } else if (formData.ip.length > 255) {
+      newErrors.ip = 'La dirección IP es demasiado larga';
     }
 
     if (!formData.port.trim()) {
@@ -117,6 +153,12 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
 
     if (!formData.version.trim()) {
       newErrors.version = 'La versión es requerida';
+    }
+
+    if (!formData.maxPlayers.trim()) {
+      newErrors.maxPlayers = 'El número máximo de jugadores es requerido';
+    } else if (!/^\d+$/.test(formData.maxPlayers) || parseInt(formData.maxPlayers) < 1) {
+      newErrors.maxPlayers = 'Debe ser un número mayor a 0';
     }
 
     setErrors(newErrors);
@@ -141,53 +183,85 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
     setIsSubmitting(true);
     
     try {
-      const serverName = formData.name;
-      const serverSlug = serverName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-      
-      const serverData = {
-        id: editingServer?.id || Date.now().toString(),
-        name: formData.name,
-        description: formData.description,
-        ip: formData.ip,
-        port: formData.port,
-        version: formData.version,
-        image: formData.image,
-        link: `/minecraft/custom-${serverSlug}`
-      };
-      
-      // Get existing servers
-      let customServers = JSON.parse(localStorage.getItem('minecraft_customServers') || '[]');
-      
-      if (editingServer) {
-        // Update existing server
-        const serverIndex = customServers.findIndex((s: any) => s.id === editingServer.id);
-        if (serverIndex !== -1) {
-          customServers[serverIndex] = serverData;
-        }
-        
-        // Show success notification
-        addNotification('Servidor actualizado correctamente', 'success');
-      } else {
-        // Add new server
-        customServers.push(serverData);
-        
-        // Show success notification
-        addNotification('Servidor agregado correctamente', 'success');
+      // Obtener el juego de Minecraft
+      const minecraftGameResult = await getGameByName('Minecraft');
+      if (!minecraftGameResult.data) {
+        throw new Error('No se pudo encontrar el juego Minecraft');
       }
       
-      // Save to localStorage
-      localStorage.setItem('minecraft_customServers', JSON.stringify(customServers));
+      // Obtener el usuario actual
+      const currentUser = getCurrentUserClient();
+      if (!currentUser) {
+        addNotification('Debes estar autenticado para crear un servidor', 'error');
+        return;
+      }
+      
+      const serverData = {
+        game_id: minecraftGameResult.data.id,
+        name: formData.name,
+        description: formData.description,
+        server_ip: formData.ip,
+        server_port: parseInt(formData.port),
+        server_version: formData.version,
+        max_players: parseInt(formData.maxPlayers),
+        server_type: formData.serverType,
+        is_active: true,
+        is_featured: false,
+        owner_id: currentUser.id
+      };
+      
+      if (editingServer) {
+        // TODO: Implementar actualización de servidor existente
+        addNotification('Función de edición aún no implementada', 'warning');
+        return;
+      } else {
+        // Verificar si ya existe un servidor con el mismo nombre
+        const existingServer = await getServerByName(formData.name, minecraftGameResult.data.id);
+        if (existingServer) {
+          addNotification('Ya existe un servidor con ese nombre. Por favor, elige otro nombre.', 'error');
+          return;
+        }
+        
+        // Crear nuevo servidor usando la API
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          throw new Error('No hay sesión activa');
+        }
+        
+        const response = await fetch('/api/servers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify(serverData)
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(result.error || 'Error al crear el servidor');
+        }
+        
+        addNotification('Servidor creado correctamente en la base de datos', 'success');
+      }
       
       // Notify parent to reload servers
       const reloadEvent = new CustomEvent('serverUpdated');
       window.dispatchEvent(reloadEvent);
       
       // Close modal
-        setIsModalOpen(false);
-        if (onClose) onClose();
+      setIsModalOpen(false);
+      if (onClose) onClose();
+      
+      // Reload the page to show the new server
+      window.location.reload();
+      
     } catch (error) {
       console.error('Error saving server:', error);
-      addNotification('Error al guardar el servidor', 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Error al guardar el servidor';
+      addNotification(errorMessage, 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -198,13 +272,18 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
     setShowImageGallery(false);
   };
 
-  if (!isModalOpen) return null;
-
   return (
     <>
       {/* Main Modal */}
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-react-modal="add-server">
-        <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md border border-white/10">
+      <div 
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 ${
+          isModalOpen ? 'block' : 'hidden'
+        }`} 
+        data-react-modal="add-server"
+        style={{ overflow: isModalOpen ? 'hidden' : 'auto' }}
+      >
+        <div className="bg-slate-800 rounded-xl w-full max-w-md border border-white/10 max-h-[90vh] flex flex-col">
+          <div className="p-6 overflow-y-auto flex-1">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-white">
               {editingServer ? 'Editar Servidor' : 'Añadir Nuevo Servidor'}
@@ -299,6 +378,45 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
             </div>
             
             <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Tipo de Servidor</label>
+              <select 
+                name="serverType"
+                value={formData.serverType}
+                onChange={(e) => setFormData(prev => ({ ...prev, serverType: e.target.value as any }))}
+                className="w-full bg-slate-700 border border-white/20 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500 appearance-none cursor-pointer"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em',
+                  paddingRight: '2.5rem'
+                }}
+              >
+                <option value="survival" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Supervivencia</option>
+                <option value="creative" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Creativo</option>
+                <option value="pvp" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>PvP</option>
+                <option value="roleplay" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Roleplay</option>
+                <option value="minigames" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Minijuegos</option>
+                <option value="custom" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Personalizado</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Máximo de Jugadores</label>
+              <input 
+                type="text" 
+                name="maxPlayers"
+                value={formData.maxPlayers}
+                onChange={handleInputChange}
+                className={`w-full bg-white/5 border rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  errors.maxPlayers ? 'border-red-500' : 'border-white/20'
+                }`}
+                placeholder="Ej: 50"
+              />
+              {errors.maxPlayers && <p className="text-red-400 text-sm mt-1">{errors.maxPlayers}</p>}
+            </div>
+            
+            <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Imagen (URL)</label>
               <div className="flex gap-2">
                 <input 
@@ -342,6 +460,7 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
 

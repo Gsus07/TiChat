@@ -111,7 +111,7 @@ const Navigation: React.FC = () => {
                 <a href="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Inicio</a>
                 <a href="/minecraft" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Minecraft</a>
                 <a href="/call-of-duty" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Call of Duty</a>
-                <a href="/among-us" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Among Us</a>
+<a href="/among-us" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Among Us</a>
                 <a href="/uno" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">UNO</a>
               </div>
             </div>
@@ -195,7 +195,7 @@ const Navigation: React.FC = () => {
               <a href="/" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">Inicio</a>
               <a href="/minecraft" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">Minecraft</a>
               <a href="/call-of-duty" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">Call of Duty</a>
-              <a href="/among-us" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">Among Us</a>
+<a href="/among-us" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">Among Us</a>
               <a href="/uno" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors">UNO</a>
             </div>
           </div>

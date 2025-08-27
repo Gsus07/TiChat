@@ -36,7 +36,7 @@ const isOwner = currentUserId === server.created_by;
 const ping = Math.floor(Math.random() * 50) + 10;
 ---
 
-<a href={`/minecraft/${server.id}`} class="block group relative server-card cursor-pointer" data-server-id={server.id}>
+<div class="block group relative server-card cursor-pointer" data-server-id={server.id} onclick={`window.location.href='/minecraft/${server.id}'`}>
   <!-- Glow effect background -->
   <div class="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur opacity-0 group-hover:opacity-75 transition duration-500"></div>
   
@@ -188,7 +188,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
       <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
     </div>
   </div>
-</a>
+</div>
 
 <script>
   // Declare global window interface

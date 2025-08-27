@@ -1,0 +1,184 @@
+---
+import type { ThemeConfig } from '../utils/games';
+import { generateCSSVariables, getDefaultThemeConfig } from '../utils/games';
+
+interface Props {
+  themeConfig?: ThemeConfig;
+  className?: string;
+}
+
+const { themeConfig = getDefaultThemeConfig(), className = '' } = Astro.props;
+const cssVariables = generateCSSVariables(themeConfig);
+---
+
+<style define:vars={{ 
+  colorPrimary: themeConfig.colors?.primary || '#3B82F6',
+  colorSecondary: themeConfig.colors?.secondary || '#1D4ED8',
+  colorAccent: themeConfig.colors?.accent || '#60A5FA',
+  bgFrom: themeConfig.colors?.background?.from || 'blue-900',
+  bgTo: themeConfig.colors?.background?.to || 'indigo-900',
+  fontFamily: themeConfig.typography?.fontFamily || 'Inter',
+  titleSize: themeConfig.typography?.titleSize || 'text-4xl',
+  bodySize: themeConfig.typography?.bodySize || 'text-base'
+}}>
+  .theme-container {
+    --color-primary: var(--colorPrimary);
+    --color-secondary: var(--colorSecondary);
+    --color-accent: var(--colorAccent);
+    --bg-from: var(--bgFrom);
+    --bg-to: var(--bgTo);
+    --font-family: var(--fontFamily);
+    --title-size: var(--titleSize);
+    --body-size: var(--bodySize);
+  }
+
+  .theme-container .bg-gradient-game {
+    background: linear-gradient(135deg, 
+      rgb(var(--bg-from) / 0.9), 
+      rgb(var(--bg-to) / 0.8)
+    );
+  }
+
+  .theme-container .text-primary {
+    color: var(--color-primary);
+  }
+
+  .theme-container .text-secondary {
+    color: var(--color-secondary);
+  }
+
+  .theme-container .text-accent {
+    color: var(--color-accent);
+  }
+
+  .theme-container .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .theme-container .bg-secondary {
+    background-color: var(--color-secondary);
+  }
+
+  .theme-container .bg-accent {
+    background-color: var(--color-accent);
+  }
+
+  .theme-container .border-primary {
+    border-color: var(--color-primary);
+  }
+
+  .theme-container .border-secondary {
+    border-color: var(--color-secondary);
+  }
+
+  .theme-container .border-accent {
+    border-color: var(--color-accent);
+  }
+
+  .theme-container .hover\:bg-primary:hover {
+    background-color: var(--color-primary);
+  }
+
+  .theme-container .hover\:bg-secondary:hover {
+    background-color: var(--color-secondary);
+  }
+
+  .theme-container .hover\:bg-accent:hover {
+    background-color: var(--color-accent);
+  }
+
+  .theme-container .hover\:text-primary:hover {
+    color: var(--color-primary);
+  }
+
+  .theme-container .hover\:text-secondary:hover {
+    color: var(--color-secondary);
+  }
+
+  .theme-container .hover\:text-accent:hover {
+    color: var(--color-accent);
+  }
+
+  .theme-container .font-game {
+    font-family: var(--font-family), system-ui, sans-serif;
+  }
+
+  .theme-container .title-size {
+    font-size: var(--title-size);
+  }
+
+  .theme-container .body-size {
+    font-size: var(--body-size);
+  }
+
+  /* Gradientes personalizados */
+  .theme-container .bg-gradient-primary {
+    background: linear-gradient(135deg, 
+      var(--color-primary), 
+      var(--color-secondary)
+    );
+  }
+
+  .theme-container .bg-gradient-accent {
+    background: linear-gradient(135deg, 
+      var(--color-accent), 
+      var(--color-primary)
+    );
+  }
+
+  /* Efectos de hover para botones */
+  .theme-container .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  .theme-container .btn-primary:hover {
+    background-color: var(--color-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .theme-container .btn-secondary {
+    background-color: var(--color-secondary);
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  .theme-container .btn-secondary:hover {
+    background-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Animaciones personalizadas */
+  .theme-container .animate-pulse-custom {
+    animation: pulse-custom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-custom {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  /* Efectos de glassmorphism */
+  .theme-container .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .theme-container .glass-dark {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+</style>
+
+<div class={`theme-container ${className}`}>
+  <slot />
+</div>

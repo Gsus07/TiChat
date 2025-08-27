@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNotifications } from './NotificationProvider';
+import { supabase } from '../../utils/supabaseClient';
 
 interface PostFormData {
   content: string;
@@ -11,12 +12,16 @@ interface PostFormErrors {
 }
 
 interface PostFormProps {
+  serverId?: string;
+  gameId?: string;
   serverName?: string;
   placeholder?: string;
   showNameField?: boolean;
 }
 
 const PostForm: React.FC<PostFormProps> = ({ 
+  serverId,
+  gameId,
   serverName = '',
   placeholder = '¿Qué está pasando en el servidor?',
   showNameField = false
@@ -65,38 +70,43 @@ const PostForm: React.FC<PostFormProps> = ({
     setIsSubmitting(true);
     
     try {
-      // Get user session
-      const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+      // Get user session from Supabase
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (!userSession) {
+      if (sessionError || !session?.user) {
         addNotification('Debes iniciar sesión para publicar', 'error');
         return;
       }
 
-      const user = JSON.parse(userSession).user;
-      const author = showNameField ? authorName : user.username || user.full_name || 'Usuario';
+      const user = session.user;
       
-      // Create post data
+      // Validate required data
+      if (!serverId && !gameId) {
+        addNotification('Error: No se puede determinar el destino del post', 'error');
+        return;
+      }
+      
+      // Create post data for Supabase
       const postData = {
-        id: Date.now().toString(),
-        author: author,
+        user_id: user.id,
+        game_id: gameId,
+        server_id: serverId || null,
+        title: '', // Posts from form don't have titles
         content: formData.content,
-        timestamp: new Date().toISOString(),
-        likes: 0,
-        comments: 0,
-        serverName: serverName,
-        userId: user.id
+        post_type: 'general' as const,
+        is_active: true
       };
 
-      // Get existing posts for this server
-      const storageKey = serverName ? `posts_${serverName}` : 'posts_general';
-      const existingPosts = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      // Insert post into Supabase
+      const { data: newPost, error: insertError } = await supabase
+        .from('posts')
+        .insert([postData])
+        .select()
+        .single();
       
-      // Add new post to the beginning
-      existingPosts.unshift(postData);
-      
-      // Save to localStorage
-      localStorage.setItem(storageKey, JSON.stringify(existingPosts));
+      if (insertError) {
+        throw insertError;
+      }
       
       // Reset form
       setFormData({ content: '', image: null });
@@ -107,9 +117,12 @@ const PostForm: React.FC<PostFormProps> = ({
       
       // Dispatch custom event to reload posts
       const event = new CustomEvent('postAdded', {
-        detail: { serverName, post: postData }
+        detail: { serverId, gameId, post: newPost }
       });
       window.dispatchEvent(event);
+      
+      // Reload the page to show the new post
+      window.location.reload();
       
     } catch (error) {
       console.error('Error creating post:', error);

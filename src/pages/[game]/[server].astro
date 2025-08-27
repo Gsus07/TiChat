@@ -1,0 +1,60 @@
+---
+import { getGameByName, getServerByName, getGameWithTheme, getServerWithTheme } from '../../utils/games';
+import ServerTemplate from '../../components/ServerTemplate.astro';
+
+export async function getStaticPaths() {
+  // En desarrollo, retornamos un array vacío para permitir generación bajo demanda
+  // En producción, aquí generaríamos todas las rutas estáticas
+  return [];
+}
+
+const { game: gameName, server: serverName } = Astro.params;
+
+if (!gameName || !serverName) {
+  return Astro.redirect('/404');
+}
+
+// Asegurar que son strings después de la validación
+const gameNameString = gameName as string;
+const serverNameString = serverName as string;
+
+// Convertir el slug de la URL al nombre del juego
+const gameNameFormatted = gameNameString
+  .split('-')
+  .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
+// Convertir el slug de la URL al nombre del servidor
+const serverNameFormatted = serverNameString
+  .split('-')
+  .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
+// Obtener datos del juego
+const { data: game, error: gameError } = await getGameWithTheme(gameNameFormatted);
+
+if (gameError || !game) {
+  console.error('Error fetching game:', gameError);
+  return Astro.redirect('/404');
+}
+
+// Obtener datos del servidor con tema
+const { data: server, error: serverError } = await getServerWithTheme(serverNameFormatted, game.id);
+
+if (serverError || !server) {
+  console.error('Error fetching server:', serverError);
+  return Astro.redirect(`/${gameName}`);
+}
+
+// Combinar configuraciones de tema (servidor > juego > default)
+const combinedThemeConfig = {
+  ...game.theme_config,
+  ...server.theme_config
+};
+---
+
+<ServerTemplate 
+  server={server}
+  game={game}
+  themeConfig={combinedThemeConfig}
+/>

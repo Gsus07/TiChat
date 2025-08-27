@@ -1,5 +1,32 @@
 import { supabase } from './supabaseClient';
 
+export interface ThemeConfig {
+  colors?: {
+    primary?: string;
+    secondary?: string;
+    accent?: string;
+    background?: {
+      from?: string;
+      to?: string;
+    };
+  };
+  typography?: {
+    fontFamily?: string;
+    titleSize?: string;
+    bodySize?: string;
+  };
+  images?: {
+    hero?: string;
+    icon?: string;
+    background?: string;
+  };
+  layout?: {
+    hasServers?: boolean;
+    showStats?: boolean;
+    enableCustomServers?: boolean;
+  };
+}
+
 export interface Game {
   id: string;
   name: string;
@@ -11,6 +38,7 @@ export interface Game {
   is_active: boolean;
   created_at: string;
   has_servers: boolean;
+  theme_config?: ThemeConfig;
 }
 
 export interface GameServer {
@@ -28,6 +56,7 @@ export interface GameServer {
   owner_id?: string;
   created_at: string;
   updated_at: string;
+  theme_config?: ThemeConfig;
 }
 
 export interface ServerStats {
@@ -187,17 +216,40 @@ export async function getServerById(id: string) {
 
 export async function createServer(serverData: Omit<GameServer, 'id' | 'created_at' | 'updated_at'>) {
   try {
+    console.log('🚀 Iniciando creación de servidor:', serverData);
+    
+    // Validar datos requeridos
+    if (!serverData.name || !serverData.game_id || !serverData.owner_id) {
+      const missingFields = [];
+      if (!serverData.name) missingFields.push('name');
+      if (!serverData.game_id) missingFields.push('game_id');
+      if (!serverData.owner_id) missingFields.push('owner_id');
+      
+      const errorMsg = `Campos requeridos faltantes: ${missingFields.join(', ')}`;
+      console.error('❌ Error de validación:', errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    console.log('✅ Validación de datos completada');
+    
     const { data, error } = await supabase
       .from('game_servers')
       .insert([serverData])
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Error insertando servidor en BD:', error);
+      throw error;
+    }
+    
+    console.log('✅ Servidor creado exitosamente:', data.id);
     
     // Crear estadísticas iniciales del servidor
     if (data) {
-      await supabase
+      console.log('📊 Creando estadísticas iniciales del servidor...');
+      
+      const { error: statsError } = await supabase
         .from('server_stats')
         .insert([{
           server_id: data.id,
@@ -205,11 +257,19 @@ export async function createServer(serverData: Omit<GameServer, 'id' | 'created_
           total_posts: 0,
           total_members: 0
         }]);
+      
+      if (statsError) {
+        console.error('⚠️ Error creando estadísticas del servidor:', statsError);
+        // No fallar la creación del servidor por esto
+      } else {
+        console.log('✅ Estadísticas del servidor creadas');
+      }
     }
     
+    console.log('🎉 Creación de servidor completada exitosamente');
     return { data, error: null };
   } catch (error) {
-    console.error('Error creating server:', error);
+    console.error('💥 Error crítico creando servidor:', error);
     return { data: null, error };
   }
 }
@@ -337,25 +397,175 @@ export async function removeFavoriteGame(userId: string, gameId: string) {
 }
 
 // Función para obtener servidor por nombre
-export async function getServerByName(serverName: string) {
+export async function getServerByName(serverName: string, gameId: string): Promise<{ data: GameServer | null; error: any }> {
   try {
     const { data, error } = await supabase
       .from('game_servers')
       .select('*')
       .eq('name', serverName)
-      .eq('is_active', true)
+      .eq('game_id', gameId)
       .single();
-    
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null; // No se encontró el servidor
-      }
-      throw error;
-    }
-    
-    return data;
+
+    return { data, error };
   } catch (error) {
-    console.error('Error getting server by name:', error);
-    return null;
+    return { data: null, error };
+  }
+}
+
+export async function getServerWithTheme(serverName: string, gameId: string): Promise<{ data: GameServer | null; error: any }> {
+  try {
+    const { data: server, error } = await supabase
+      .from('game_servers')
+      .select('*')
+      .eq('name', serverName)
+      .eq('game_id', gameId)
+      .single();
+
+    if (error) return { data: null, error };
+    if (!server) return { data: null, error: 'Server not found' };
+
+    // Obtener el tema del juego
+    const { data: game } = await getGameById(gameId);
+    const gameTheme = game?.theme_config || {};
+
+    // Combinar temas: default -> game -> server
+    const defaultTheme = getDefaultThemeConfig();
+    const combinedTheme = mergeThemeConfigs(
+      mergeThemeConfigs(defaultTheme, gameTheme),
+      server.theme_config || {}
+    );
+
+    return {
+      data: {
+        ...server,
+        theme_config: combinedTheme
+      },
+      error: null
+    };
+  } catch (error) {
+    return { data: null, error };
+  }
+}
+
+// Funciones para manejar configuraciones de tema
+export function getDefaultThemeConfig(): ThemeConfig {
+  return {
+    colors: {
+      primary: '#3B82F6',
+      secondary: '#1D4ED8',
+      accent: '#60A5FA',
+      background: {
+        from: 'blue-900',
+        to: 'indigo-900'
+      }
+    },
+    typography: {
+      fontFamily: 'Inter',
+      titleSize: 'text-4xl',
+      bodySize: 'text-base'
+    },
+    images: {
+      hero: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop',
+      icon: '/default-game.svg',
+      background: '/default-bg.jpg'
+    },
+    layout: {
+      hasServers: false,
+      showStats: true,
+      enableCustomServers: false
+    }
+  };
+}
+
+export function mergeThemeConfigs(baseTheme: ThemeConfig, overrideTheme: ThemeConfig): ThemeConfig {
+  return {
+    colors: {
+      ...baseTheme.colors,
+      ...overrideTheme.colors,
+      background: {
+        ...baseTheme.colors?.background,
+        ...overrideTheme.colors?.background
+      }
+    },
+    typography: {
+      ...baseTheme.typography,
+      ...overrideTheme.typography
+    },
+    images: {
+      ...baseTheme.images,
+      ...overrideTheme.images
+    },
+    layout: {
+      ...baseTheme.layout,
+      ...overrideTheme.layout
+    }
+  };
+}
+
+export function generateCSSVariables(themeConfig: ThemeConfig): string {
+  const { colors, typography } = themeConfig;
+  
+  let cssVars = '';
+  
+  if (colors) {
+    if (colors.primary) cssVars += `--color-primary: ${colors.primary}; `;
+    if (colors.secondary) cssVars += `--color-secondary: ${colors.secondary}; `;
+    if (colors.accent) cssVars += `--color-accent: ${colors.accent}; `;
+    if (colors.background?.from) cssVars += `--bg-from: ${colors.background.from}; `;
+    if (colors.background?.to) cssVars += `--bg-to: ${colors.background.to}; `;
+  }
+  
+  if (typography) {
+    if (typography.fontFamily) cssVars += `--font-family: ${typography.fontFamily}; `;
+    if (typography.titleSize) cssVars += `--title-size: ${typography.titleSize}; `;
+    if (typography.bodySize) cssVars += `--body-size: ${typography.bodySize}; `;
+  }
+  
+  return cssVars;
+}
+
+export async function getGameWithTheme(gameName: string): Promise<{ data: Game | null; error: any }> {
+  try {
+    const { data: game, error } = await getGameByName(gameName);
+    
+    if (error) return { data: null, error };
+    if (!game) return { data: null, error: 'Game not found' };
+
+    // Combinar tema por defecto con el tema del juego
+    const defaultTheme = getDefaultThemeConfig();
+    const combinedTheme = mergeThemeConfigs(defaultTheme, game.theme_config || {});
+
+    return {
+      data: {
+        ...game,
+        theme_config: combinedTheme
+      },
+      error: null
+    };
+  } catch (error) {
+    return { data: null, error };
+  }
+}
+
+export async function getGameWithThemeById(gameId: string): Promise<{ data: Game | null; error: any }> {
+  try {
+    const { data: game, error } = await getGameById(gameId);
+    
+    if (error) return { data: null, error };
+    if (!game) return { data: null, error: 'Game not found' };
+
+    // Combinar tema por defecto con el tema del juego
+    const defaultTheme = getDefaultThemeConfig();
+    const combinedTheme = mergeThemeConfigs(defaultTheme, game.theme_config || {});
+
+    return {
+      data: {
+        ...game,
+        theme_config: combinedTheme
+      },
+      error: null
+    };
+  } catch (error) {
+    return { data: null, error };
   }
 }

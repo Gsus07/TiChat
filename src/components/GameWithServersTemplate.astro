@@ -1,0 +1,591 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ThemeProvider from './ThemeProvider.astro';
+import PostForm from './react/PostForm.tsx';
+import { getServersByGameId } from '../utils/games';
+import type { Game, GameServer, ThemeConfig } from '../utils/games';
+
+interface Props {
+  game: Game;
+  themeConfig: ThemeConfig;
+}
+
+const { game, themeConfig } = Astro.props;
+
+// Obtener servidores del juego
+const { data: servers, error: serversError } = await getServersByGameId(game.id);
+
+if (serversError) {
+  console.error('Error fetching servers:', serversError);
+}
+
+const gameServers = servers || [];
+const featuredServers = gameServers.filter(server => server.is_featured);
+const regularServers = gameServers.filter(server => !server.is_featured);
+
+// Configurar imágenes desde el tema
+const heroImage = themeConfig.images?.hero || game.cover_image_url || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop';
+const gameIcon = themeConfig.images?.icon || '/default-game.svg';
+---
+
+<Layout title={`${game.name} - Servidores | Gaming Community`}>
+  <ThemeProvider themeConfig={themeConfig}>
+    <!-- Fondo animado personalizado -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute inset-0 bg-gradient-game opacity-90"></div>
+      
+      <!-- Partículas animadas -->
+      <div class="absolute inset-0">
+        {Array.from({ length: 25 }).map((_, i) => (
+          <div 
+            class="absolute w-1 h-1 bg-accent rounded-full animate-pulse-custom"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${3 + Math.random() * 4}s`
+            }}
+          ></div>
+        ))}
+      </div>
+      
+      <!-- Elementos geométricos -->
+      <div class="absolute top-32 left-16 w-40 h-40 border border-primary opacity-10 rotate-45 animate-spin" style="animation-duration: 30s;"></div>
+      <div class="absolute bottom-32 right-16 w-28 h-28 border border-secondary opacity-10 rounded-full animate-bounce" style="animation-duration: 4s;"></div>
+      <div class="absolute top-2/3 left-1/3 w-20 h-20 border border-accent opacity-10 rotate-12 animate-pulse"></div>
+    </div>
+
+    <!-- Contenido principal -->
+    <main class="relative z-10 min-h-screen">
+      <!-- Header del juego -->
+      <header class="relative overflow-hidden">
+        <!-- Imagen de fondo del hero -->
+        <div class="absolute inset-0">
+          <img 
+            src={heroImage} 
+            alt={`${game.name} background`}
+            class="w-full h-full object-cover"
+          />
+          <div class="absolute inset-0 bg-gradient-primary opacity-80"></div>
+        </div>
+        
+        <!-- Contenido del header -->
+        <div class="relative z-10 container mx-auto px-4 py-16">
+          <div class="flex items-center justify-between mb-8">
+            <a 
+              href="/" 
+              class="btn-secondary px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+            >
+              ← Volver a Juegos
+            </a>
+          </div>
+          
+          <div class="flex items-center space-x-6 mb-8">
+            <div class="w-24 h-24 rounded-xl overflow-hidden border-4 border-accent shadow-2xl">
+              <img 
+                src={gameIcon} 
+                alt={`${game.name} icon`}
+                class="w-full h-full object-cover"
+              />
+            </div>
+            
+            <div class="text-white">
+              <h1 class="title-size font-bold font-game mb-2">{game.name}</h1>
+              <p class="body-size opacity-90 max-w-2xl">
+                {game.description || `Explora los diferentes servidores de ${game.name} y encuentra tu comunidad perfecta.`}
+              </p>
+              
+              {game.genre && (
+                <div class="flex items-center space-x-2 mt-4">
+                  <span class="px-3 py-1 bg-accent rounded-full text-sm font-medium">
+                    {game.genre}
+                  </span>
+                  {game.platform && (
+                    <span class="px-3 py-1 bg-secondary rounded-full text-sm font-medium">
+                      {game.platform}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <!-- Estadísticas del juego -->
+          {themeConfig.layout?.showStats && (
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+              <div class="glass rounded-xl p-6 text-center text-white">
+                <div class="text-3xl font-bold text-accent mb-2">{gameServers.length}</div>
+                <div class="text-sm opacity-80">Servidores Activos</div>
+              </div>
+              <div class="glass rounded-xl p-6 text-center text-white">
+                <div class="text-3xl font-bold text-accent mb-2">{featuredServers.length}</div>
+                <div class="text-sm opacity-80">Servidores Destacados</div>
+              </div>
+              <div class="glass rounded-xl p-6 text-center text-white">
+                <div class="text-3xl font-bold text-accent mb-2">
+                  {gameServers.reduce((total, server) => total + server.max_players, 0)}
+                </div>
+                <div class="text-sm opacity-80">Capacidad Total</div>
+              </div>
+              <div class="glass rounded-xl p-6 text-center text-white">
+                <div class="text-3xl font-bold text-accent mb-2">
+                  {new Set(gameServers.map(server => server.server_type)).size}
+                </div>
+                <div class="text-sm opacity-80">Tipos de Servidor</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+
+      <!-- Sección de servidores -->
+      <section class="container mx-auto px-4 py-12">
+        <div class="max-w-7xl mx-auto">
+          
+          <!-- Servidores destacados -->
+          {featuredServers.length > 0 && (
+            <div class="mb-16">
+              <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white font-game flex items-center">
+                  <svg class="w-8 h-8 text-accent mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                  Servidores Destacados
+                </h2>
+                <div class="text-accent font-medium">
+                  {featuredServers.length} {featuredServers.length === 1 ? 'servidor' : 'servidores'}
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {featuredServers.map((server) => (
+                  <div class="transform transition-all duration-300 hover:scale-105">
+                    <a href={`/${game.name.toLowerCase().replace(/\s+/g, '-')}/${server.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <div class="glass-dark rounded-2xl p-6 h-full border-2 border-accent hover:border-primary transition-colors duration-300">
+                        <div class="flex items-start justify-between mb-4">
+                          <div class="flex-1">
+                            <h3 class="text-xl font-bold text-white mb-2 font-game">{server.name}</h3>
+                            <p class="text-gray-300 text-sm mb-3 line-clamp-2">
+                              {server.description || `Servidor ${server.server_type} de ${game.name}`}
+                            </p>
+                          </div>
+                          <span class="px-3 py-1 bg-accent text-white text-xs font-medium rounded-full ml-2">
+                            DESTACADO
+                          </span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                          <div class="flex items-center justify-between">
+                            <span class="text-gray-400 text-sm">Tipo:</span>
+                            <span class="text-white font-medium capitalize">{server.server_type}</span>
+                          </div>
+                          
+                          <div class="flex items-center justify-between">
+                            <span class="text-gray-400 text-sm">Jugadores:</span>
+                            <span class="text-white font-medium">0/{server.max_players}</span>
+                          </div>
+                          
+                          {server.server_ip && (
+                            <div class="flex items-center justify-between">
+                              <span class="text-gray-400 text-sm">IP:</span>
+                              <span class="text-accent font-mono text-sm">{server.server_ip}</span>
+                            </div>
+                          )}
+                          
+                          {server.server_version && (
+                            <div class="flex items-center justify-between">
+                              <span class="text-gray-400 text-sm">Versión:</span>
+                              <span class="text-white text-sm">{server.server_version}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div class="mt-6 pt-4 border-t border-gray-600">
+                          <div class="btn-primary w-full text-center py-3 rounded-lg font-semibold">
+                            Entrar al Servidor
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <!-- Todos los servidores -->
+          <div class="mb-16">
+            <div class="flex items-center justify-between mb-8">
+              <h2 class="text-3xl font-bold text-white font-game">
+                {featuredServers.length > 0 ? 'Todos los Servidores' : 'Servidores Disponibles'}
+              </h2>
+              <div class="text-accent font-medium">
+                {gameServers.length} {gameServers.length === 1 ? 'servidor' : 'servidores'}
+              </div>
+            </div>
+            
+            {gameServers.length > 0 ? (
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {gameServers.map((server) => (
+                  <div class="transform transition-all duration-300 hover:scale-105">
+                    <a href={`/${game.name.toLowerCase().replace(/\s+/g, '-')}/${server.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <div class={`glass rounded-xl p-5 h-full hover:glass-dark transition-all duration-300 ${
+                        server.is_featured ? 'border border-accent' : 'border border-transparent hover:border-primary'
+                      }`}>
+                        <div class="flex items-start justify-between mb-3">
+                          <h3 class="text-lg font-bold text-white font-game">{server.name}</h3>
+                          {server.is_featured && (
+                            <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                          )}
+                        </div>
+                        
+                        <div class="space-y-2 mb-4">
+                          <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Tipo:</span>
+                            <span class="text-white capitalize">{server.server_type}</span>
+                          </div>
+                          
+                          <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Jugadores:</span>
+                            <span class="text-accent font-medium">0/{server.max_players}</span>
+                          </div>
+                        </div>
+                        
+                        <div class="btn-secondary w-full text-center py-2 rounded-lg text-sm font-semibold">
+                          Ver Servidor
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div class="text-center py-16">
+                <div class="glass rounded-2xl p-12 max-w-md mx-auto">
+                  <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-accent flex items-center justify-center">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-white mb-4 font-game">
+                    No hay servidores disponibles
+                  </h3>
+                  <p class="text-gray-300 mb-6">
+                    Aún no hay servidores configurados para {game.name}.
+                    <span id="create-first-text" style="display: none;"> ¡Puedes crear el primero!</span>
+                  </p>
+                  <div id="create-server-btn-empty" style="display: none;">
+                    <button class="btn-primary px-6 py-3 rounded-lg font-semibold">
+                      Crear Servidor
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <!-- Botón para crear servidor personalizado -->
+          <div id="create-server-btn-list" class="text-center" style="display: none;">
+            <button class="btn-accent px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105">
+              + Crear Servidor Personalizado
+            </button>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Sección de posts del juego -->
+      <section class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+          <!-- Formulario para crear post -->
+          <div class="mb-12" id="post-form-container">
+            <div class="glass-dark rounded-2xl p-8">
+              <h2 class="text-2xl font-bold text-white mb-6 font-game">
+                Comparte tu experiencia en {game.name}
+              </h2>
+              <PostForm 
+                client:load
+                gameId={game.id}
+                placeholder={`¿Qué está pasando en ${game.name}?`}
+                showNameField={false}
+              />
+            </div>
+          </div>
+          
+          <!-- Lista de posts -->
+          <div class="space-y-8">
+            <div class="flex items-center justify-between">
+              <h2 class="text-3xl font-bold text-white font-game">
+                Últimas publicaciones
+              </h2>
+              <div class="text-accent font-medium" id="post-count">
+                0 posts
+              </div>
+            </div>
+            
+            <div class="grid gap-8" id="posts-container" style="display: none;">
+              <!-- Posts se cargarán dinámicamente aquí -->
+            </div>
+            
+            <div class="text-center py-16" id="empty-posts-state">
+              <div class="glass rounded-2xl p-12 max-w-md mx-auto">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-accent flex items-center justify-center">
+                  <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-4 font-game">
+                  ¡Sé el primero en publicar!
+                </h3>
+                <p class="text-gray-300 mb-6">
+                  No hay publicaciones en {game.name} aún. 
+                  Comparte tu experiencia y sé el primero.
+                </p>
+                <div id="login-prompt" style="display: none;">
+                  <a 
+                    href="/auth/login" 
+                    class="btn-primary px-6 py-3 rounded-lg font-semibold inline-block"
+                  >
+                    Iniciar Sesión
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </ThemeProvider>
+</Layout>
+
+<script>
+  // Función para verificar autenticación del cliente
+  function checkClientAuth() {
+    const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+    return userSession ? JSON.parse(userSession) : null;
+  }
+
+  // Función para cargar posts desde localStorage
+  function loadLocalStoragePosts() {
+    const gameName = document.querySelector('h1')?.textContent?.trim() || 'general';
+    const storageKey = `posts_${gameName}`;
+    const posts = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    
+    return posts.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }
+
+  // Función para crear elemento de post
+  function createPostElement(post: any) {
+    const timeAgo = formatTimeAgo(post.timestamp);
+    const authorInitial = post.author.charAt(0).toUpperCase();
+    
+    return `
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg post-card transform transition-all duration-300 hover:scale-[1.02]" data-post-id="${post.id}">
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+            ${authorInitial}
+          </div>
+          <div class="ml-3 flex-1">
+            <div class="flex items-center gap-2">
+              <h3 class="font-semibold text-white">${post.author}</h3>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-gray-400">
+              <span>${timeAgo}</span>
+            </div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <p class="text-gray-200 leading-relaxed whitespace-pre-wrap">${post.content}</p>
+        </div>
+        <div class="flex items-center justify-between pt-4 border-t border-white/10">
+          <div class="flex items-center space-x-6">
+            <button class="flex items-center space-x-2 text-gray-400 hover:text-red-400 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+              <span>${post.likes || 0}</span>
+            </button>
+            <button class="flex items-center space-x-2 text-gray-400 hover:text-blue-400 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+              <span>${post.comments || 0}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Función para formatear tiempo
+  function formatTimeAgo(timestamp: any) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) {
+      return 'Hace unos minutos';
+    } else if (diffInHours < 24) {
+      return `Hace ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      if (diffInDays < 7) {
+        return `Hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
+      } else {
+        return date.toLocaleDateString('es-ES');
+      }
+    }
+  }
+
+  // Función para actualizar la lista de posts
+  function updatePostsList() {
+    const posts = loadLocalStoragePosts();
+    const postsContainer = document.getElementById('posts-container');
+    const emptyState = document.getElementById('empty-posts-state');
+    const postCount = document.getElementById('post-count');
+    
+    if (posts.length > 0) {
+      if (postsContainer) {
+        postsContainer.innerHTML = posts.map((post: any) => createPostElement(post)).join('');
+        postsContainer.style.display = 'grid';
+      }
+      if (emptyState) {
+        emptyState.style.display = 'none';
+      }
+      if (postCount) {
+        postCount.textContent = `${posts.length} ${posts.length === 1 ? 'post' : 'posts'}`;
+      }
+    } else {
+      if (postsContainer) {
+        postsContainer.style.display = 'none';
+      }
+      if (emptyState) {
+        emptyState.style.display = 'block';
+      }
+      if (postCount) {
+        postCount.textContent = '0 posts';
+      }
+    }
+  }
+
+  // Función para actualizar UI basada en autenticación
+  function updateAuthUI() {
+    const session = checkClientAuth();
+    const enableCustomServers = true; // Asumimos que está habilitado por defecto
+    const hasServers = document.querySelectorAll('.server-card').length > 0;
+    
+    const createFirstText = document.getElementById('create-first-text');
+    const createServerBtnEmpty = document.getElementById('create-server-btn-empty');
+    const createServerBtnList = document.getElementById('create-server-btn-list');
+    const postFormContainer = document.getElementById('post-form-container');
+    const loginPrompt = document.getElementById('login-prompt');
+    
+    if (session && session.user && enableCustomServers) {
+      // Usuario autenticado: mostrar opciones de crear servidor
+      if (createFirstText) {
+        createFirstText.style.display = 'inline';
+      }
+      if (createServerBtnEmpty) {
+        createServerBtnEmpty.style.display = 'block';
+      }
+      if (createServerBtnList && hasServers) {
+        createServerBtnList.style.display = 'block';
+      }
+    } else {
+      // Usuario no autenticado: ocultar opciones de crear servidor
+      if (createFirstText) {
+        createFirstText.style.display = 'none';
+      }
+      if (createServerBtnEmpty) {
+        createServerBtnEmpty.style.display = 'none';
+      }
+      if (createServerBtnList) {
+        createServerBtnList.style.display = 'none';
+      }
+    }
+    
+    // Manejar UI de posts
+    if (session && session.user) {
+      if (postFormContainer) {
+        postFormContainer.style.display = 'block';
+      }
+      if (loginPrompt) {
+        loginPrompt.style.display = 'none';
+      }
+    } else {
+      if (postFormContainer) {
+        postFormContainer.style.display = 'none';
+      }
+      if (loginPrompt) {
+        loginPrompt.style.display = 'block';
+      }
+    }
+  }
+
+  // Animaciones y efectos interactivos
+  document.addEventListener('DOMContentLoaded', () => {
+    // Verificar autenticación al cargar la página
+    updateAuthUI();
+    
+    // Cargar posts desde localStorage
+    updatePostsList();
+    
+    // Escuchar cambios en el storage (para cuando el usuario se loguee/desloguee)
+    window.addEventListener('storage', updateAuthUI);
+    
+    // Escuchar eventos de nuevos posts
+    window.addEventListener('postAdded', () => {
+      updatePostsList();
+    });
+    
+    // Escuchar cambios en localStorage para posts
+    window.addEventListener('storage', (e) => {
+      if (e.key && e.key.startsWith('posts_')) {
+        updatePostsList();
+      }
+    });
+    
+    // Efecto parallax en el header
+    const header = document.querySelector('header');
+    const handleScroll = () => {
+      const scrolled = window.pageYOffset;
+      const rate = scrolled * -0.3;
+      if (header) {
+        header.style.transform = `translateY(${rate}px)`;
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    // Animación de entrada para las tarjetas de servidores
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            (entry.target as HTMLElement).style.opacity = '1';
+            (entry.target as HTMLElement).style.transform = 'translateY(0)';
+          }, index * 100);
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('.transform').forEach((el) => {
+      (el as HTMLElement).style.opacity = '0';
+      (el as HTMLElement).style.transform = 'translateY(30px)';
+      (el as HTMLElement).style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+    
+    // Efecto hover mejorado para las tarjetas
+    document.querySelectorAll('.glass, .glass-dark').forEach((card) => {
+      card.addEventListener('mouseenter', () => {
+        (card as HTMLElement).style.transform = 'translateY(-5px) scale(1.02)';
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        (card as HTMLElement).style.transform = 'translateY(0) scale(1)';
+      });
+    });
+  });
+</script>

@@ -1,0 +1,587 @@
+---
+import type { ThemeConfig } from '../utils/games';
+
+interface Props {
+  entityType: 'game' | 'server';
+  entityId: string;
+  currentTheme?: ThemeConfig;
+  onSave?: (themeConfig: ThemeConfig) => void;
+}
+
+const { entityType, entityId, currentTheme = {}, onSave } = Astro.props;
+
+// Configuración por defecto para el formulario
+const defaultConfig = {
+  colors: {
+    primary: '#3b82f6',
+    secondary: '#1d4ed8',
+    accent: '#1e40af',
+    background: { from: '#0f172a', to: '#1e293b' },
+    surface: '#1e293b',
+    text: '#f8fafc'
+  },
+  typography: {
+    fontFamily: 'Inter, system-ui, sans-serif',
+    headingFont: 'Orbitron, monospace'
+  },
+  images: {
+    hero: '',
+    icon: '',
+    pattern: ''
+  },
+  layout: {
+    borderRadius: '12px',
+    spacing: '1rem'
+  }
+};
+
+// Combinar configuración actual con la por defecto
+const config = {
+  colors: { ...defaultConfig.colors, ...currentTheme.colors },
+  typography: { ...defaultConfig.typography, ...currentTheme.typography },
+  images: { ...defaultConfig.images, ...currentTheme.images },
+  layout: { ...defaultConfig.layout, ...currentTheme.layout }
+};
+---
+
+<div class="theme-customizer bg-gray-900 rounded-xl p-6 border border-gray-700">
+  <div class="flex items-center justify-between mb-6">
+    <h3 class="text-xl font-bold text-white font-game">
+      Personalizar Tema - {entityType === 'game' ? 'Juego' : 'Servidor'}
+    </h3>
+    <button 
+      id="toggle-customizer" 
+      class="btn-secondary px-4 py-2 rounded-lg text-sm"
+    >
+      <span class="toggle-text">Expandir</span>
+    </button>
+  </div>
+  
+  <div id="customizer-content" class="hidden">
+    <form id="theme-form" class="space-y-8">
+      <!-- Sección de Colores -->
+      <div class="space-y-4">
+        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+          🎨 Colores
+        </h4>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Color Primario</label>
+            <div class="flex items-center space-x-2">
+              <input 
+                type="color" 
+                name="colors.primary" 
+                value={config.colors.primary}
+                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+              />
+              <input 
+                type="text" 
+                value={config.colors.primary}
+                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                readonly
+              />
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Color Secundario</label>
+            <div class="flex items-center space-x-2">
+              <input 
+                type="color" 
+                name="colors.secondary" 
+                value={config.colors.secondary}
+                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+              />
+              <input 
+                type="text" 
+                value={config.colors.secondary}
+                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                readonly
+              />
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Color de Acento</label>
+            <div class="flex items-center space-x-2">
+              <input 
+                type="color" 
+                name="colors.accent" 
+                value={config.colors.accent}
+                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+              />
+              <input 
+                type="text" 
+                value={config.colors.accent}
+                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                readonly
+              />
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Fondo (Desde)</label>
+            <div class="flex items-center space-x-2">
+              <input 
+                type="color" 
+                name="colors.background.from" 
+                value={typeof config.colors.background === 'object' ? config.colors.background.from : config.colors.background}
+                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+              />
+              <input 
+                type="text" 
+                value={typeof config.colors.background === 'object' ? config.colors.background.from : config.colors.background}
+                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                readonly
+              />
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Fondo (Hasta)</label>
+            <div class="flex items-center space-x-2">
+              <input 
+                type="color" 
+                name="colors.background.to" 
+                value={typeof config.colors.background === 'object' ? config.colors.background.to : config.colors.background}
+                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+              />
+              <input 
+                type="text" 
+                value={typeof config.colors.background === 'object' ? config.colors.background.to : config.colors.background}
+                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                readonly
+              />
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Superficie</label>
+            <div class="flex items-center space-x-2">
+              <input 
+                type="color" 
+                name="colors.surface" 
+                value={config.colors.surface}
+                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+              />
+              <input 
+                type="text" 
+                value={config.colors.surface}
+                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                readonly
+              />
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Texto</label>
+            <div class="flex items-center space-x-2">
+              <input 
+                type="color" 
+                name="colors.text" 
+                value={config.colors.text}
+                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+              />
+              <input 
+                type="text" 
+                value={config.colors.text}
+                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                readonly
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sección de Tipografía -->
+      <div class="space-y-4">
+        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+          📝 Tipografía
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Fuente Principal</label>
+            <select 
+              name="typography.fontFamily" 
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+            >
+              <option value="Inter, system-ui, sans-serif" selected={config.typography.fontFamily === 'Inter, system-ui, sans-serif'}>
+                Inter (Sans-serif)
+              </option>
+              <option value="Roboto, sans-serif" selected={config.typography.fontFamily === 'Roboto, sans-serif'}>
+                Roboto
+              </option>
+              <option value="Open Sans, sans-serif" selected={config.typography.fontFamily === 'Open Sans, sans-serif'}>
+                Open Sans
+              </option>
+              <option value="Poppins, sans-serif" selected={config.typography.fontFamily === 'Poppins, sans-serif'}>
+                Poppins
+              </option>
+              <option value="JetBrains Mono, monospace" selected={config.typography.fontFamily === 'JetBrains Mono, monospace'}>
+                JetBrains Mono
+              </option>
+            </select>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Fuente de Títulos</label>
+            <select 
+              name="typography.headingFont" 
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+            >
+              <option value="Orbitron, monospace" selected={config.typography.headingFont === 'Orbitron, monospace'}>
+                Orbitron (Gaming)
+              </option>
+              <option value="Rajdhani, sans-serif" selected={config.typography.headingFont === 'Rajdhani, sans-serif'}>
+                Rajdhani
+              </option>
+              <option value="Exo 2, sans-serif" selected={config.typography.headingFont === 'Exo 2, sans-serif'}>
+                Exo 2
+              </option>
+              <option value="Teko, sans-serif" selected={config.typography.headingFont === 'Teko, sans-serif'}>
+                Teko
+              </option>
+              <option value="Fredoka One, cursive" selected={config.typography.headingFont === 'Fredoka One, cursive'}>
+                Fredoka One
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sección de Imágenes -->
+      <div class="space-y-4">
+        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+          🖼️ Imágenes
+        </h4>
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Imagen Hero (URL)</label>
+            <input 
+              type="url" 
+              name="images.hero" 
+              value={config.images.hero}
+              placeholder="https://ejemplo.com/imagen-hero.jpg"
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+            />
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Icono (URL)</label>
+            <input 
+              type="url" 
+              name="images.icon" 
+              value={config.images.icon}
+              placeholder="/icons/mi-icono.svg"
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+            />
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Patrón de Fondo (URL)</label>
+            <input 
+              type="url" 
+              name="images.pattern" 
+              value={config.images.pattern}
+              placeholder="/patterns/mi-patron.svg"
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sección de Layout -->
+      <div class="space-y-4">
+        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+          📐 Layout
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Radio de Bordes</label>
+            <select 
+              name="layout.borderRadius" 
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+            >
+              <option value="4px" selected={config.layout.borderRadius === '4px'}>Pequeño (4px)</option>
+              <option value="8px" selected={config.layout.borderRadius === '8px'}>Mediano (8px)</option>
+              <option value="12px" selected={config.layout.borderRadius === '12px'}>Grande (12px)</option>
+              <option value="16px" selected={config.layout.borderRadius === '16px'}>Extra Grande (16px)</option>
+              <option value="20px" selected={config.layout.borderRadius === '20px'}>Redondeado (20px)</option>
+            </select>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-300">Espaciado</label>
+            <select 
+              name="layout.spacing" 
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+            >
+              <option value="0.75rem" selected={config.layout.spacing === '0.75rem'}>Compacto (0.75rem)</option>
+              <option value="1rem" selected={config.layout.spacing === '1rem'}>Normal (1rem)</option>
+              <option value="1.25rem" selected={config.layout.spacing === '1.25rem'}>Amplio (1.25rem)</option>
+              <option value="1.5rem" selected={config.layout.spacing === '1.5rem'}>Extra Amplio (1.5rem)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Vista Previa -->
+      <div class="space-y-4">
+        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+          👁️ Vista Previa
+        </h4>
+        <div id="theme-preview" class="p-6 rounded-lg border-2 border-dashed border-gray-600">
+          <div class="preview-card p-4 rounded-lg">
+            <h5 class="preview-heading text-lg font-bold mb-2">Título de Ejemplo</h5>
+            <p class="preview-text mb-4">Este es un texto de ejemplo para mostrar cómo se verá el tema.</p>
+            <button class="preview-button px-4 py-2 rounded font-semibold">
+              Botón de Ejemplo
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Botones de Acción -->
+      <div class="flex items-center justify-between pt-6 border-t border-gray-700">
+        <div class="flex space-x-3">
+          <button 
+            type="button" 
+            id="reset-theme" 
+            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+          >
+            Restablecer
+          </button>
+          <button 
+            type="button" 
+            id="preview-theme" 
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          >
+            Vista Previa
+          </button>
+        </div>
+        
+        <div class="flex space-x-3">
+          <button 
+            type="button" 
+            id="export-theme" 
+            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+          >
+            Exportar JSON
+          </button>
+          <button 
+            type="submit" 
+            class="px-6 py-2 bg-accent hover:bg-accent/90 text-white rounded-lg font-semibold transition-colors"
+          >
+            Guardar Tema
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggle-customizer');
+    const content = document.getElementById('customizer-content');
+    const toggleText = toggleBtn?.querySelector('.toggle-text');
+    const form = document.getElementById('theme-form');
+    const preview = document.getElementById('theme-preview');
+    
+    // Toggle del customizador
+    toggleBtn?.addEventListener('click', () => {
+      const isHidden = content?.classList.contains('hidden');
+      
+      if (isHidden) {
+        content?.classList.remove('hidden');
+        toggleText!.textContent = 'Contraer';
+      } else {
+        content?.classList.add('hidden');
+        toggleText!.textContent = 'Expandir';
+      }
+    });
+    
+    // Actualizar vista previa en tiempo real
+    function updatePreview() {
+      const formData = new FormData(form as HTMLFormElement);
+      const themeConfig: any = {
+        colors: {},
+        typography: {},
+        images: {},
+        layout: {}
+      };
+      
+      // Procesar datos del formulario
+      for (const [key, value] of formData.entries()) {
+        const keys = key.split('.');
+        if (keys.length === 2) {
+          themeConfig[keys[0]][keys[1]] = value;
+        }
+      }
+      
+      // Actualizar colores de inputs de texto
+      document.querySelectorAll('input[type="color"]').forEach((colorInput: any) => {
+        const textInput = colorInput.parentElement.querySelector('input[type="text"]');
+        if (textInput) {
+          textInput.value = colorInput.value;
+        }
+      });
+      
+      // Aplicar estilos a la vista previa
+      const previewCard = preview?.querySelector('.preview-card') as HTMLElement;
+      const previewHeading = preview?.querySelector('.preview-heading') as HTMLElement;
+      const previewText = preview?.querySelector('.preview-text') as HTMLElement;
+      const previewButton = preview?.querySelector('.preview-button') as HTMLElement;
+      
+      if (previewCard) {
+        previewCard.style.backgroundColor = themeConfig.colors.surface || '#1e293b';
+        previewCard.style.borderRadius = themeConfig.layout.borderRadius || '12px';
+        previewCard.style.fontFamily = themeConfig.typography.fontFamily || 'Inter, system-ui, sans-serif';
+      }
+      
+      if (previewHeading) {
+        previewHeading.style.color = themeConfig.colors.text || '#f8fafc';
+        previewHeading.style.fontFamily = themeConfig.typography.headingFont || 'Orbitron, monospace';
+      }
+      
+      if (previewText) {
+        previewText.style.color = themeConfig.colors.text || '#f8fafc';
+      }
+      
+      if (previewButton) {
+        previewButton.style.backgroundColor = themeConfig.colors.primary || '#3b82f6';
+        previewButton.style.color = '#ffffff';
+        previewButton.style.borderRadius = themeConfig.layout.borderRadius || '12px';
+      }
+    }
+    
+    // Escuchar cambios en el formulario
+    form?.addEventListener('input', updatePreview);
+    form?.addEventListener('change', updatePreview);
+    
+    // Botón de reset
+    document.getElementById('reset-theme')?.addEventListener('click', () => {
+      if (confirm('¿Estás seguro de que quieres restablecer el tema a los valores por defecto?')) {
+        (form as HTMLFormElement)?.reset();
+        updatePreview();
+      }
+    });
+    
+    // Botón de exportar
+    document.getElementById('export-theme')?.addEventListener('click', () => {
+      const formData = new FormData(form as HTMLFormElement);
+      const themeConfig: any = {
+        colors: {},
+        typography: {},
+        images: {},
+        layout: {}
+      };
+      
+      for (const [key, value] of formData.entries()) {
+        const keys = key.split('.');
+        if (keys.length === 2) {
+          themeConfig[keys[0]][keys[1]] = value;
+        }
+      }
+      
+      const jsonString = JSON.stringify(themeConfig, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `theme-config-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+    
+    // Envío del formulario
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(form as HTMLFormElement);
+      const themeConfig: any = {
+        colors: {},
+        typography: {},
+        images: {},
+        layout: {}
+      };
+      
+      for (const [key, value] of formData.entries()) {
+        const keys = key.split('.');
+        if (keys.length === 2) {
+          themeConfig[keys[0]][keys[1]] = value;
+        }
+      }
+      
+      try {
+        const response = await fetch('/api/theme/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            entityType: '{entityType}',
+            entityId: '{entityId}',
+            themeConfig
+          })
+        });
+        
+        if (response.ok) {
+          alert('Tema guardado exitosamente');
+          window.location.reload();
+        } else {
+          throw new Error('Error al guardar el tema');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al guardar el tema. Por favor, inténtalo de nuevo.');
+      }
+    });
+    
+    // Inicializar vista previa
+    updatePreview();
+  });
+</script>
+
+<style>
+  .theme-customizer {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .theme-customizer::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .theme-customizer::-webkit-scrollbar-track {
+    background: #374151;
+    border-radius: 4px;
+  }
+  
+  .theme-customizer::-webkit-scrollbar-thumb {
+    background: #6b7280;
+    border-radius: 4px;
+  }
+  
+  .theme-customizer::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
+  input[type="color"] {
+    -webkit-appearance: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  
+  input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 6px;
+  }
+</style>

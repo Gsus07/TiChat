@@ -68,8 +68,17 @@ export function saveUserSession(session: UserSession, remember: boolean = false)
  * @param request Request object from Astro
  * @returns User object or null if not authenticated
  */
-export async function getCurrentUser(request: Request): Promise<User | null> {
+export async function getCurrentUser(request?: Request): Promise<User | null> {
   // For now, return null as we're using client-side authentication
   // This can be extended to work with server-side sessions if needed
   return null;
+}
+
+/**
+ * Get current user from client-side session
+ * @returns User object or null if not authenticated
+ */
+export function getCurrentUserClient(): User | null {
+  const session = getUserSession();
+  return session ? session.user : null;
 }
