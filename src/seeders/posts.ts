@@ -119,93 +119,51 @@ export async function seedPosts() {
   
   try {
     // Verificar si ya existen posts
-    const { data: existingPosts, error: checkError } = await supabase
+    const { data: existingPosts } = await supabase
       .from('posts')
       .select('id')
       .limit(1);
     
-    if (checkError) {
-      throw checkError;
-    }
-    
     if (existingPosts && existingPosts.length > 0) {
-      console.log('⚠️  Los posts ya existen, saltando seeder de posts');
+      console.log('⚠️  Ya existen posts, saltando seeder de posts');
       return;
     }
     
     // Obtener usuarios para asignar como autores
     const { data: users, error: usersError } = await supabase
-      .from('users')
+      .from('profiles')
       .select('id, username');
     
-    if (usersError) {
-      throw usersError;
-    }
-    
-    if (!users || users.length === 0) {
-      console.log('⚠️  No hay usuarios disponibles, saltando seeder de posts');
+    if (usersError || !users || users.length === 0) {
+      console.error('Error obteniendo usuarios:', usersError);
       return;
     }
     
-    // Crear un mapa de usernames a IDs
-    const userMap = new Map(users.map((user: any) => [user.username, user.id]));
-    
-    // Procesar posts
-    const processedPosts = [];
-    
-    for (const post of postsData) {
-      try {
-        // Obtener game_id
-        const gameResult = await getGameByName(post.game_name);
-        if (!gameResult.data) {
-          console.warn(`Juego ${post.game_name} no encontrado, saltando post`);
-          continue;
-        }
-        const game = gameResult.data;
-        
-        // Obtener server_id si aplica
-        let server_id = null;
-        if (post.server_name) {
-          const serverResult = await getServerByName(post.server_name);
-          if (serverResult.data) {
-            server_id = serverResult.data.id;
-          }
-        }
-        
-        // Obtener author_id
-        let author_id = null;
-        if (post.author_username && userMap.has(post.author_username)) {
-          author_id = userMap.get(post.author_username);
-        } else {
-          // Asignar un usuario aleatorio si no se especifica
-          const randomUser = users[Math.floor(Math.random() * users.length)];
-          author_id = randomUser.id;
-        }
-        
-        processedPosts.push({
-          content: post.content,
-          image_url: post.image_url || null,
-          game_id: game.id,
-          server_id: server_id,
-          author_id: author_id,
-          likes_count: Math.floor(Math.random() * 50) + 1, // 1-50 likes aleatorios
-          comments_count: Math.floor(Math.random() * 20) + 1 // 1-20 comentarios aleatorios
-        });
-      } catch (error) {
-        console.warn(`Error procesando post: ${error}`);
-        continue;
-      }
-    }
-    
-    if (processedPosts.length === 0) {
-      console.log('⚠️  No se pudieron procesar posts');
+    // Obtener el primer juego disponible para usar como referencia
+    const { data: firstGame } = await supabase
+      .from('games')
+      .select('id')
+      .limit(1)
+      .single();
+      
+    if (!firstGame) {
+      console.error('No hay juegos disponibles para crear posts');
       return;
     }
     
-    // Insertar posts
+    // Crear un post simple de prueba
+    const testPost = {
+      title: 'Post de prueba',
+      content: 'Este es un post de prueba para verificar que el seeding funciona correctamente.',
+      game_id: firstGame.id,
+      user_id: users[0].id,
+      post_type: 'general'
+    };
+    
+    // Insertar un solo post de prueba
     const { data, error } = await supabase
       .from('posts')
-      .insert(processedPosts)
+      .insert([testPost])
       .select();
     
     if (error) {

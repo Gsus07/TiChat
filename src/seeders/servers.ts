@@ -65,7 +65,7 @@ export async function seedServers() {
   try {
     // Verificar si ya existen servidores
     const { data: existingServers, error: checkError } = await supabase
-      .from('servers')
+      .from('game_servers')
       .select('id')
       .limit(1);
     
@@ -89,18 +89,18 @@ export async function seedServers() {
     const serversWithGameId = serversData.map(server => ({
       name: server.name,
       description: server.description,
-      ip_address: server.ip_address,
-      port: server.port,
-      version: server.version,
+      server_ip: server.ip_address,
+      server_port: server.port,
+      server_version: server.version,
       max_players: server.max_players,
-      current_players: server.current_players,
-      is_online: server.is_online,
+      server_type: 'survival',
+      is_active: server.is_online,
       game_id: minecraftGame.id
     }));
     
     // Insertar servidores
     const { data, error } = await supabase
-      .from('servers')
+      .from('game_servers')
       .insert(serversWithGameId)
       .select();
     

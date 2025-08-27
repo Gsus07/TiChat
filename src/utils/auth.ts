@@ -62,3 +62,14 @@ export function saveUserSession(session: UserSession, remember: boolean = false)
   const storage = remember ? localStorage : sessionStorage;
   storage.setItem('userSession', JSON.stringify(session));
 }
+
+/**
+ * Get current user from request (for server-side usage)
+ * @param request Request object from Astro
+ * @returns User object or null if not authenticated
+ */
+export async function getCurrentUser(request: Request): Promise<User | null> {
+  // For now, return null as we're using client-side authentication
+  // This can be extended to work with server-side sessions if needed
+  return null;
+}

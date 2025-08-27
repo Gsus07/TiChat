@@ -2,6 +2,9 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import PostForm from '../../components/react/PostForm.tsx';
+import { getServerById } from '../../utils/games';
+import { getPostsByServerId } from '../../utils/posts';
+import { getCurrentUser } from '../../utils/auth';
 
 // Función requerida para rutas dinámicas
 export async function getStaticPaths() {
@@ -13,8 +16,12 @@ export async function getStaticPaths() {
 // Configurar para renderizado en el cliente
 export const prerender = false;
 
-// Esta página maneja servidores dinámicos creados por el usuario
+// Esta página maneja servidores dinámicos creados por el usuario y servidores de la BD
 const { server } = Astro.params as { server?: string };
+
+// Obtener usuario actual
+const currentUser = await getCurrentUser(Astro.request);
+const currentUserId = currentUser?.id;
 
 // Datos por defecto para servidores personalizados
 const defaultServerData = {
@@ -29,14 +36,15 @@ const defaultServerData = {
   id: ''
 };
 
-// Intentar obtener datos del servidor desde el parámetro
+// Intentar obtener datos del servidor
 let serverData = defaultServerData;
+let posts: any[] = [];
+let isCustomServer = false;
 
-// Si el servidor es personalizado, intentar cargar datos específicos
 if (server && typeof server === 'string') {
   if (server.startsWith('custom-')) {
-    // En el cliente, los datos se cargarán desde localStorage
-    // Aquí usamos datos por defecto que se actualizarán en el cliente
+    // Servidor personalizado - cargar desde localStorage en el cliente
+    isCustomServer = true;
     const serverId = server.replace('custom-', '');
     serverData = {
       ...defaultServerData,
@@ -44,6 +52,33 @@ if (server && typeof server === 'string') {
       description: 'Cargando datos del servidor...',
       id: serverId
     };
+  } else {
+    // Servidor de la base de datos
+    try {
+      const serverResult = await getServerById(server);
+      if (serverResult.data) {
+        const dbServer = serverResult.data;
+        serverData = {
+          name: dbServer.name,
+          description: dbServer.description || 'Servidor de Minecraft',
+          ip: dbServer.server_ip || 'servidor.com',
+          port: dbServer.server_port?.toString() || '25565',
+          version: dbServer.server_version || '1.20.1',
+          players: `${dbServer.server_stats?.[0]?.online_players || 0}/${dbServer.max_players}`,
+          status: dbServer.is_active ? 'En línea' : 'Fuera de línea',
+          image: '/minecraft-icon.png',
+          id: dbServer.id
+        };
+        
+        // Obtener posts del servidor
+        const postsResult = await getPostsByServerId(server, currentUserId);
+        if (postsResult.data) {
+          posts = postsResult.data;
+        }
+      }
+    } catch (error) {
+      console.error('Error loading server data:', error);
+    }
   }
 }
 ---
@@ -100,7 +135,7 @@ if (server && typeof server === 'string') {
       <!-- Formulario para nueva publicación -->
       <PostForm 
         client:load
-        serverName={server}
+        serverName={isCustomServer ? server : serverData.id}
         placeholder="¿Qué está pasando en el servidor?"
       />
 
@@ -108,101 +143,124 @@ if (server && typeof server === 'string') {
       <div class="space-y-6">
         <h2 class="text-2xl font-bold text-white mb-6">Muro del Servidor</h2>
         
-        <!-- Publicaciones de ejemplo para servidores personalizados -->
-        <PostCard 
-          post={{
-            id: "1",
-            content: "¡Bienvenidos al servidor! Esperamos que disfruten su experiencia aqui. Recuerden seguir las reglas y divertirse.",
-            image_url: "",
-            created_at: "2024-01-15T10:00:00Z",
-            user_id: "admin",
-            is_active: true,
-            profiles: {
-              username: "Administrador",
-              full_name: "Administrador del Servidor",
-              avatar_url: "/default-avatar.png"
-            },
-            like_count: 15,
-            comment_count: 3,
-            user_has_liked: false
-          }}
-        />
-        
-        <PostCard 
-          post={{
-            id: "2",
-            content: "Este servidor esta increible! La comunidad es muy amigable y hay muchas cosas que hacer.",
-            image_url: "",
-            created_at: "2024-01-15T08:00:00Z",
-            user_id: "player1",
-            is_active: true,
-            profiles: {
-              username: "Jugador_Pro",
-              full_name: "Jugador Profesional",
-              avatar_url: "/default-avatar.png"
-            },
-            like_count: 8,
-            comment_count: 2,
-            user_has_liked: false
-          }}
-        />
-        
-        <PostCard 
-          post={{
-            id: "3",
-            content: "Termine mi nueva construccion en el servidor. ¡Vengan a verla en las coordenadas X:250 Z:180!",
-            image_url: "/minecraft-build.jpg",
-            created_at: "2024-01-15T06:00:00Z",
-            user_id: "builder1",
-            is_active: true,
-            profiles: {
-              username: "Constructor_Master",
-              full_name: "Maestro Constructor",
-              avatar_url: "/default-avatar.png"
-            },
-            like_count: 23,
-            comment_count: 7,
-            user_has_liked: false
-          }}
-        />
-        
-        <PostCard 
-          post={{
-            id: "4",
-            content: "Encontre una cueva super grande llena de diamantes. ¿Alguien quiere venir a explorar conmigo?",
-            image_url: "",
-            created_at: "2024-01-15T04:00:00Z",
-            user_id: "explorer1",
-            is_active: true,
-            profiles: {
-              username: "Explorador_2023",
-              full_name: "Explorador Aventurero",
-              avatar_url: "/default-avatar.png"
-            },
-            like_count: 12,
-            comment_count: 5,
-            user_has_liked: false
-          }}
-        />
-        
-        <PostCard 
-          post={{
-            id: "5",
-            content: "Mi granja automatica de trigo ya esta funcionando perfectamente. ¡Comida gratis para todos!",
-            image_url: "/minecraft-farm.jpg",
-            created_at: "2024-01-14T12:00:00Z",
-            user_id: "farmer1",
-            is_active: true,
-            profiles: {
-              username: "Granjero_Feliz",
-              full_name: "Granjero Feliz",
-              avatar_url: "/default-avatar.png"
-            },
-            like_count: 18,
-            comment_count: 4,
-            user_has_liked: false
-          }}
-        />
+        {!isCustomServer && posts.length > 0 ? (
+          <!-- Publicaciones reales de la base de datos -->
+          {posts.map((post) => (
+            <PostCard 
+              post={post}
+              currentUserId={currentUserId}
+            />
+          ))}
+        ) : !isCustomServer && posts.length === 0 ? (
+          <!-- Mensaje cuando no hay posts en servidor de BD -->
+          <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 text-center">
+            <p class="text-gray-300 text-lg">No hay publicaciones en este servidor aún.</p>
+            <p class="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+          </div>
+        ) : (
+          <!-- Publicaciones de ejemplo para servidores personalizados -->
+          <>
+            <PostCard 
+              post={{
+                id: "1",
+                content: "¡Bienvenidos al servidor! Esperamos que disfruten su experiencia aqui. Recuerden seguir las reglas y divertirse.",
+                image_url: "",
+                created_at: "2024-01-15T10:00:00Z",
+                user_id: "admin",
+                is_active: true,
+                profiles: {
+                  username: "Administrador",
+                  full_name: "Administrador del Servidor",
+                  avatar_url: "/default-avatar.png"
+                },
+                like_count: 15,
+                comment_count: 3,
+                user_has_liked: false
+              }}
+              currentUserId={currentUserId}
+            />
+            
+            <PostCard 
+              post={{
+                id: "2",
+                content: "Este servidor esta increible! La comunidad es muy amigable y hay muchas cosas que hacer.",
+                image_url: "",
+                created_at: "2024-01-15T08:00:00Z",
+                user_id: "player1",
+                is_active: true,
+                profiles: {
+                  username: "Jugador_Pro",
+                  full_name: "Jugador Profesional",
+                  avatar_url: "/default-avatar.png"
+                },
+                like_count: 8,
+                comment_count: 2,
+                user_has_liked: false
+              }}
+              currentUserId={currentUserId}
+            />
+            
+            <PostCard 
+              post={{
+                id: "3",
+                content: "Termine mi nueva construccion en el servidor. ¡Vengan a verla en las coordenadas X:250 Z:180!",
+                image_url: "/minecraft-build.jpg",
+                created_at: "2024-01-15T06:00:00Z",
+                user_id: "builder1",
+                is_active: true,
+                profiles: {
+                  username: "Constructor_Master",
+                  full_name: "Maestro Constructor",
+                  avatar_url: "/default-avatar.png"
+                },
+                like_count: 23,
+                comment_count: 7,
+                user_has_liked: false
+              }}
+              currentUserId={currentUserId}
+            />
+            
+            <PostCard 
+              post={{
+                id: "4",
+                content: "Encontre una cueva super grande llena de diamantes. ¿Alguien quiere venir a explorar conmigo?",
+                image_url: "",
+                created_at: "2024-01-15T04:00:00Z",
+                user_id: "explorer1",
+                is_active: true,
+                profiles: {
+                  username: "Explorador_2023",
+                  full_name: "Explorador Aventurero",
+                  avatar_url: "/default-avatar.png"
+                },
+                like_count: 12,
+                comment_count: 5,
+                user_has_liked: false
+              }}
+              currentUserId={currentUserId}
+            />
+            
+            <PostCard 
+              post={{
+                id: "5",
+                content: "Mi granja automatica de trigo ya esta funcionando perfectamente. ¡Comida gratis para todos!",
+                image_url: "/minecraft-farm.jpg",
+                created_at: "2024-01-14T12:00:00Z",
+                user_id: "farmer1",
+                is_active: true,
+                profiles: {
+                  username: "Granjero_Feliz",
+                  full_name: "Granjero Feliz",
+                  avatar_url: "/default-avatar.png"
+                },
+                like_count: 18,
+                comment_count: 4,
+                user_has_liked: false
+              }}
+              currentUserId={currentUserId}
+            />
+          </>
+        )}
       </div>
     </div>
   </main>

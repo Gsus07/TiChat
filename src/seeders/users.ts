@@ -65,7 +65,7 @@ export async function seedUsers() {
   try {
     // Verificar si ya existen usuarios (además del usuario autenticado)
     const { data: existingUsers, error: checkError } = await supabase
-      .from('users')
+      .from('profiles')
       .select('id')
       .limit(5);
     
@@ -80,7 +80,7 @@ export async function seedUsers() {
     
     // Insertar usuarios demo
     const { data, error } = await supabase
-      .from('users')
+      .from('profiles')
       .insert(usersData)
       .select();
     
