@@ -95,7 +95,7 @@ const joinDate = new Date(profile.created_at).toLocaleDateString('es-ES', {
           onclick={`toggleFollow('${userId}')`}
           data-user-id={userId}
           data-following={isFollowing}
-          class={`px-6 py-2 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
+          class={`px-6 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg ${
             isFollowing 
               ? 'bg-gray-600 hover:bg-red-600 text-white' 
               : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white'

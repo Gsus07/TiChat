@@ -122,7 +122,7 @@ const Navigation: React.FC = () => {
               {!user && (
                 <div className="flex items-center space-x-3">
                   <a href="/login" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors">Iniciar Sesión</a>
-                  <a href="/register" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105">Registrarse</a>
+                  <a href="/register" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-lg">Registrarse</a>
                 </div>
               )}
 
