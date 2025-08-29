@@ -68,6 +68,20 @@ export interface ServerStats {
   last_updated: string;
 }
 
+export interface UserProfile {
+  username: string;
+  full_name?: string;
+  avatar_url?: string;
+}
+
+// Extended interface for GameServer with joined data
+export interface GameServerWithJoins extends GameServer {
+  games?: Game;
+  server_stats?: ServerStats[];
+  profiles?: UserProfile;
+  image?: string; // For backward compatibility
+}
+
 // Funciones para manejar juegos
 export async function getAllGames() {
   try {
@@ -200,7 +214,7 @@ export async function getServersByGameId(gameId: string) {
   }
 }
 
-export async function getServerById(id: string) {
+export async function getServerById(id: string): Promise<{ data: GameServerWithJoins | null; error: any }> {
   try {
     const { data, error } = await supabase
       .from('game_servers')
@@ -589,7 +603,7 @@ export function createServerSlug(serverName: string): string {
     .replace(/^-|-$/g, ''); // Remover guiones al inicio y final
 }
 
-export async function getServerBySlug(serverSlug: string, gameId: string): Promise<{ data: GameServer | null; error: any }> {
+export async function getServerBySlug(serverSlug: string, gameId: string): Promise<{ data: GameServerWithJoins | null; error: any }> {
   try {
     // Primero intentar buscar por slug exacto
     const { data: servers, error } = await supabase
@@ -624,7 +638,7 @@ export async function getServerBySlug(serverSlug: string, gameId: string): Promi
   }
 }
 
-export async function getServerBySlugWithTheme(serverSlug: string, gameId: string): Promise<{ data: GameServer | null; error: any }> {
+export async function getServerBySlugWithTheme(serverSlug: string, gameId: string): Promise<{ data: GameServerWithJoins | null; error: any }> {
   try {
     const { data: server, error } = await getServerBySlug(serverSlug, gameId);
     

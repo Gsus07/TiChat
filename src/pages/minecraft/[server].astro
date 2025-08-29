@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import PostForm from '../../components/react/PostForm.tsx';
-import { getServerBySlugWithTheme, getGameByName } from '../../utils/games';
+import { getServerBySlugWithTheme, getGameByName, type GameServerWithJoins } from '../../utils/games';
 import { getPostsByServerId } from '../../utils/posts';
 import { getCurrentUser } from '../../utils/auth';
 
@@ -25,6 +25,7 @@ const currentUserId = currentUser?.id;
 // Inicializar variables
 let serverData: any = null;
 let posts: any[] = [];
+let dbServer: GameServerWithJoins;
 
 // Verificar que tenemos un ID de servidor válido
 if (!server) {
@@ -49,7 +50,7 @@ try {
     return Astro.redirect('/minecraft');
   }
   
-  const dbServer = serverResult.data;
+  dbServer = serverResult.data;
   
   // Verificar que el servidor pertenece al juego de Minecraft
   if (dbServer.games?.name !== 'Minecraft') {
@@ -59,13 +60,14 @@ try {
   serverData = {
     name: dbServer.name,
     description: dbServer.description || 'Servidor de Minecraft',
-    ip: dbServer.server_ip || 'servidor.com',
-    port: dbServer.server_port?.toString() || '25565',
-    version: dbServer.server_version || '1.20.1',
-    players: `${dbServer.server_stats?.[0]?.online_players || Math.floor(Math.random() * 20) + 5}/${dbServer.max_players || 50}`,
+    ip: dbServer.server_ip || 'No disponible',
+    port: dbServer.server_port?.toString() || 'No disponible',
+    version: dbServer.server_version || 'No especificada',
+    players: `${dbServer.server_stats?.[0]?.online_players || 0}/${dbServer.max_players || 0}`,
     status: dbServer.is_active ? 'En línea' : 'Fuera de línea',
-    image: dbServer.image || '/minecraft-icon.png',
+    image: dbServer.image || '/minecraft.svg',
     id: dbServer.id,
+    game_id: dbServer.game_id,
     server_type: dbServer.server_type || 'survival'
   };
   
