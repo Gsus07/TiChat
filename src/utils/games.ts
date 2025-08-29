@@ -108,11 +108,19 @@ export async function getGameByName(name: string) {
       .from('games')
       .select('*')
       .eq('name', name)
-      .eq('is_active', true)
-      .single();
+      .eq('is_active', true);
     
-    if (error) throw error;
-    return { data, error: null };
+    if (error) {
+      console.error('Error fetching game by name:', error);
+      return { data: null, error };
+    }
+    
+    if (!data || data.length === 0) {
+      console.log(`Game '${name}' not found`);
+      return { data: null, error: null };
+    }
+    
+    return { data: data[0], error: null };
   } catch (error) {
     console.error('Error fetching game by name:', error);
     return { data: null, error };
@@ -567,5 +575,108 @@ export async function getGameWithThemeById(gameId: string): Promise<{ data: Game
     };
   } catch (error) {
     return { data: null, error };
+  }
+}
+
+// Funciones para manejar slugs de servidor
+export function createServerSlug(serverName: string): string {
+  return serverName
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // Remover caracteres especiales
+    .replace(/\s+/g, '-') // Reemplazar espacios con guiones
+    .replace(/-+/g, '-') // Reemplazar múltiples guiones con uno solo
+    .replace(/^-|-$/g, ''); // Remover guiones al inicio y final
+}
+
+export async function getServerBySlug(serverSlug: string, gameId: string): Promise<{ data: GameServer | null; error: any }> {
+  try {
+    // Primero intentar buscar por slug exacto
+    const { data: servers, error } = await supabase
+      .from('game_servers')
+      .select(`
+        *,
+        games(*),
+        server_stats(*),
+        profiles:owner_id(username, full_name, avatar_url)
+      `)
+      .eq('game_id', gameId)
+      .eq('is_active', true);
+
+    if (error) throw error;
+    if (!servers || servers.length === 0) {
+      return { data: null, error: 'No servers found' };
+    }
+
+    // Buscar el servidor cuyo nombre genere el slug solicitado
+    const matchingServer = servers.find(server => 
+      createServerSlug(server.name) === serverSlug
+    );
+
+    if (!matchingServer) {
+      return { data: null, error: 'Server not found' };
+    }
+
+    return { data: matchingServer, error: null };
+  } catch (error) {
+    console.error('Error fetching server by slug:', error);
+    return { data: null, error };
+  }
+}
+
+export async function getServerBySlugWithTheme(serverSlug: string, gameId: string): Promise<{ data: GameServer | null; error: any }> {
+  try {
+    const { data: server, error } = await getServerBySlug(serverSlug, gameId);
+    
+    if (error) return { data: null, error };
+    if (!server) return { data: null, error: 'Server not found' };
+
+    // Obtener el tema del juego
+    const { data: game } = await getGameById(gameId);
+    const gameTheme = game?.theme_config || {};
+
+    // Combinar temas: default -> game -> server
+    const defaultTheme = getDefaultThemeConfig();
+    const combinedTheme = mergeThemeConfigs(
+      mergeThemeConfigs(defaultTheme, gameTheme),
+      server.theme_config || {}
+    );
+
+    return {
+      data: {
+        ...server,
+        theme_config: combinedTheme
+      },
+      error: null
+    };
+  } catch (error) {
+    return { data: null, error };
+  }
+}
+
+// Función para verificar si un slug de servidor es único
+export async function isServerSlugUnique(serverSlug: string, gameId: string, excludeServerId?: string): Promise<boolean> {
+  try {
+    const { data: servers, error } = await supabase
+      .from('game_servers')
+      .select('id, name')
+      .eq('game_id', gameId)
+      .eq('is_active', true);
+
+    if (error) throw error;
+    if (!servers) return true;
+
+    // Verificar si algún servidor genera el mismo slug
+    const conflictingServer = servers.find(server => {
+      if (excludeServerId && server.id === excludeServerId) {
+        return false; // Excluir el servidor actual al editar
+      }
+      return createServerSlug(server.name) === serverSlug;
+    });
+
+    return !conflictingServer;
+  } catch (error) {
+    console.error('Error checking server slug uniqueness:', error);
+    return false;
   }
 }

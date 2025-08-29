@@ -1,6 +1,6 @@
 ---
 // src/components/ServerCard.astro
-import { getServerStats } from '../utils/games';
+import { getServerStats, createServerSlug } from '../utils/games';
 import { supabase } from '../utils/supabaseClient';
 
 interface Props {
@@ -36,7 +36,7 @@ const isOwner = currentUserId === server.created_by;
 const ping = Math.floor(Math.random() * 50) + 10;
 ---
 
-<a href={`/minecraft/${server.id}`} class="block group relative server-card cursor-pointer" data-server-id={server.id}>
+<a href={`/minecraft/${createServerSlug(server.name)}`} class="server-card block group relative cursor-pointer" data-server-id={server.id}>
   <!-- Glow effect background -->
   <div class="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl blur opacity-0 group-hover:opacity-75 transition duration-500"></div>
   
@@ -143,7 +143,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
       <div class="flex items-center justify-between mt-6">
         <button 
           onclick={`event.stopPropagation(); copyServerIP('${server.ip_address}:${server.port}')`}
-          class="flex items-center text-green-400 group-hover:text-green-300 transition-colors duration-300 hover:bg-green-500/10 px-3 py-2 rounded-lg"
+          class="flex items-center text-green-400 group-hover:text-green-300 transition-colors duration-300 hover:bg-green-500/10 px-3 py-2 rounded-lg z-10 relative"
         >
           <span class="text-sm font-medium">Copiar IP</span>
           <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,10 +162,10 @@ const ping = Math.floor(Math.random() * 50) + 10;
       
       <!-- Botones de administración (solo visible para el propietario) -->
       {isOwner && (
-        <div class="admin-buttons mt-4 flex gap-2">
+        <div class="admin-buttons mt-4 flex gap-2 relative z-10">
           <button 
             onclick={`event.preventDefault(); event.stopPropagation(); editServer('${server.id}')`} 
-            class="edit-btn flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm"
+            class="edit-btn flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm relative z-10"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -174,7 +174,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
           </button>
           <button 
             onclick={`event.preventDefault(); event.stopPropagation(); deleteServer('${server.id}')`} 
-            class="delete-btn flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
+            class="delete-btn flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm relative z-10"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -240,4 +240,26 @@ const ping = Math.floor(Math.random() * 50) + 10;
   window.copyServerIP = copyServerIP;
   window.editServer = editServer;
   window.deleteServer = deleteServer;
+
+  // Manejar navegación de la tarjeta del servidor
+  document.addEventListener('DOMContentLoaded', () => {
+    const serverCards = document.querySelectorAll('.server-card');
+    
+    serverCards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        
+        // No navegar si se hizo clic en un botón o sus elementos hijos
+        if (target.closest('button') || target.closest('.admin-buttons')) {
+          return;
+        }
+        
+        // Obtener la URL del enlace padre
+        const link = card as HTMLAnchorElement;
+        if (link.href) {
+          window.location.href = link.href;
+        }
+      });
+    });
+  });
 </script>

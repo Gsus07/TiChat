@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNotifications } from './NotificationProvider';
-import { getGameByName, getServerByName } from '../../utils/games';
+import { getGameByName, getServerByName, isServerSlugUnique } from '../../utils/games';
 import { getCurrentUserClient } from '../../utils/auth';
 import { supabase } from '../../utils/supabaseClient';
 
@@ -215,9 +215,9 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
         addNotification('Función de edición aún no implementada', 'warning');
         return;
       } else {
-        // Verificar si ya existe un servidor con el mismo nombre
-        const existingServer = await getServerByName(formData.name, minecraftGameResult.data.id);
-        if (existingServer) {
+        // Verificar si el slug del servidor es único
+        const isUnique = await isServerSlugUnique(formData.name, minecraftGameResult.data.id);
+        if (!isUnique) {
           addNotification('Ya existe un servidor con ese nombre. Por favor, elige otro nombre.', 'error');
           return;
         }

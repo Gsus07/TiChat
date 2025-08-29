@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import PostForm from '../../components/react/PostForm.tsx';
-import { getServerById } from '../../utils/games';
+import { getServerBySlugWithTheme, getGameByName } from '../../utils/games';
 import { getPostsByServerId } from '../../utils/posts';
 import { getCurrentUser } from '../../utils/auth';
 
@@ -31,9 +31,18 @@ if (!server) {
   return Astro.redirect('/minecraft');
 }
 
-// Obtener datos del servidor desde Supabase
+// Obtener datos del servidor desde Supabase usando slug
 try {
-  const serverResult = await getServerById(server);
+  // Primero obtener el ID del juego Minecraft
+  const gameResult = await getGameByName('Minecraft');
+  if (!gameResult.data) {
+    return Astro.redirect('/minecraft');
+  }
+  
+  const gameId = gameResult.data.id;
+  
+  // Obtener servidor por slug
+  const serverResult = await getServerBySlugWithTheme(server, gameId);
   
   if (!serverResult.data) {
     // Si no se encuentra el servidor, redirigir a la página principal de Minecraft
@@ -55,13 +64,13 @@ try {
     version: dbServer.server_version || '1.20.1',
     players: `${dbServer.server_stats?.[0]?.online_players || Math.floor(Math.random() * 20) + 5}/${dbServer.max_players || 50}`,
     status: dbServer.is_active ? 'En línea' : 'Fuera de línea',
-    image: dbServer.image_url || '/minecraft-icon.png',
+    image: dbServer.image || '/minecraft-icon.png',
     id: dbServer.id,
     server_type: dbServer.server_type || 'survival'
   };
   
   // Obtener posts del servidor
-  const postsResult = await getPostsByServerId(server, currentUserId);
+  const postsResult = await getPostsByServerId(dbServer.id, currentUserId);
   if (postsResult.data) {
     posts = postsResult.data;
   }
