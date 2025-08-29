@@ -121,9 +121,6 @@ const PostForm: React.FC<PostFormProps> = ({
       });
       window.dispatchEvent(event);
       
-      // Reload the page to show the new post
-      window.location.reload();
-      
     } catch (error) {
       console.error('Error creating post:', error);
       addNotification('Error al publicar el post', 'error');
