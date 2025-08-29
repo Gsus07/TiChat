@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNotifications } from './NotificationProvider';
-import PostCard from '../PostCard.astro';
+import PostCard from './PostCard';
 
 interface Post {
   id: string;
@@ -44,12 +44,33 @@ const PostsList: React.FC<PostsListProps> = ({
   initialPosts, 
   serverId, 
   gameId, 
-  currentUserId,
+  currentUserId: propCurrentUserId,
   emptyMessage = 'No hay publicaciones aún.' 
 }) => {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(propCurrentUserId);
   const [loading, setLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const { addNotification } = useNotifications();
+
+  // Manejar hidratación y obtener usuario actual del cliente
+  useEffect(() => {
+    setIsClient(true);
+    
+    // Obtener usuario actual del lado del cliente
+    const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+    if (userSession) {
+      try {
+        const session = JSON.parse(userSession);
+        // Solo establecer currentUserId si hay un token válido
+        if (session.access_token && session.user?.id) {
+          setCurrentUserId(session.user.id);
+        }
+      } catch (e) {
+        console.error('Error parsing user session:', e);
+      }
+    }
+  }, []);
 
   // Función para cargar posts desde la API
   const loadPosts = useCallback(async () => {
@@ -176,50 +197,14 @@ const PostsList: React.FC<PostsListProps> = ({
       {posts.map((post) => (
         <div 
           key={post.id} 
-          className="transform transition-all duration-300 hover:scale-[1.02]"
-          dangerouslySetInnerHTML={{
-            __html: `
-              <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-                <div class="flex items-start space-x-4">
-                  <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                      ${post.profiles.username.charAt(0).toUpperCase()}
-                    </div>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-center space-x-2 mb-2">
-                      <h3 class="text-white font-semibold">${post.profiles.full_name || post.profiles.username}</h3>
-                      <span class="text-gray-400 text-sm">@${post.profiles.username}</span>
-                      <span class="text-gray-500 text-sm">•</span>
-                      <span class="text-gray-500 text-sm">${new Date(post.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <div class="text-gray-200 mb-4 whitespace-pre-wrap">${post.content}</div>
-                    <div class="flex items-center space-x-6 text-gray-400">
-                      <button class="flex items-center space-x-2 hover:text-red-400 transition-colors" data-post-id="${post.id}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                        </svg>
-                        <span class="like-count">${post.like_count}</span>
-                      </button>
-                      <button class="flex items-center space-x-2 hover:text-blue-400 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                        </svg>
-                        <span class="comment-count">${post.comment_count}</span>
-                      </button>
-                      <button class="flex items-center space-x-2 hover:text-green-400 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
-                        </svg>
-                        <span>Compartir</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `
-          }}
-        />
+          className={`${isClient ? 'transform transition-all duration-300 hover:scale-[1.02]' : ''}`}
+        >
+          <PostCard 
+            post={post} 
+            currentUserId={currentUserId}
+            onPostUpdate={updatePost}
+          />
+        </div>
       ))}
     </div>
   );

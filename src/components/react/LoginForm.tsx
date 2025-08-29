@@ -124,7 +124,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
           username: result.profile?.username || result.user.user_metadata?.username || 'Usuario',
           full_name: result.profile?.full_name || result.user.user_metadata?.full_name || 'Usuario',
           avatar: result.profile?.avatar_url || '/default-avatar.png'
-        }
+        },
+        access_token: result.session?.access_token,
+        loginTime: new Date().toISOString(),
+        rememberMe: formData.rememberMe
       };
 
       // Guardar sesión

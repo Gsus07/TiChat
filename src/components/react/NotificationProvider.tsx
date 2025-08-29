@@ -11,6 +11,12 @@ interface NotificationProviderProps {
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isReady, setIsReady] = useState(false);
+
+  // Marcar como listo después de la hidratación
+  useEffect(() => {
+    setIsReady(true);
+  }, []);
 
   const addNotification = (message: string, type: Notification['type'] = 'info', duration: number = 5000) => {
     const id = Date.now().toString() + Math.random().toString(36).substring(2, 11);
@@ -75,17 +81,25 @@ export const useNotifications = (): NotificationContextType => {
   const context = useContext(NotificationContext);
   if (context === undefined) {
     // Return a safe fallback instead of throwing an error
-    console.warn('useNotifications called outside of NotificationProvider, using fallback');
+    // Solo mostrar warning una vez para evitar spam en consola
+    if (typeof window !== 'undefined' && !window.__notificationWarningShown) {
+      console.warn('useNotifications called outside of NotificationProvider, using fallback');
+      window.__notificationWarningShown = true;
+    }
     return {
       notifications: [],
       addNotification: (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') => {
-        console.log(`Notification: [${type}] ${message}`);
+        console.log(`Notification fallback: [${type}] ${message}`);
+        // Intentar usar la función global como respaldo
+        if (typeof window !== 'undefined' && (window as any).showGlobalNotification) {
+          (window as any).showGlobalNotification(message, type);
+        }
       },
       removeNotification: (id: string) => {
-        console.log(`Remove notification: ${id}`);
+        console.log(`Remove notification fallback: ${id}`);
       },
       clearAllNotifications: () => {
-        console.log('Clear all notifications');
+        console.log('Clear all notifications fallback');
       }
     };
   }
