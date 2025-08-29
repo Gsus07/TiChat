@@ -164,10 +164,17 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
   const loadComments = async () => {
     setLoadingComments(true);
     try {
-      const response = await fetch(`/api/posts/${post.id}/comments`);
+      // Construir URL con userId si está disponible
+      let url = `/api/posts/${post.id}/comments`;
+      if (currentUserId) {
+        url += `?userId=${currentUserId}`;
+      }
+      
+      const response = await fetch(url);
       if (response.ok) {
-        const data = await response.json();
-        setComments(data.comments || []);
+        const result = await response.json();
+        // La API devuelve { data: comments, error: null }
+        setComments(result.data || []);
       } else {
         addNotification('Error al cargar comentarios', 'error');
       }
@@ -475,37 +482,78 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
       {/* Sección de comentarios */}
       {showComments && (
         <div className="mt-6 pt-6 border-t border-white/10">
-          {/* Input para nuevo comentario */}
+          {/* Formulario de comentarios */}
           {isClient && isAuthenticated && (
-            <div className="mb-4">
-              <div className="flex space-x-3">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                    U
+            <div className="mb-6">
+              <div className="bg-gradient-to-r from-white/5 to-white/3 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+                <div className="flex space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm ring-2 ring-green-400/30">
+                      U
+                    </div>
                   </div>
-                </div>
-                <div className="flex-1">
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Escribe un comentario..."
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-green-400 resize-none"
-                    rows={2}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        submitComment();
-                      }
-                    }}
-                  />
-                  <div className="flex justify-end mt-2">
-                    <button
-                      onClick={submitComment}
-                      disabled={submittingComment || !newComment.trim()}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {submittingComment ? 'Enviando...' : 'Comentar'}
-                    </button>
+                  <div className="flex-1">
+                    <div className="relative">
+                      <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="¿Qué opinas sobre esta publicación?"
+                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500/50 resize-none transition-all duration-200 backdrop-blur-sm"
+                        rows={3}
+                        disabled={submittingComment}
+                        maxLength={500}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            submitComment();
+                          }
+                        }}
+                      />
+                      <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-black/20 px-2 py-1 rounded-full">
+                        {newComment.length}/500
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center mt-3">
+                      <div className="flex items-center space-x-3">
+                        <button
+                          type="button"
+                          className="flex items-center space-x-1 text-xs text-gray-400 hover:text-blue-400 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2" />
+                          </svg>
+                          <span>Adjuntar</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="flex items-center space-x-1 text-xs text-gray-400 hover:text-yellow-400 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span>Emoji</span>
+                        </button>
+                      </div>
+                      <button
+                        onClick={submitComment}
+                        disabled={!newComment.trim() || submittingComment}
+                        className="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm font-semibold shadow-lg hover:shadow-green-500/25 disabled:shadow-none transform hover:scale-105 disabled:hover:scale-100"
+                      >
+                        {submittingComment ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                            <span>Enviando...</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                            <span>Comentar</span>
+                          </div>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -513,72 +561,90 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
           )}
           
           {/* Lista de comentarios */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {loadingComments ? (
-              <div className="flex justify-center py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500"></div>
-                <span className="ml-2 text-gray-400">Cargando comentarios...</span>
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-green-500 border-t-transparent"></div>
+                <span className="ml-3 text-gray-400 font-medium">Cargando comentarios...</span>
               </div>
             ) : comments.length > 0 ? (
-              comments.map((comment) => (
-                <div key={comment.id} className="flex space-x-3">
-                  <div className="flex-shrink-0">
-                    {comment.profiles.avatar_url ? (
-                      <img 
-                        src={comment.profiles.avatar_url} 
-                        alt={comment.profiles.username}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                        {comment.profiles.username.charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <div className="bg-white/5 rounded-lg p-3">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="text-white font-medium text-sm">
-                          {comment.profiles.full_name || comment.profiles.username}
-                        </span>
-                        <span className="text-gray-400 text-xs">@{comment.profiles.username}</span>
-                        <span className="text-gray-500 text-xs">•</span>
-                        <span className="text-gray-500 text-xs">{formatDate(comment.created_at)}</span>
-                      </div>
-                      <p className="text-gray-200 text-sm whitespace-pre-wrap">{comment.content}</p>
-                    </div>
-                    <div className="flex items-center space-x-4 mt-2">
-                      <button 
-                        onClick={() => handleCommentLike(comment.id)}
-                        className={`flex items-center space-x-1 text-xs transition-colors ${
-                          comment.user_has_liked 
-                            ? 'text-red-400 hover:text-red-300' 
-                            : 'text-gray-400 hover:text-red-400'
-                        }`}
-                      >
-                        <svg 
-                          className={`w-4 h-4 ${
-                            comment.user_has_liked ? 'fill-current' : ''
-                          }`} 
-                          fill={comment.user_has_liked ? 'currentColor' : 'none'} 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
-                        >
-                          <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            strokeWidth="2" 
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              <div className="max-h-96 overflow-y-auto pr-2 space-y-3">
+                {comments.map((comment) => (
+                  <div key={comment.id} className="group hover:bg-white/5 rounded-xl p-3 transition-all duration-200">
+                    <div className="flex space-x-3">
+                      <div className="flex-shrink-0">
+                        {comment.profiles.avatar_url ? (
+                          <img 
+                            src={comment.profiles.avatar_url} 
+                            alt={comment.profiles.username}
+                            className="w-10 h-10 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-green-400/30 transition-all"
                           />
-                        </svg>
-                        <span>{comment.like_count}</span>
-                      </button>
+                        ) : (
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm ring-2 ring-white/10 group-hover:ring-blue-400/30 transition-all">
+                            {comment.profiles.username.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="bg-gradient-to-r from-white/8 to-white/4 backdrop-blur-sm rounded-xl p-4 border border-white/10 group-hover:border-white/20 transition-all">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="text-white font-semibold text-sm">
+                              {comment.profiles.full_name || comment.profiles.username}
+                            </span>
+                            <span className="text-gray-400 text-xs font-medium">@{comment.profiles.username}</span>
+                            <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
+                            <span className="text-gray-500 text-xs">{formatDate(comment.created_at)}</span>
+                          </div>
+                          <p className="text-gray-100 text-sm leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                        </div>
+                        <div className="flex items-center space-x-6 mt-3 ml-1">
+                          <button 
+                            onClick={() => handleCommentLike(comment.id)}
+                            className={`flex items-center space-x-2 text-xs font-medium transition-all duration-200 hover:scale-105 ${
+                              comment.user_has_liked 
+                                ? 'text-red-400 hover:text-red-300' 
+                                : 'text-gray-400 hover:text-red-400'
+                            }`}
+                          >
+                            <svg 
+                              className={`w-4 h-4 transition-all ${
+                                comment.user_has_liked ? 'fill-current scale-110' : ''
+                              }`} 
+                              fill={comment.user_has_liked ? 'currentColor' : 'none'} 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                            >
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth="2" 
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                              />
+                            </svg>
+                            <span>{comment.like_count}</span>
+                          </button>
+                          <button className="flex items-center space-x-2 text-xs font-medium text-gray-400 hover:text-blue-400 transition-all duration-200 hover:scale-105">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                            <span>Responder</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))}
+              </div>
             ) : (
-              <p className="text-gray-400 text-center py-4">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <p className="text-gray-400 font-medium mb-2">No hay comentarios aún</p>
+                <p className="text-gray-500 text-sm">¡Sé el primero en compartir tu opinión!</p>
+              </div>
             )}
           </div>
         </div>

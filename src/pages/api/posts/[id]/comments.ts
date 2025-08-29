@@ -5,6 +5,8 @@ import { getCommentsByPostId, createComment } from '../../../../utils/posts';
 export const GET: APIRoute = async ({ params, request }) => {
   try {
     const postId = params.id;
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
     
     if (!postId) {
       return new Response(JSON.stringify({ error: 'ID de post requerido' }), {
@@ -13,7 +15,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       });
     }
 
-    const comments = await getCommentsByPostId(postId);
+    const comments = await getCommentsByPostId(postId, userId || undefined);
     
     return new Response(JSON.stringify(comments), {
       status: 200,
