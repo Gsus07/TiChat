@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import GameCard from '../components/GameCard.astro';
 import { getAllGames } from '../utils/games';
 import { supabase } from '../utils/supabaseClient';
+import type { Game } from '../types/game';
 
 // Obtener todos los juegos activos
 const { data: games, error } = await getAllGames();
@@ -51,11 +52,24 @@ const currentUserId = user?.id;
       <div class="relative">
         <div class="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-3xl blur-3xl"></div>
         <div class="relative bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10">
-          <h2 class="text-3xl font-bold text-center text-white mb-8">
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
-              Selecciona tu Juego
-            </span>
-          </h2>
+          <div class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+            <h2 class="text-3xl font-bold text-white">
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+                Selecciona tu Juego
+              </span>
+            </h2>
+            {currentUserId && (
+              <button 
+                id="add-game-btn"
+                class="group relative px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 flex items-center space-x-2"
+              >
+                <svg class="w-5 h-5 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <span>Añadir Juego</span>
+              </button>
+            )}
+          </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {games && games.length > 0 ? (
                games.map((game) => (
@@ -75,3 +89,94 @@ const currentUserId = user?.id;
     </div>
   </main>
 </Layout>
+
+<script>
+  // Import React and ReactDOM for the modal
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+  import CreateGameForm from '../components/CreateGameForm';
+
+  // Function to fetch updated games list
+  async function fetchUpdatedGames() {
+    try {
+      const response = await fetch('/api/games');
+      if (!response.ok) {
+        throw new Error('Error fetching games');
+      }
+      const result = await response.json();
+      return result.data || [];
+    } catch (error) {
+      console.error('Error fetching updated games:', error);
+      return null;
+    }
+  }
+
+  // Function to update the games grid dynamically
+  async function updateGamesGrid() {
+    const gamesGrid = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3');
+    if (!gamesGrid) return;
+
+    // Show loading state
+    gamesGrid.innerHTML = '<div class="col-span-full text-center text-gray-400"><p>Actualizando lista de juegos...</p></div>';
+
+    const updatedGames = await fetchUpdatedGames();
+    
+    if (updatedGames === null) {
+      // Error fetching, reload page as fallback
+      window.location.reload();
+      return;
+    }
+
+    if (updatedGames.length === 0) {
+      gamesGrid.innerHTML = '<div class="col-span-full text-center text-gray-400"><p>No hay juegos disponibles en este momento.</p></div>';
+      return;
+    }
+
+    // Update the grid with new games
+    // For now, we'll reload the page to ensure proper rendering of Astro components
+    // In a future enhancement, this could be replaced with dynamic component rendering
+    window.location.reload();
+  }
+
+  // Function to show the create game modal
+  function showCreateGameModal() {
+    // Create modal container
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'create-game-modal';
+    document.body.appendChild(modalContainer);
+
+    // Create React root and render the form
+    const root = createRoot(modalContainer);
+    
+    const handleGameCreated = async (newGame: Game) => {
+      console.log('✅ Nuevo juego creado:', newGame);
+      
+      // Close modal
+      root.unmount();
+      document.body.removeChild(modalContainer);
+      
+      // Update games list dynamically
+      await updateGamesGrid();
+    };
+
+    const handleCancel = () => {
+      root.unmount();
+      document.body.removeChild(modalContainer);
+    };
+
+    root.render(
+      React.createElement(CreateGameForm, {
+        onGameCreated: handleGameCreated,
+        onCancel: handleCancel
+      })
+    );
+  }
+
+  // Add event listener to the add game button
+  document.addEventListener('DOMContentLoaded', () => {
+    const addGameBtn = document.getElementById('add-game-btn');
+    if (addGameBtn) {
+      addGameBtn.addEventListener('click', showCreateGameModal);
+    }
+  });
+</script>
