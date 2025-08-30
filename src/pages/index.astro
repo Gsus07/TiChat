@@ -70,7 +70,7 @@ const currentUserId = user?.id;
               </button>
             )}
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {games && games.length > 0 ? (
                games.map((game) => (
                  <GameCard 
@@ -95,6 +95,7 @@ const currentUserId = user?.id;
   import React from 'react';
   import { createRoot } from 'react-dom/client';
   import CreateGameForm from '../components/CreateGameForm';
+  import type { Game } from '../types/game';
 
   // Function to fetch updated games list
   async function fetchUpdatedGames() {

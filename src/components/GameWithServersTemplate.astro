@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import ThemeProvider from './ThemeProvider.astro';
 import PostForm from './react/PostForm.tsx';
 import PostsList from './react/PostsList.tsx';
+import CreateServerForm from './CreateServerForm.tsx';
 import { getServersByGameId } from '../utils/games';
 import { getPostsByGameId } from '../utils/posts';
 import { getCurrentUser } from '../utils/auth';
@@ -292,7 +293,7 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
                     <span id="create-first-text" style="display: none;"> ¡Puedes crear el primero!</span>
                   </p>
                   <div id="create-server-btn-empty" style="display: none;">
-                    <button class="btn-primary px-6 py-3 rounded-lg font-semibold">
+                    <button id="show-create-form-empty" class="btn-primary px-6 py-3 rounded-lg font-semibold">
                       Crear Servidor
                     </button>
                   </div>
@@ -303,7 +304,7 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
           
           <!-- Botón para crear servidor personalizado -->
           <div id="create-server-btn-list" class="text-center" style="display: none;">
-            <button class="btn-accent px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105">
+            <button id="show-create-form" class="btn-accent px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105">
               + Crear Servidor Personalizado
             </button>
           </div>
@@ -350,14 +351,33 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
         </div>
       </section>
     </main>
+
+    <!-- Formulario de creación de servidor -->
+    <div id="create-server-modal" style="display: none;">
+      <CreateServerForm 
+        gameId={game.id}
+        client:load
+      />
+    </div>
   </ThemeProvider>
 </Layout>
 
 <script>
   // Función para verificar autenticación del cliente
-  function checkClientAuth() {
-    const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
-    return userSession ? JSON.parse(userSession) : null;
+  async function checkClientAuth() {
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabase = createClient(
+        import.meta.env.PUBLIC_SUPABASE_URL,
+        import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+      );
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      return user ? { user } : null;
+    } catch (error) {
+      console.error('Error checking auth:', error);
+      return null;
+    }
   }
 
   // Función para cargar posts desde localStorage
@@ -464,8 +484,8 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
   }
 
   // Función para actualizar UI basada en autenticación
-  function updateAuthUI() {
-    const session = checkClientAuth();
+  async function updateAuthUI() {
+    const session = await checkClientAuth();
     const enableCustomServers = true; // Asumimos que está habilitado por defecto
     const hasServers = document.querySelectorAll('.server-card').length > 0;
     
@@ -483,7 +503,7 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
       if (createServerBtnEmpty) {
         createServerBtnEmpty.style.display = 'block';
       }
-      if (createServerBtnList && hasServers) {
+      if (createServerBtnList) {
         createServerBtnList.style.display = 'block';
       }
     } else {
@@ -518,15 +538,49 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
   }
 
   // Animaciones y efectos interactivos
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+    
+    // Manejar apertura del formulario de creación
+    const showCreateFormBtn = document.getElementById('show-create-form');
+    const showCreateFormEmptyBtn = document.getElementById('show-create-form-empty');
+    const createServerModal = document.getElementById('create-server-modal');
+    
+    const showCreateForm = () => {
+      if (createServerModal) {
+        createServerModal.style.display = 'block';
+      }
+    };
+    
+    if (showCreateFormBtn) {
+      showCreateFormBtn.addEventListener('click', showCreateForm);
+    }
+    
+    if (showCreateFormEmptyBtn) {
+      showCreateFormEmptyBtn.addEventListener('click', showCreateForm);
+    }
+    
+    // Manejar cierre del formulario
+    window.addEventListener('message', (event) => {
+      if (event.data.type === 'CLOSE_CREATE_SERVER_FORM') {
+        if (createServerModal) {
+          createServerModal.style.display = 'none';
+        }
+      }
+      
+      if (event.data.type === 'SERVER_CREATED') {
+        // Recargar la página para mostrar el nuevo servidor
+        window.location.reload();
+      }
+    });
+    
     // Verificar autenticación al cargar la página
-    updateAuthUI();
+    await updateAuthUI();
     
     // Cargar posts desde localStorage
     updatePostsList();
     
     // Escuchar cambios en el storage (para cuando el usuario se loguee/desloguee)
-    window.addEventListener('storage', updateAuthUI);
+    window.addEventListener('storage', () => updateAuthUI());
     
     // Escuchar eventos de nuevos posts
     window.addEventListener('postAdded', () => {
