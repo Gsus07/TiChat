@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
 import { getUserSession } from './auth';
+import { compressAvatarImage, compressPostImage, validateImageFile } from './imageCompression';
 
 export interface UploadResult {
   data: {
@@ -227,6 +228,32 @@ export async function changeUserAvatar(
   file: File
 ): Promise<{ data: { publicUrl: string } | null; error: string | null }> {
   try {
+    console.log('🔄 Iniciando cambio de avatar del usuario');
+    
+    // Validar el archivo antes de procesar
+    try {
+      validateImageFile(file, 10); // Máximo 10MB antes de compresión
+    } catch (validationError) {
+      return {
+        data: null,
+        error: validationError instanceof Error ? validationError.message : 'Archivo no válido'
+      };
+    }
+
+    // Comprimir la imagen antes de subirla
+    let processedFile: File;
+    try {
+      console.log('🗜️ Comprimiendo imagen de avatar...');
+      processedFile = await compressAvatarImage(file);
+      console.log('✅ Imagen comprimida exitosamente');
+    } catch (compressionError) {
+      console.error('❌ Error al comprimir imagen:', compressionError);
+      return {
+        data: null,
+        error: 'Error al procesar la imagen. Intenta con otro archivo.'
+      };
+    }
+
     // Configurar sesión de Supabase
     const sessionSet = await setSupabaseSession();
     if (!sessionSet) {
@@ -246,8 +273,8 @@ export async function changeUserAvatar(
       };
     }
 
-    // Subir el nuevo archivo
-    const uploadResult = await uploadFile(file, 'avatars', user.id);
+    // Subir el archivo comprimido
+    const uploadResult = await uploadFile(processedFile, 'avatars', user.id);
     
     if (uploadResult.error || !uploadResult.data) {
       return {
@@ -280,6 +307,87 @@ export async function changeUserAvatar(
     return {
       data: null,
       error: 'Error inesperado al cambiar el avatar'
+    };
+  }
+}
+
+/**
+ * Función para subir imágenes de posts
+ * @param file - El archivo de imagen del post
+ * @returns Resultado de la operación de subida
+ */
+export async function uploadPostImage(
+  file: File
+): Promise<{ data: { publicUrl: string; path: string } | null; error: string | null }> {
+  try {
+    console.log('🔄 Iniciando subida de imagen de post');
+    
+    // Validar el archivo antes de procesar
+    try {
+      validateImageFile(file, 15); // Máximo 15MB antes de compresión para posts
+    } catch (validationError) {
+      return {
+        data: null,
+        error: validationError instanceof Error ? validationError.message : 'Archivo no válido'
+      };
+    }
+
+    // Comprimir la imagen antes de subirla
+    let processedFile: File;
+    try {
+      console.log('🗜️ Comprimiendo imagen de post...');
+      processedFile = await compressPostImage(file);
+      console.log('✅ Imagen de post comprimida exitosamente');
+    } catch (compressionError) {
+      console.error('❌ Error al comprimir imagen de post:', compressionError);
+      return {
+        data: null,
+        error: 'Error al procesar la imagen. Intenta con otro archivo.'
+      };
+    }
+
+    // Configurar sesión de Supabase
+    const sessionSet = await setSupabaseSession();
+    if (!sessionSet) {
+      return {
+        data: null,
+        error: 'Usuario no autenticado'
+      };
+    }
+
+    // Obtener el usuario actual
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return {
+        data: null,
+        error: 'Usuario no autenticado'
+      };
+    }
+
+    // Subir el archivo comprimido al bucket 'posts'
+    const uploadResult = await uploadFile(processedFile, 'posts', user.id);
+    
+    if (uploadResult.error || !uploadResult.data) {
+      return {
+        data: null,
+        error: uploadResult.error || 'Error al subir la imagen del post'
+      };
+    }
+
+    return {
+      data: {
+        publicUrl: uploadResult.data.publicUrl,
+        path: uploadResult.data.path
+      },
+      error: null
+    };
+
+  } catch (error) {
+    console.error('Unexpected error uploading post image:', error);
+    return {
+      data: null,
+      error: 'Error inesperado al subir la imagen del post'
     };
   }
 }
