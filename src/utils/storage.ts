@@ -1,0 +1,285 @@
+import { supabase } from './supabaseClient';
+import { getUserSession } from './auth';
+
+export interface UploadResult {
+  data: {
+    path: string;
+    fullPath: string;
+    publicUrl: string;
+  } | null;
+  error: string | null;
+}
+
+/**
+ * Configura la sesión de Supabase con el token guardado localmente
+ */
+async function setSupabaseSession(): Promise<boolean> {
+  const session = getUserSession();
+  console.log('Checking user session:', {
+    hasSession: !!session,
+    hasAccessToken: !!session?.access_token,
+    hasRefreshToken: !!session?.refresh_token
+  });
+  
+  if (!session || !session.access_token) {
+    console.error('No valid session or access token found');
+    return false;
+  }
+
+  try {
+    // Configurar la sesión en Supabase
+    const { data, error } = await supabase.auth.setSession({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token || ''
+    });
+    
+    if (error) {
+      console.error('Error setting Supabase session:', error);
+      return false;
+    }
+    
+    console.log('Supabase session set successfully:', {
+      hasUser: !!data.user,
+      userId: data.user?.id
+    });
+    
+    return !error && !!data.user;
+  } catch (error) {
+    console.error('Unexpected error setting Supabase session:', error);
+    return false;
+  }
+}
+
+/**
+ * Sube un archivo a Supabase Storage
+ * @param file - El archivo a subir
+ * @param bucket - El nombre del bucket (por defecto 'avatars')
+ * @param folder - La carpeta dentro del bucket (opcional)
+ * @returns Resultado de la subida con la URL pública
+ */
+export async function uploadFile(
+  file: File,
+  bucket: string = 'avatars',
+  folder?: string
+): Promise<UploadResult> {
+  try {
+    // Validar el archivo
+    if (!file) {
+      return {
+        data: null,
+        error: 'No se proporcionó ningún archivo'
+      };
+    }
+
+    // Validar tipo de archivo (solo imágenes)
+    if (!file.type.startsWith('image/')) {
+      return {
+        data: null,
+        error: 'Solo se permiten archivos de imagen'
+      };
+    }
+
+    // Validar tamaño del archivo (máximo 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+    if (file.size > maxSize) {
+      return {
+        data: null,
+        error: 'El archivo es demasiado grande. Máximo 5MB permitido'
+      };
+    }
+
+    // Configurar sesión de Supabase
+    const sessionSet = await setSupabaseSession();
+    if (!sessionSet) {
+      return {
+        data: null,
+        error: 'Usuario no autenticado'
+      };
+    }
+
+    // Obtener el usuario autenticado
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return {
+        data: null,
+        error: 'Usuario no autenticado'
+      };
+    }
+
+    // Generar nombre único para el archivo
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    
+    // Construir la ruta del archivo
+    const filePath = folder ? `${folder}/${fileName}` : fileName;
+    
+    // Subir el archivo a Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error('Error uploading file:', uploadError);
+      return {
+        data: null,
+        error: `Error al subir el archivo: ${uploadError.message}`
+      };
+    }
+
+    // Obtener la URL pública del archivo
+    const { data: urlData } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(filePath);
+
+    return {
+      data: {
+        path: uploadData.path,
+        fullPath: uploadData.fullPath,
+        publicUrl: urlData.publicUrl
+      },
+      error: null
+    };
+
+  } catch (error) {
+    console.error('Unexpected error uploading file:', error);
+    return {
+      data: null,
+      error: 'Error inesperado al subir el archivo'
+    };
+  }
+}
+
+/**
+ * Elimina un archivo de Supabase Storage
+ * @param filePath - La ruta del archivo a eliminar
+ * @param bucket - El nombre del bucket
+ * @returns Resultado de la eliminación
+ */
+export async function deleteFile(
+  filePath: string,
+  bucket: string = 'avatars'
+): Promise<{ error: string | null }> {
+  try {
+    const { error } = await supabase.storage
+      .from(bucket)
+      .remove([filePath]);
+
+    if (error) {
+      console.error('Error deleting file:', error);
+      return { error: `Error al eliminar el archivo: ${error.message}` };
+    }
+
+    return { error: null };
+  } catch (error) {
+    console.error('Unexpected error deleting file:', error);
+    return { error: 'Error inesperado al eliminar el archivo' };
+  }
+}
+
+/**
+ * Actualiza el avatar del usuario en la base de datos
+ * @param avatarUrl - La nueva URL del avatar
+ * @returns Resultado de la actualización
+ */
+export async function updateUserAvatar(
+  avatarUrl: string
+): Promise<{ error: string | null }> {
+  try {
+    // Configurar sesión de Supabase
+    const sessionSet = await setSupabaseSession();
+    if (!sessionSet) {
+      return { error: 'Usuario no autenticado' };
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return { error: 'Usuario no autenticado' };
+    }
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ avatar_url: avatarUrl })
+      .eq('id', user.id);
+
+    if (updateError) {
+      console.error('Error updating avatar:', updateError);
+      return { error: `Error al actualizar el avatar: ${updateError.message}` };
+    }
+
+    return { error: null };
+  } catch (error) {
+    console.error('Unexpected error updating avatar:', error);
+    return { error: 'Error inesperado al actualizar el avatar' };
+  }
+}
+
+/**
+ * Función completa para cambiar el avatar del usuario
+ * @param file - El archivo de imagen del nuevo avatar
+ * @returns Resultado de la operación completa
+ */
+export async function changeUserAvatar(
+  file: File
+): Promise<{ data: { publicUrl: string } | null; error: string | null }> {
+  try {
+    // Configurar sesión de Supabase
+    const sessionSet = await setSupabaseSession();
+    if (!sessionSet) {
+      return {
+        data: null,
+        error: 'Usuario no autenticado'
+      };
+    }
+
+    // Obtener el usuario actual
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return {
+        data: null,
+        error: 'Usuario no autenticado'
+      };
+    }
+
+    // Subir el nuevo archivo
+    const uploadResult = await uploadFile(file, 'avatars', user.id);
+    
+    if (uploadResult.error || !uploadResult.data) {
+      return {
+        data: null,
+        error: uploadResult.error || 'Error al subir el archivo'
+      };
+    }
+
+    // Actualizar el avatar en la base de datos
+    const updateResult = await updateUserAvatar(uploadResult.data.publicUrl);
+    
+    if (updateResult.error) {
+      // Si falla la actualización, intentar eliminar el archivo subido
+      await deleteFile(uploadResult.data.path, 'avatars');
+      return {
+        data: null,
+        error: updateResult.error
+      };
+    }
+
+    return {
+      data: {
+        publicUrl: uploadResult.data.publicUrl
+      },
+      error: null
+    };
+
+  } catch (error) {
+    console.error('Unexpected error changing avatar:', error);
+    return {
+      data: null,
+      error: 'Error inesperado al cambiar el avatar'
+    };
+  }
+}

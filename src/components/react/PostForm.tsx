@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNotifications } from './NotificationProvider';
 import { supabase } from '../../utils/supabaseClient';
+import { uploadFile } from '../../utils/storage';
 
 interface PostFormData {
   content: string;
@@ -86,6 +87,18 @@ const PostForm: React.FC<PostFormProps> = ({
         return;
       }
       
+      // Upload image if provided
+      let imageUrl = null;
+      if (formData.image) {
+        try {
+          imageUrl = await uploadFile(formData.image, 'posts');
+        } catch (imageError) {
+          console.error('Error uploading image:', imageError);
+          addNotification('Error al subir la imagen', 'error');
+          return;
+        }
+      }
+
       // Create post data for Supabase
       const postData = {
         user_id: user.id,
@@ -93,6 +106,7 @@ const PostForm: React.FC<PostFormProps> = ({
         server_id: serverId || null,
         title: '', // Posts from form don't have titles
         content: formData.content,
+        image_url: imageUrl,
         post_type: 'general' as const,
         is_active: true
       };

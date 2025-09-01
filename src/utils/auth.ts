@@ -11,6 +11,8 @@ interface User {
 
 interface UserSession {
   user: User;
+  access_token?: string;
+  refresh_token?: string;
   loginTime: string;
   rememberMe: boolean;
 }
@@ -22,12 +24,28 @@ interface UserSession {
 export function getUserSession(): UserSession | null {
   const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
   
+  console.log('Getting user session:', {
+    hasLocalStorage: !!localStorage.getItem('userSession'),
+    hasSessionStorage: !!sessionStorage.getItem('userSession'),
+    rawSession: userSession ? 'exists' : 'null'
+  });
+  
   if (!userSession) {
+    console.log('No user session found in storage');
     return null;
   }
   
   try {
-    return JSON.parse(userSession) as UserSession;
+    const parsedSession = JSON.parse(userSession) as UserSession;
+    console.log('Parsed user session:', {
+      hasUser: !!parsedSession.user,
+      userId: parsedSession.user?.id,
+      hasAccessToken: !!parsedSession.access_token,
+      hasRefreshToken: !!parsedSession.refresh_token,
+      loginTime: parsedSession.loginTime,
+      rememberMe: parsedSession.rememberMe
+    });
+    return parsedSession;
   } catch (error) {
     console.error('Error parsing user session:', error);
     // Clear invalid session

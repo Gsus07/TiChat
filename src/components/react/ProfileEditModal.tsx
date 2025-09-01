@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getUserSession } from '../../utils/auth.ts';
 import { useNotifications } from './NotificationProvider';
+import AvatarUpload from './AvatarUpload';
 
 interface User {
   id: string;
@@ -34,6 +35,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
     name: '',
     email: ''
   });
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +66,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
     if (isOpen) {
       const session = getUserSession();
       if (session) {
+        setCurrentUser(session.user);
         setFormData({
           name: session.user.full_name || session.user.username || '',
           email: session.user.email
@@ -246,6 +249,53 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
+            </div>
+            
+            {/* Avatar Upload Section */}
+            <div className="flex justify-center mb-6">
+              <AvatarUpload 
+                currentAvatarUrl={currentUser?.avatar}
+                onAvatarChange={(newAvatarUrl) => {
+                  if (currentUser) {
+                    const updatedUser = { ...currentUser, avatar: newAvatarUrl };
+                    setCurrentUser(updatedUser);
+                    
+                    // Update session storage
+                    const session = getUserSession();
+                    if (session) {
+                      const updatedSession = {
+                        ...session,
+                        user: updatedUser
+                      };
+                      
+                      if (localStorage.getItem('userSession')) {
+                        localStorage.setItem('userSession', JSON.stringify(updatedSession));
+                      } else {
+                        sessionStorage.setItem('userSession', JSON.stringify(updatedSession));
+                      }
+                      
+                      // Update users array (legacy support)
+                      const users = JSON.parse(localStorage.getItem('users') || '[]');
+                      const userIndex = users.findIndex((u: any) => u.id === session.user.id);
+                      if (userIndex !== -1) {
+                        users[userIndex].avatar = newAvatarUrl;
+                        localStorage.setItem('users', JSON.stringify(users));
+                      }
+                      
+                      // Notify parent component
+                      if (onProfileUpdate) {
+                        onProfileUpdate(updatedUser);
+                      }
+                      
+                      // Dispatch event for profile page update
+                      const event = new CustomEvent('profileUpdated');
+                      window.dispatchEvent(event);
+                    }
+                  }
+                }}
+                size="large"
+                className="mb-2"
+              />
             </div>
             
             <form onSubmit={handleSubmit} className="space-y-4">

@@ -283,9 +283,14 @@ import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
       loadProfile();
     });
 
-    // Avatar change (placeholder)
+    // Avatar change - open profile edit modal
     document.getElementById('changeAvatarBtn')?.addEventListener('click', () => {
-      console.log('Función de cambio de avatar próximamente');
+      const session = checkAuth();
+      if (!session) return;
+      
+      // Trigger React modal open
+      const event = new CustomEvent('openProfileEditModal');
+      window.dispatchEvent(event);
     });
 
     // Notification function is now handled by the global NotificationProvider
