@@ -133,11 +133,11 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
-      <div className="bg-surface-800/95 backdrop-blur-md border border-surface-700/50 rounded-2xl p-4 sm:p-6 w-full max-w-sm sm:max-w-md lg:max-w-lg max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="glass-calico backdrop-blur-md border border-calico-stripe-light/20 rounded-2xl p-4 sm:p-6 w-full max-w-sm sm:max-w-md lg:max-w-lg max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Scroll indicator for mobile */}
         <div className="sm:hidden w-12 h-1 bg-surface-600 rounded-full mx-auto mb-4"></div>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-white">Crear Nuevo Juego</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-calico-white">Crear Nuevo Juego</h2>
           <button
             onClick={onCancel}
             className="text-surface-400 hover:text-white transition-colors p-1 hover:bg-surface-700/50 rounded-lg"
@@ -152,7 +152,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
         <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* Nombre del juego */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-surface-200 mb-1.5 sm:mb-2">
+            <label htmlFor="name" className="block text-sm font-medium text-calico-gray-300 mb-1.5 sm:mb-2">
               Nombre del juego *
             </label>
             <input
@@ -161,10 +161,10 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-surface-900/50 border rounded-xl text-white placeholder-surface-400 focus:outline-none focus:ring-2 transition-all text-sm sm:text-base ${
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-calico-stripe-dark/50 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all text-sm sm:text-base ${
                 errors.name 
                   ? 'border-red-500 focus:ring-red-500/50' 
-                  : 'border-surface-600 focus:border-primary-500 focus:ring-primary-500/50'
+                  : 'border-calico-stripe-light/30 focus:border-calico-orange-500 focus:ring-calico-orange-500/20'
               }`}
               placeholder="Ej: Minecraft, Valorant, League of Legends"
               disabled={isSubmitting}
@@ -176,7 +176,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
 
           {/* Descripción */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-surface-200 mb-1.5 sm:mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-calico-gray-300 mb-1.5 sm:mb-2">
               Descripción
             </label>
             <textarea
@@ -185,10 +185,10 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
               value={formData.description}
               onChange={handleInputChange}
               rows={3}
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-surface-900/50 border rounded-xl text-white placeholder-surface-400 focus:outline-none focus:ring-2 transition-all resize-none text-sm sm:text-base ${
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-calico-stripe-dark/50 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all resize-none text-sm sm:text-base ${
                 errors.description 
                   ? 'border-red-500 focus:ring-red-500/50' 
-                  : 'border-surface-600 focus:border-primary-500 focus:ring-primary-500/50'
+                  : 'border-calico-stripe-light/30 focus:border-calico-orange-500 focus:ring-calico-orange-500/20'
               }`}
               placeholder="Describe el juego y su comunidad..."
               disabled={isSubmitting}
@@ -200,7 +200,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
 
           {/* Género */}
           <div>
-            <label htmlFor="genre" className="block text-sm font-medium text-surface-200 mb-1.5 sm:mb-2">
+            <label htmlFor="genre" className="block text-sm font-medium text-calico-gray-300 mb-1.5 sm:mb-2">
               Género
             </label>
             <select
@@ -208,7 +208,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
               name="genre"
               value={formData.genre}
               onChange={handleInputChange}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-800 border border-surface-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:border-primary-500 focus:ring-primary-500/50 transition-all text-sm sm:text-base"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-calico-stripe-dark border border-calico-stripe-light/30 rounded-xl text-calico-white focus:outline-none focus:ring-2 focus:border-calico-orange-500 focus:ring-calico-orange-500/20 transition-all text-sm sm:text-base"
               style={{ backgroundColor: '#1f2937', color: '#ffffff' }}
               disabled={isSubmitting}
             >
@@ -231,7 +231,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
 
           {/* Plataforma */}
           <div>
-            <label htmlFor="platform" className="block text-sm font-medium text-surface-200 mb-1.5 sm:mb-2">
+            <label htmlFor="platform" className="block text-sm font-medium text-calico-gray-300 mb-1.5 sm:mb-2">
               Plataforma
             </label>
             <select
@@ -239,7 +239,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
               name="platform"
               value={formData.platform}
               onChange={handleInputChange}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-800 border border-surface-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:border-primary-500 focus:ring-primary-500/50 transition-all text-sm sm:text-base"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-calico-stripe-dark border border-calico-stripe-light/30 rounded-xl text-calico-white focus:outline-none focus:ring-2 focus:border-calico-orange-500 focus:ring-calico-orange-500/20 transition-all text-sm sm:text-base"
               style={{ backgroundColor: '#1f2937', color: '#ffffff' }}
               disabled={isSubmitting}
             >
@@ -255,7 +255,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
 
           {/* URL de imagen */}
           <div>
-            <label htmlFor="cover_image_url" className="block text-sm font-medium text-surface-200 mb-1.5 sm:mb-2">
+            <label htmlFor="cover_image_url" className="block text-sm font-medium text-calico-gray-300 mb-1.5 sm:mb-2">
               URL de imagen de portada
             </label>
             <input
@@ -264,10 +264,10 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
               name="cover_image_url"
               value={formData.cover_image_url}
               onChange={handleInputChange}
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-surface-900/50 border rounded-xl text-white placeholder-surface-400 focus:outline-none focus:ring-2 transition-all text-sm sm:text-base ${
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-calico-stripe-dark/50 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all text-sm sm:text-base ${
                 errors.cover_image_url 
                   ? 'border-red-500 focus:ring-red-500/50' 
-                  : 'border-surface-600 focus:border-primary-500 focus:ring-primary-500/50'
+                  : 'border-calico-stripe-light/30 focus:border-calico-orange-500 focus:ring-calico-orange-500/20'
               }`}
               placeholder="https://ejemplo.com/imagen.jpg"
               disabled={isSubmitting}
@@ -278,17 +278,17 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
           </div>
 
           {/* Tiene servidores */}
-          <div className="flex items-center space-x-3 p-3 sm:p-4 bg-surface-900/30 rounded-xl border border-surface-700/50">
+          <div className="flex items-center space-x-3 p-3 sm:p-4 bg-calico-stripe-dark/30 rounded-xl border border-calico-stripe-light/20">
             <input
               type="checkbox"
               id="has_servers"
               name="has_servers"
               checked={formData.has_servers}
               onChange={handleInputChange}
-              className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500 bg-surface-900 border-surface-600 rounded focus:ring-primary-500 focus:ring-2"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-calico-orange-500 bg-calico-stripe-dark border-calico-stripe-light/30 rounded focus:ring-calico-orange-500 focus:ring-2"
               disabled={isSubmitting}
             />
-            <label htmlFor="has_servers" className="text-sm sm:text-base text-white cursor-pointer">
+            <label htmlFor="has_servers" className="text-sm sm:text-base text-calico-white cursor-pointer">
               Este juego tiene servidores
             </label>
           </div>
@@ -305,14 +305,14 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
             <button
               type="button"
               onClick={onCancel}
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 bg-surface-700 hover:bg-surface-600 text-white rounded-xl transition-colors text-sm sm:text-base font-medium"
+              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 bg-calico-stripe-dark hover:bg-calico-stripe-light/20 text-calico-white rounded-xl transition-colors text-sm sm:text-base font-medium"
               disabled={isSubmitting}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base font-medium shadow-lg hover:shadow-xl"
+              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 hover:from-calico-orange-700 hover:to-calico-orange-600 text-calico-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base font-medium shadow-lg hover:shadow-xl hover-glow-orange"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

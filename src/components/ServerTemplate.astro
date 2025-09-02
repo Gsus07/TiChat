@@ -42,7 +42,7 @@ function getServerTypeColor(type: string) {
     minigames: 'text-yellow-400',
     custom: 'text-pink-400'
   };
-  return colors[type as keyof typeof colors] || 'text-gray-400';
+  return colors[type as keyof typeof colors] || 'text-calico-gray-400';
 }
 
 // Función para obtener el icono del tipo de servidor
@@ -120,10 +120,10 @@ function getServerTypeIcon(type: string) {
             
             {server.is_featured && (
               <div class="flex items-center space-x-2 px-4 py-2 bg-accent rounded-full">
-                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 text-calico-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                 </svg>
-                <span class="text-white font-semibold text-sm">Destacado</span>
+                <span class="text-calico-white font-semibold text-sm">Destacado</span>
               </div>
             )}
           </div>
@@ -136,7 +136,7 @@ function getServerTypeIcon(type: string) {
               </svg>
             </div>
             
-            <div class="text-white flex-1">
+            <div class="text-calico-white flex-1">
               <div class="flex items-center space-x-3 mb-2">
                 <h1 class="text-3xl md:text-4xl font-bold font-game">{server.name}</h1>
                 <span class={`px-3 py-1 rounded-full text-sm font-medium capitalize ${getServerTypeColor(server.server_type)} bg-white/20`}>
@@ -152,29 +152,29 @@ function getServerTypeIcon(type: string) {
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {server.server_ip && (
                   <div class="glass rounded-lg p-3">
-                    <div class="text-xs text-gray-300 mb-1">IP del Servidor</div>
+                    <div class="text-xs text-calico-gray-300 mb-1">IP del Servidor</div>
                     <div class="font-mono text-accent font-semibold">{server.server_ip}</div>
                     {server.server_port && (
-                      <div class="text-xs text-gray-400">:{server.server_port}</div>
+                      <div class="text-xs text-calico-gray-400">:{server.server_port}</div>
                     )}
                   </div>
                 )}
                 
                 <div class="glass rounded-lg p-3">
-                  <div class="text-xs text-gray-300 mb-1">Jugadores</div>
+                  <div class="text-xs text-calico-gray-300 mb-1">Jugadores</div>
                   <div class="text-accent font-semibold">0 / {server.max_players}</div>
-                  <div class="text-xs text-gray-400">En línea</div>
+                  <div class="text-xs text-calico-gray-400">En línea</div>
                 </div>
                 
                 {server.server_version && (
                   <div class="glass rounded-lg p-3">
-                    <div class="text-xs text-gray-300 mb-1">Versión</div>
-                    <div class="text-white font-semibold">{server.server_version}</div>
+                    <div class="text-xs text-calico-gray-300 mb-1">Versión</div>
+                    <div class="text-calico-white font-semibold">{server.server_version}</div>
                   </div>
                 )}
                 
                 <div class="glass rounded-lg p-3">
-                  <div class="text-xs text-gray-300 mb-1">Estado</div>
+                  <div class="text-xs text-calico-gray-300 mb-1">Estado</div>
                   <div class="flex items-center space-x-2">
                     <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                     <span class="text-green-400 font-semibold text-sm">En línea</span>
@@ -186,17 +186,17 @@ function getServerTypeIcon(type: string) {
           
           <!-- Estadísticas del servidor -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-            <div class="glass rounded-xl p-6 text-center text-white">
+            <div class="glass-calico rounded-xl p-6 text-center text-calico-white">
               <div class="text-3xl font-bold text-accent mb-2">{serverPosts.length}</div>
               <div class="text-sm opacity-80">Posts Totales</div>
             </div>
-            <div class="glass rounded-xl p-6 text-center text-white">
+            <div class="glass rounded-xl p-6 text-center text-calico-white">
               <div class="text-3xl font-bold text-accent mb-2">
                 {new Set(serverPosts.map(post => post.user_id)).size}
               </div>
               <div class="text-sm opacity-80">Miembros Activos</div>
             </div>
-            <div class="glass rounded-xl p-6 text-center text-white">
+            <div class="glass rounded-xl p-6 text-center text-calico-white">
               <div class="text-3xl font-bold text-accent mb-2">
                 {serverPosts.filter(post => {
                   const postDate = new Date(post.created_at);
@@ -207,7 +207,7 @@ function getServerTypeIcon(type: string) {
               </div>
               <div class="text-sm opacity-80">Posts Esta Semana</div>
             </div>
-            <div class="glass rounded-xl p-6 text-center text-white">
+            <div class="glass rounded-xl p-6 text-center text-calico-white">
               <div class="text-3xl font-bold text-accent mb-2">
                 {Math.floor(Math.random() * 100)}%
               </div>
@@ -224,7 +224,7 @@ function getServerTypeIcon(type: string) {
           {currentUser && (
             <div class="mb-12">
               <div class="glass-dark rounded-2xl p-8">
-                <h2 class="text-2xl font-bold text-white mb-6 font-game">
+                <h2 class="text-2xl font-bold text-calico-white mb-6 font-game">
                   Comparte tu experiencia en {server.name}
                 </h2>
                 <PostForm 
@@ -241,7 +241,7 @@ function getServerTypeIcon(type: string) {
           <!-- Lista de posts -->
           <div class="space-y-8">
             <div class="flex items-center justify-between">
-              <h2 class="text-3xl font-bold text-white font-game">
+              <h2 class="text-3xl font-bold text-calico-white font-game">
                 Actividad del servidor
               </h2>
               <div class="text-accent font-medium">
@@ -264,14 +264,14 @@ function getServerTypeIcon(type: string) {
               <div class="text-center py-16">
                 <div class="glass rounded-2xl p-12 max-w-md mx-auto">
                   <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-accent flex items-center justify-center">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-10 h-10 text-calico-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                     </svg>
                   </div>
-                  <h3 class="text-xl font-bold text-white mb-4 font-game">
+                  <h3 class="text-xl font-bold text-calico-white mb-4 font-game">
                     ¡Inicia la conversación!
                   </h3>
-                  <p class="text-gray-300 mb-6">
+                  <p class="text-calico-gray-300 mb-6">
                     No hay publicaciones en {server.name} aún. 
                     {currentUser ? 'Sé el primero en compartir algo.' : 'Inicia sesión para participar en la comunidad.'}
                   </p>

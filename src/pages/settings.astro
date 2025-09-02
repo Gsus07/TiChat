@@ -1,0 +1,113 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCurrentUser } from '../utils/auth';
+
+// Verificar autenticación
+const currentUser = await getCurrentUser(Astro.request);
+
+if (!currentUser) {
+  return Astro.redirect('/login');
+}
+---
+
+<Layout title="Configuraciones">
+  <main class="min-h-screen bg-gradient-to-br from-calico-white via-calico-cream to-calico-orange-50 py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-calico-gray-800 mb-4">Configuraciones</h1>
+        <p class="text-calico-gray-600">Personaliza tu experiencia en la plataforma</p>
+      </div>
+
+      <!-- Settings Sections -->
+      <div class="grid gap-8">
+        <!-- Perfil -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-calico-orange-200">
+          <h2 class="text-2xl font-semibold text-calico-gray-800 mb-6 flex items-center">
+            <svg class="w-6 h-6 mr-3 text-calico-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            Configuración de Perfil
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-calico-gray-700 mb-2">Nombre de usuario</label>
+              <input type="text" class="w-full px-4 py-3 rounded-xl border border-calico-gray-300 focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent" placeholder="Tu nombre de usuario">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-calico-gray-700 mb-2">Biografía</label>
+              <textarea class="w-full px-4 py-3 rounded-xl border border-calico-gray-300 focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent" rows="3" placeholder="Cuéntanos sobre ti..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notificaciones -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-calico-orange-200">
+          <h2 class="text-2xl font-semibold text-calico-gray-800 mb-6 flex items-center">
+            <svg class="w-6 h-6 mr-3 text-calico-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 19H6a2 2 0 01-2-2V7a2 2 0 012-2h5m5 0v6m0 0l3-3m-3 3l-3-3"></path>
+            </svg>
+            Notificaciones
+          </h2>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-medium text-calico-gray-800">Notificaciones por email</h3>
+                <p class="text-sm text-calico-gray-600">Recibe actualizaciones importantes por correo</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-calico-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-calico-orange-500"></div>
+              </label>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-medium text-calico-gray-800">Notificaciones push</h3>
+                <p class="text-sm text-calico-gray-600">Recibe notificaciones en tiempo real</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-calico-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-calico-orange-500"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Privacidad -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-calico-orange-200">
+          <h2 class="text-2xl font-semibold text-calico-gray-800 mb-6 flex items-center">
+            <svg class="w-6 h-6 mr-3 text-calico-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+            Privacidad y Seguridad
+          </h2>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-medium text-calico-gray-800">Perfil público</h3>
+                <p class="text-sm text-calico-gray-600">Permite que otros usuarios vean tu perfil</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-calico-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-calico-orange-500"></div>
+              </label>
+            </div>
+            <button class="w-full bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl transition-colors duration-300">
+              Cambiar Contraseña
+            </button>
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex gap-4 justify-end">
+          <button class="px-6 py-3 border border-calico-gray-300 text-calico-gray-700 rounded-xl hover:bg-calico-gray-50 transition-colors duration-300">
+            Cancelar
+          </button>
+          <button class="px-6 py-3 bg-calico-orange-500 hover:bg-calico-orange-600 text-white rounded-xl transition-colors duration-300">
+            Guardar Cambios
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>

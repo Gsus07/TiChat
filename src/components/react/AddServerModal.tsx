@@ -282,10 +282,10 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
         data-react-modal="add-server"
         style={{ overflow: isModalOpen ? 'hidden' : 'auto' }}
       >
-        <div className="bg-slate-800 rounded-xl w-full max-w-md border border-white/10 max-h-[90vh] flex flex-col">
+        <div className="bg-calico-gray-800 rounded-xl w-full max-w-md border border-white/10 max-h-[90vh] flex flex-col">
           <div className="p-6 overflow-y-auto flex-1">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-white">
+            <h3 className="text-xl font-bold text-calico-white">
               {editingServer ? 'Editar Servidor' : 'Añadir Nuevo Servidor'}
             </h3>
             <button 
@@ -293,7 +293,7 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
                    setIsModalOpen(false);
                    if (onClose) onClose();
                  }}
-                 className="text-gray-400 hover:text-white transition-colors"
+                 className="text-calico-gray-400 hover:text-calico-white transition-colors"
                >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -303,87 +303,87 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Nombre del Servidor</label>
+              <label className="block text-sm font-medium text-calico-gray-300 mb-2">Nombre del Servidor</label>
               <input 
                 type="text" 
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className={`w-full bg-white/5 border rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                  errors.name ? 'border-red-500' : 'border-white/20'
+                className={`w-full bg-white/5 border rounded-lg p-3 text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 ${
+                  errors.name ? 'border-calico-red-500' : 'border-white/20'
                 }`}
                 placeholder="Ej: Mi Servidor Personalizado"
               />
-              {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
+              {errors.name && <p className="text-calico-red-400 text-sm mt-1">{errors.name}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Descripción</label>
+              <label className="block text-sm font-medium text-calico-gray-300 mb-2">Descripción</label>
               <input 
                 type="text" 
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                className={`w-full bg-white/5 border rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                  errors.description ? 'border-red-500' : 'border-white/20'
+                className={`w-full bg-white/5 border rounded-lg p-3 text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 ${
+                  errors.description ? 'border-calico-red-500' : 'border-white/20'
                 }`}
                 placeholder="Ej: Servidor de aventuras épicas"
               />
-              {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description}</p>}
+              {errors.description && <p className="text-calico-red-400 text-sm mt-1">{errors.description}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Dirección IP</label>
+              <label className="block text-sm font-medium text-calico-gray-300 mb-2">Dirección IP</label>
               <input 
                 type="text" 
                 name="ip"
                 value={formData.ip}
                 onChange={handleInputChange}
-                className={`w-full bg-white/5 border rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                  errors.ip ? 'border-red-500' : 'border-white/20'
+                className={`w-full bg-white/5 border rounded-lg p-3 text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 ${
+                  errors.ip ? 'border-calico-red-500' : 'border-white/20'
                 }`}
                 placeholder="Ej: miservidor.com"
               />
-              {errors.ip && <p className="text-red-400 text-sm mt-1">{errors.ip}</p>}
+              {errors.ip && <p className="text-calico-red-400 text-sm mt-1">{errors.ip}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Puerto</label>
+              <label className="block text-sm font-medium text-calico-gray-300 mb-2">Puerto</label>
               <input 
                 type="text" 
                 name="port"
                 value={formData.port}
                 onChange={handleInputChange}
-                className={`w-full bg-white/5 border rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                  errors.port ? 'border-red-500' : 'border-white/20'
+                className={`w-full bg-white/5 border rounded-lg p-3 text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 ${
+                  errors.port ? 'border-calico-red-500' : 'border-white/20'
                 }`}
                 placeholder="Ej: 25565"
               />
-              {errors.port && <p className="text-red-400 text-sm mt-1">{errors.port}</p>}
+              {errors.port && <p className="text-calico-red-400 text-sm mt-1">{errors.port}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Versión</label>
+              <label className="block text-sm font-medium text-calico-gray-300 mb-2">Versión</label>
               <input 
                 type="text" 
                 name="version"
                 value={formData.version}
                 onChange={handleInputChange}
-                className={`w-full bg-white/5 border rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                  errors.version ? 'border-red-500' : 'border-white/20'
+                className={`w-full bg-white/5 border rounded-lg p-3 text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 ${
+                  errors.version ? 'border-calico-red-500' : 'border-white/20'
                 }`}
                 placeholder="Ej: 1.20.1"
               />
-              {errors.version && <p className="text-red-400 text-sm mt-1">{errors.version}</p>}
+              {errors.version && <p className="text-calico-red-400 text-sm mt-1">{errors.version}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Tipo de Servidor</label>
+              <label className="block text-sm font-medium text-calico-gray-300 mb-2">Tipo de Servidor</label>
               <select 
                 name="serverType"
                 value={formData.serverType}
                 onChange={(e) => setFormData(prev => ({ ...prev, serverType: e.target.value as any }))}
-                className="w-full bg-slate-700 border border-white/20 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500 appearance-none cursor-pointer"
+                className="w-full bg-calico-gray-700 border border-white/20 rounded-lg p-3 text-calico-white focus:outline-none focus:ring-2 focus:ring-calico-orange-500 appearance-none cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                   backgroundPosition: 'right 0.5rem center',
@@ -392,32 +392,32 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
                   paddingRight: '2.5rem'
                 }}
               >
-                <option value="survival" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Supervivencia</option>
-                <option value="creative" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Creativo</option>
-                <option value="pvp" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>PvP</option>
-                <option value="roleplay" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Roleplay</option>
-                <option value="minigames" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Minijuegos</option>
-                <option value="custom" style={{ backgroundColor: '#334155', color: 'white', padding: '8px' }}>Personalizado</option>
+                <option value="survival" style={{ backgroundColor: '#334155', color: '#F5F5DC', padding: '8px' }}>Supervivencia</option>
+                <option value="creative" style={{ backgroundColor: '#334155', color: '#F5F5DC', padding: '8px' }}>Creativo</option>
+                <option value="pvp" style={{ backgroundColor: '#334155', color: '#F5F5DC', padding: '8px' }}>PvP</option>
+                <option value="roleplay" style={{ backgroundColor: '#334155', color: '#F5F5DC', padding: '8px' }}>Roleplay</option>
+                <option value="minigames" style={{ backgroundColor: '#334155', color: '#F5F5DC', padding: '8px' }}>Minijuegos</option>
+                <option value="custom" style={{ backgroundColor: '#334155', color: '#F5F5DC', padding: '8px' }}>Personalizado</option>
               </select>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Máximo de Jugadores</label>
+              <label className="block text-sm font-medium text-calico-gray-300 mb-2">Máximo de Jugadores</label>
               <input 
                 type="text" 
                 name="maxPlayers"
                 value={formData.maxPlayers}
                 onChange={handleInputChange}
-                className={`w-full bg-white/5 border rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                  errors.maxPlayers ? 'border-red-500' : 'border-white/20'
+                className={`w-full bg-white/5 border rounded-lg p-3 text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 ${
+                  errors.maxPlayers ? 'border-calico-red-500' : 'border-white/20'
                 }`}
                 placeholder="Ej: 50"
               />
-              {errors.maxPlayers && <p className="text-red-400 text-sm mt-1">{errors.maxPlayers}</p>}
+              {errors.maxPlayers && <p className="text-calico-red-400 text-sm mt-1">{errors.maxPlayers}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Imagen (URL)</label>
+              <label className="block text-sm font-medium text-calico-gray-300 mb-2">Imagen (URL)</label>
               <div className="flex gap-2">
                 <input 
                   type="text" 
@@ -425,12 +425,12 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
                   value={formData.image}
                   onChange={handleInputChange}
                   placeholder="Ej: /mi-servidor.jpg" 
-                  className="flex-1 bg-white/5 border border-white/20 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="flex-1 bg-white/5 border border-white/20 rounded-lg p-3 text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500"
                 />
                 <button 
                   type="button" 
                   onClick={() => setShowImageGallery(true)}
-                  className="px-4 py-3 bg-purple-500/20 border border-purple-500/30 rounded-lg text-purple-400 hover:text-purple-300 hover:bg-purple-500/30 transition-colors"
+                  className="px-4 py-3 bg-calico-orange-500/20 border border-calico-orange-500/30 rounded-lg text-calico-orange-400 hover:text-calico-orange-300 hover:bg-calico-orange-500/30 transition-colors"
                   title="Seleccionar de galería"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -447,14 +447,14 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
                    setIsModalOpen(false);
                    if (onClose) onClose();
                  }}
-                 className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors"
+                 className="flex-1 bg-calico-gray-600 hover:bg-calico-gray-700 text-calico-white py-2 px-4 rounded-lg transition-colors"
                >
                 Cancelar
               </button>
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg transition-colors"
+                className="flex-1 bg-calico-orange-600 hover:bg-calico-orange-700 disabled:bg-calico-orange-800 disabled:cursor-not-allowed text-calico-white py-2 px-4 rounded-lg transition-colors"
               >
                 {isSubmitting ? 'Guardando...' : (editingServer ? 'Actualizar Servidor' : 'Crear Servidor')}
               </button>
@@ -467,12 +467,12 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
       {/* Image Gallery Modal */}
       {showImageGallery && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-60 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-2xl border border-white/10">
+          <div className="bg-calico-gray-800 rounded-xl p-6 w-full max-w-2xl border border-white/10">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">Seleccionar Imagen</h3>
+              <h3 className="text-xl font-bold text-calico-white">Seleccionar Imagen</h3>
               <button 
                 onClick={() => setShowImageGallery(false)}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-calico-gray-400 hover:text-calico-white transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -487,8 +487,8 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
                   onClick={() => handleImageSelect(imageUrl)}
                   className={`relative group overflow-hidden rounded-lg border-2 transition-all ${
                     formData.image === imageUrl 
-                      ? 'border-green-500 ring-2 ring-green-500/50' 
-                      : 'border-white/20 hover:border-green-400'
+                      ? 'border-calico-orange-500 ring-2 ring-calico-orange-500/50' 
+                      : 'border-white/20 hover:border-calico-orange-400'
                   }`}
                 >
                   <img 
@@ -497,8 +497,8 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
                     className="w-full h-24 object-cover group-hover:scale-105 transition-transform"
                   />
                   {formData.image === imageUrl && (
-                    <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                      <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="absolute inset-0 bg-calico-orange-500/20 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-calico-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>

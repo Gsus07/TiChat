@@ -146,26 +146,26 @@ const RegisterForm: React.FC = () => {
   const getFieldBorderClass = (fieldName: keyof FormErrors) => {
     const hasError = getFieldError(fieldName);
     if (hasError) return 'border-red-500 focus:border-red-500 focus:ring-red-500/20';
-    return 'border-white/20 focus:border-purple-500 focus:ring-purple-500/20';
+    return 'border-white/20 focus:border-calico-orange-500 focus:ring-calico-orange-500/20';
   };
 
   return (
     <div className="w-full max-w-md">
       <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 p-8 text-center border-b border-white/10">
-          <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+        <div className="bg-gradient-to-r from-calico-orange-600/20 to-calico-gray-600/20 p-8 text-center border-b border-white/10">
+          <div className="w-20 h-20 bg-gradient-to-r from-calico-orange-500 to-calico-gray-500 rounded-full mx-auto mb-4 flex items-center justify-center">
             <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Únete a nosotros</h1>
-          <p className="text-gray-300">Crea tu cuenta en Gaming Hub</p>
+          <h1 className="text-3xl font-bold text-calico-white mb-2">Únete a nosotros</h1>
+          <p className="text-calico-gray-300">Crea tu cuenta en Gaming Hub</p>
         </div>
 
         <div className="p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300">Nombre Completo</label>
+              <label htmlFor="name" className="block text-sm font-medium text-calico-gray-300">Nombre Completo</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +179,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Tu nombre completo"
-                  className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('name')}`}
+                  className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('name')}`}
                   required
                 />
               </div>
@@ -189,7 +189,7 @@ const RegisterForm: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="username" className="block text-sm font-medium text-gray-300">Nombre de Usuario</label>
+              <label htmlFor="username" className="block text-sm font-medium text-calico-gray-300">Nombre de Usuario</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,7 +203,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.username}
                   onChange={handleInputChange}
                   placeholder="tu_usuario"
-                  className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('username')}`}
+                  className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('username')}`}
                   required
                   minLength={3}
                   maxLength={50}
@@ -215,7 +215,7 @@ const RegisterForm: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">Correo Electrónico</label>
+              <label htmlFor="email" className="block text-sm font-medium text-calico-gray-300">Correo Electrónico</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,7 +229,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="tu@email.com"
-                  className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('email')}`}
+                  className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('email')}`}
                   required
                 />
               </div>
@@ -239,7 +239,7 @@ const RegisterForm: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300">Contraseña</label>
+              <label htmlFor="password" className="block text-sm font-medium text-calico-gray-300">Contraseña</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,7 +253,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="••••••••"
-                  className={`w-full pl-10 pr-12 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('password')}`}
+                  className={`w-full pl-10 pr-12 py-3 bg-white/5 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('password')}`}
                   required
                 />
                 <button
@@ -279,7 +279,7 @@ const RegisterForm: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">Confirmar Contraseña</label>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-calico-gray-300">Confirmar Contraseña</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -293,7 +293,7 @@ const RegisterForm: React.FC = () => {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   placeholder="••••••••"
-                  className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('confirmPassword')}`}
+                  className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('confirmPassword')}`}
                   required
                 />
               </div>
@@ -309,21 +309,21 @@ const RegisterForm: React.FC = () => {
                 name="terms"
                 checked={formData.terms}
                 onChange={handleInputChange}
-                className="w-4 h-4 mt-1 text-purple-600 bg-white/10 border-white/20 rounded focus:ring-purple-500 focus:ring-2"
+                className="w-4 h-4 mt-1 text-calico-orange-600 bg-white/10 border-white/20 rounded focus:ring-calico-orange-500 focus:ring-2"
                 required
               />
-              <label htmlFor="terms" className="ml-3 text-sm text-gray-300">
+              <label htmlFor="terms" className="ml-3 text-sm text-calico-gray-300">
                 Acepto los 
-                <a href="#" className="text-purple-400 hover:text-purple-300 transition-colors">términos y condiciones</a>
+                <a href="#" className="text-calico-orange-400 hover:text-calico-orange-300 transition-colors">términos y condiciones</a>
                 {' '}y la{' '}
-                <a href="#" className="text-purple-400 hover:text-purple-300 transition-colors">política de privacidad</a>
+                <a href="#" className="text-calico-orange-400 hover:text-calico-orange-300 transition-colors">política de privacidad</a>
               </label>
             </div>
 
             <button 
               type="submit" 
               disabled={isLoading || Object.keys(errors).length > 0}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-transparent"
+              className="w-full bg-gradient-to-r from-calico-orange-600 to-calico-gray-600 hover:from-calico-orange-700 hover:to-calico-gray-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-calico-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-calico-orange-500/25 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:ring-offset-2 focus:ring-offset-transparent"
             >
               <span>{isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}</span>
               {isLoading && (
@@ -361,16 +361,16 @@ const RegisterForm: React.FC = () => {
           </div>
 
           <div className="mt-8 text-center">
-            <p className="text-gray-400">
+            <p className="text-calico-gray-400">
               ¿Ya tienes una cuenta?{' '}
-              <a href="/login" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">Inicia sesión aquí</a>
+              <a href="/login" className="text-calico-orange-400 hover:text-calico-orange-300 font-medium transition-colors">Inicia sesión aquí</a>
             </p>
           </div>
         </div>
       </div>
 
       <div className="mt-6 text-center">
-        <a href="/" className="inline-flex items-center text-gray-400 hover:text-white transition-colors">
+        <a href="/" className="inline-flex items-center text-calico-gray-400 hover:text-calico-white transition-colors">
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>

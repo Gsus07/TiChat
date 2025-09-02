@@ -1,5 +1,114 @@
 @import "tailwindcss";
 
+/* Variables CSS inspiradas en gata calico - Paleta clara y suave */
+:root {
+  /* Colores principales calico - Base clara */
+  --calico-white: #FFFFFF;
+  --calico-white-soft: #FEFEFE;
+  --calico-white-warm: #FDF9F6;
+  --calico-cream: #FAF7F4;
+  --calico-ivory: #F8F6F3;
+  
+  /* Grises suaves y pasteles */
+  --calico-gray-50: #FAFAFA;
+  --calico-gray-100: #F5F5F5;
+  --calico-gray-200: #EEEEEE;
+  --calico-gray-300: #E0E0E0;
+  --calico-gray-400: #BDBDBD;
+  --calico-gray-500: #9E9E9E;
+  --calico-gray-600: #757575;
+  --calico-gray-700: #616161;
+  --calico-gray-800: #424242;
+  --calico-gray-900: #212121;
+  
+  /* Naranjas suaves y pasteles */
+  --calico-orange-50: #FFF8F1;
+  --calico-orange-100: #FFECDB;
+  --calico-orange-200: #FFE0C4;
+  --calico-orange-300: #FFD4A3;
+  --calico-orange-400: #FFC182;
+  --calico-orange-500: #FFB366;
+  --calico-orange-600: #FF9F43;
+  --calico-orange-700: #E8883A;
+  --calico-orange-800: #D17332;
+  --calico-orange-900: #B85E2A;
+  
+  /* Colores de acento suaves */
+  --calico-stripe-light: #F0F0F0;
+  --calico-stripe-medium: #D0D0D0;
+  --calico-stripe-dark: #A0A0A0;
+  
+  /* Colores de texto optimizados */
+  --text-primary: #2D3748;
+  --text-secondary: #4A5568;
+  --text-muted: #718096;
+  --text-light: #A0AEC0;
+}
+
+/* Patrones y texturas de gato calico */
+.calico-pattern {
+  position: relative;
+}
+
+.calico-pattern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 30%, var(--calico-orange-100) 2px, transparent 2px),
+    radial-gradient(circle at 80% 70%, var(--calico-gray-200) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 40% 80%, var(--calico-orange-200) 1px, transparent 1px),
+    radial-gradient(circle at 90% 20%, var(--calico-gray-100) 1px, transparent 1px);
+  background-size: 120px 120px, 80px 80px, 60px 60px, 40px 40px;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.calico-texture {
+  background-image: 
+    linear-gradient(45deg, transparent 40%, var(--calico-orange-50) 40%, var(--calico-orange-50) 60%, transparent 60%),
+    linear-gradient(-45deg, transparent 40%, var(--calico-gray-50) 40%, var(--calico-gray-50) 60%, transparent 60%);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+.gaming-pattern {
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FFB366' fill-opacity='0.05'%3E%3Cpath d='M20 2C16.13 2 13 5.13 13 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239E9E9E' fill-opacity='0.03'%3E%3Cpath d='M21,6H18V4A2,2 0 0,0 16,2H8A2,2 0 0,0 6,4V6H3A1,1 0 0,0 2,7V8A3,3 0 0,0 5,11H6.83L7.83,15.72C7.96,16.32 8.5,16.76 9.11,16.76H14.89C15.5,16.76 16.04,16.32 16.17,15.72L17.17,11H19A3,3 0 0,0 22,8V7A1,1 0 0,0 21,6M8,4H16V6H8V4M6.2,8H17.8L17,11H7L6.2,8Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 40px 40px, 60px 60px;
+  background-position: 0 0, 30px 30px;
+}
+
+/* Fondo base con gradiente calico suave */
+body {
+  background: linear-gradient(135deg, var(--calico-white) 0%, var(--calico-cream) 30%, var(--calico-orange-50) 70%, var(--calico-orange-100) 100%);
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 10% 20%, var(--calico-orange-100) 1px, transparent 1px),
+    radial-gradient(circle at 90% 80%, var(--calico-gray-200) 0.8px, transparent 0.8px),
+    radial-gradient(circle at 30% 60%, var(--calico-orange-200) 0.6px, transparent 0.6px);
+  background-size: 200px 200px, 150px 150px, 100px 100px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: -1;
+  min-height: 100vh;
+  color: var(--text-primary);
+}
+
 /* Custom animation delays */
 .animation-delay-200 {
   animation-delay: 200ms;
@@ -31,15 +140,115 @@
   animation: float 3s ease-in-out infinite;
 }
 
-/* Glassmorphism effects */
+/* Glassmorphism effects con tema calico claro */
 .glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(224, 224, 224, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Hover glow effect */
+.glass-calico {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(250, 247, 244, 0.85) 60%, 
+    rgba(255, 236, 219, 0.8) 85%, 
+    rgba(255, 179, 102, 0.7) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(224, 224, 224, 0.4);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  z-index: 1;
+}
+
+/* Efectos de brillo suaves con colores calico */
 .hover-glow:hover {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(255, 179, 102, 0.4), 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
+}
+
+.hover-glow-orange:hover {
+  box-shadow: 0 0 15px rgba(255, 159, 67, 0.5), 0 4px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow-gray:hover {
+  box-shadow: 0 0 12px rgba(189, 189, 189, 0.4), 0 4px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Patrones atigrados inspirados en pelaje calico */
+.calico-stripes {
+  background-image: linear-gradient(
+    45deg,
+    transparent 25%,
+    rgba(156, 163, 175, 0.1) 25%,
+    rgba(156, 163, 175, 0.1) 50%,
+    transparent 50%,
+    transparent 75%,
+    rgba(156, 163, 175, 0.1) 75%
+  );
+  background-size: 20px 20px;
+}
+
+.calico-pattern {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(249, 115, 22, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(156, 163, 175, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(254, 254, 254, 0.05) 0%, transparent 50%);
+}
+
+/* Patrones de pelaje más complejos */
+.calico-fur-pattern {
+  background-image: 
+    radial-gradient(ellipse 30px 20px at 25% 30%, rgba(249, 115, 22, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 40px 25px at 75% 60%, rgba(156, 163, 175, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 25px 15px at 50% 80%, rgba(249, 115, 22, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 35px 30px at 15% 70%, rgba(156, 163, 175, 0.1) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(254, 254, 254, 0.02) 0%, transparent 100%);
+  background-size: 120px 100px, 150px 120px, 80px 60px, 100px 80px, 100% 100%;
+  background-position: 0 0, 50px 30px, 100px 70px, 20px 50px, 0 0;
+}
+
+.calico-texture {
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(156, 163, 175, 0.03) 2px,
+      rgba(156, 163, 175, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 3px,
+      rgba(249, 115, 22, 0.02) 3px,
+      rgba(249, 115, 22, 0.02) 6px
+    );
+}
+
+/* Manchas orgánicas tipo calico */
+.calico-spots {
+  background-image:
+    radial-gradient(ellipse 60px 40px at 20% 25%, rgba(249, 115, 22, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 45px 35px at 80% 70%, rgba(156, 163, 175, 0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 35px 25px at 60% 45%, rgba(249, 115, 22, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 50px 30px at 30% 80%, rgba(156, 163, 175, 0.09) 0%, transparent 70%);
+  background-size: 200px 150px, 180px 140px, 120px 90px, 160px 120px;
+  background-position: 0 0, 100px 50px, 50px 100px, 150px 20px;
+  background-repeat: repeat;
+}
+
+/* Animaciones calico */
+@keyframes calico-pulse {
+  0%, 100% {
+    background-color: rgba(249, 115, 22, 0.1);
+  }
+  50% {
+    background-color: rgba(156, 163, 175, 0.1);
+  }
+}
+
+.animate-calico-pulse {
+  animation: calico-pulse 3s ease-in-out infinite;
 }

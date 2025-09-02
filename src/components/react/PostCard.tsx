@@ -347,7 +347,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
   };
 
   return (
-    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-calico-stripe-light/20">
       {/* Header del post */}
       <div className="flex items-start space-x-4">
         <div className="flex-shrink-0">
@@ -358,7 +358,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
               className="w-12 h-12 rounded-full object-cover"
             />
           ) : (
-            <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-calico-orange-400 to-calico-orange-600 rounded-full flex items-center justify-center text-calico-white font-bold text-lg">
               {post.profiles.username.charAt(0).toUpperCase()}
             </div>
           )}
@@ -366,21 +366,21 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-2">
-            <h3 className="text-white font-semibold">
+            <h3 className="text-calico-white font-semibold">
               {post.profiles.full_name || post.profiles.username}
             </h3>
-            <span className="text-gray-400 text-sm">@{post.profiles.username}</span>
-            <span className="text-gray-500 text-sm">•</span>
-            <span className="text-gray-500 text-sm">{formatDate(post.created_at)}</span>
+            <span className="text-calico-gray-400 text-sm">@{post.profiles.username}</span>
+            <span className="text-calico-gray-500 text-sm">•</span>
+            <span className="text-calico-gray-500 text-sm">{formatDate(post.created_at)}</span>
           </div>
           
           {/* Título del post si existe */}
           {post.title && (
-            <h4 className="text-white font-medium mb-2">{post.title}</h4>
+            <h4 className="text-calico-white font-medium mb-2">{post.title}</h4>
           )}
           
           {/* Contenido del post */}
-          <div className="text-gray-200 mb-4 whitespace-pre-wrap">{post.content}</div>
+          <div className="text-calico-gray-200 mb-4 whitespace-pre-wrap">{post.content}</div>
           
           {/* Imagen del post si existe */}
           {post.image_url && (
@@ -406,14 +406,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
           )}
           
           {/* Acciones del post */}
-          <div className="flex items-center space-x-6 pt-4 border-t border-white/10">
+          <div className="flex items-center space-x-6 pt-4 border-t border-calico-stripe-light/20">
             {/* Botón de like */}
             <button 
               onClick={handleLike}
               className={`flex items-center space-x-2 transition-colors group ${
                 isLiked 
-                  ? 'text-red-400 hover:text-red-300' 
-                  : 'text-gray-400 hover:text-red-400'
+                  ? 'text-calico-red-400 hover:text-calico-red-300' 
+                  : 'text-calico-gray-400 hover:text-calico-red-400'
               }`}
             >
               <svg 
@@ -437,7 +437,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
             {/* Botón de comentarios */}
             <button 
               onClick={toggleComments}
-              className="flex items-center space-x-2 text-gray-400 hover:text-blue-400 transition-colors group"
+              className="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-blue-400 transition-colors group"
             >
               <svg 
                 className="w-5 h-5 group-hover:scale-110 transition-transform" 
@@ -458,7 +458,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
             {/* Botón de compartir */}
             <button 
               onClick={sharePost}
-              className="flex items-center space-x-2 text-gray-400 hover:text-green-400 transition-colors group"
+              className="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-orange-400 transition-colors group"
             >
               <svg 
                 className="w-5 h-5 group-hover:scale-110 transition-transform" 
@@ -481,14 +481,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
       
       {/* Sección de comentarios */}
       {showComments && (
-        <div className="mt-6 pt-6 border-t border-white/10">
+        <div className="mt-6 pt-6 border-t border-calico-stripe-light/20">
           {/* Formulario de comentarios */}
           {isClient && isAuthenticated && (
             <div className="mb-6">
-              <div className="bg-gradient-to-r from-white/5 to-white/3 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+              <div className="bg-gradient-to-r from-white/5 to-white/3 backdrop-blur-sm rounded-2xl p-4 border border-calico-stripe-light/20">
                 <div className="flex space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm ring-2 ring-green-400/30">
+                    <div className="w-10 h-10 bg-gradient-to-br from-calico-orange-500 to-calico-blue-600 rounded-full flex items-center justify-center text-calico-white font-bold text-sm ring-2 ring-calico-orange-400/30">
                       U
                     </div>
                   </div>
@@ -498,7 +498,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder="¿Qué opinas sobre esta publicación?"
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500/50 resize-none transition-all duration-200 backdrop-blur-sm"
+                        className="w-full bg-white/10 border border-calico-stripe-light/30 rounded-xl px-4 py-3 text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-calico-orange-500/50 resize-none transition-all duration-200 backdrop-blur-sm"
                         rows={3}
                         disabled={submittingComment}
                         maxLength={500}
@@ -509,7 +509,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
                           }
                         }}
                       />
-                      <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-black/20 px-2 py-1 rounded-full">
+                      <div className="absolute bottom-3 right-3 text-xs text-calico-gray-400 bg-black/20 px-2 py-1 rounded-full">
                         {newComment.length}/500
                       </div>
                     </div>
@@ -517,7 +517,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
                       <div className="flex items-center space-x-3">
                         <button
                           type="button"
-                          className="flex items-center space-x-1 text-xs text-gray-400 hover:text-blue-400 transition-colors"
+                          className="flex items-center space-x-1 text-xs text-calico-gray-400 hover:text-calico-blue-400 transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2" />
@@ -526,7 +526,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
                         </button>
                         <button
                           type="button"
-                          className="flex items-center space-x-1 text-xs text-gray-400 hover:text-yellow-400 transition-colors"
+                          className="flex items-center space-x-1 text-xs text-calico-gray-400 hover:text-calico-yellow-400 transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -537,11 +537,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
                       <button
                         onClick={submitComment}
                         disabled={!newComment.trim() || submittingComment}
-                        className="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm font-semibold shadow-lg hover:shadow-green-500/25 disabled:shadow-none transform hover:scale-105 disabled:hover:scale-100"
+                        className="px-6 py-2 bg-gradient-to-r from-calico-orange-600 to-calico-orange-700 text-calico-white rounded-xl hover:from-calico-orange-700 hover:to-calico-orange-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm font-semibold shadow-lg hover:shadow-calico-orange-500/25 disabled:shadow-none transform hover:scale-105 disabled:hover:scale-100"
                       >
                         {submittingComment ? (
                           <div className="flex items-center space-x-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-calico-white border-t-transparent"></div>
                             <span>Enviando...</span>
                           </div>
                         ) : (
@@ -564,8 +564,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
           <div className="space-y-3">
             {loadingComments ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-green-500 border-t-transparent"></div>
-                <span className="ml-3 text-gray-400 font-medium">Cargando comentarios...</span>
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-calico-orange-500 border-t-transparent"></div>
+                <span className="ml-3 text-calico-gray-400 font-medium">Cargando comentarios...</span>
               </div>
             ) : comments.length > 0 ? (
               <div className="max-h-96 overflow-y-auto pr-2 space-y-3">
@@ -577,33 +577,33 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
                           <img 
                             src={comment.profiles.avatar_url} 
                             alt={comment.profiles.username}
-                            className="w-10 h-10 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-green-400/30 transition-all"
+                            className="w-10 h-10 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-calico-orange-400/30 transition-all"
                           />
                         ) : (
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm ring-2 ring-white/10 group-hover:ring-blue-400/30 transition-all">
+                          <div className="w-10 h-10 bg-gradient-to-br from-calico-blue-500 to-calico-purple-600 rounded-full flex items-center justify-center text-calico-white font-bold text-sm ring-2 ring-white/10 group-hover:ring-calico-blue-400/30 transition-all">
                             {comment.profiles.username.charAt(0).toUpperCase()}
                           </div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="bg-gradient-to-r from-white/8 to-white/4 backdrop-blur-sm rounded-xl p-4 border border-white/10 group-hover:border-white/20 transition-all">
+                        <div className="bg-gradient-to-r from-white/8 to-white/4 backdrop-blur-sm rounded-xl p-4 border border-calico-stripe-light/20 group-hover:border-calico-stripe-light/30 transition-all">
                           <div className="flex items-center space-x-2 mb-2">
-                            <span className="text-white font-semibold text-sm">
+                            <span className="text-calico-white font-semibold text-sm">
                               {comment.profiles.full_name || comment.profiles.username}
                             </span>
-                            <span className="text-gray-400 text-xs font-medium">@{comment.profiles.username}</span>
-                            <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
-                            <span className="text-gray-500 text-xs">{formatDate(comment.created_at)}</span>
+                            <span className="text-calico-gray-400 text-xs font-medium">@{comment.profiles.username}</span>
+                            <div className="w-1 h-1 bg-calico-gray-500 rounded-full"></div>
+                            <span className="text-calico-gray-500 text-xs">{formatDate(comment.created_at)}</span>
                           </div>
-                          <p className="text-gray-100 text-sm leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                          <p className="text-calico-gray-100 text-sm leading-relaxed whitespace-pre-wrap">{comment.content}</p>
                         </div>
                         <div className="flex items-center space-x-6 mt-3 ml-1">
                           <button 
                             onClick={() => handleCommentLike(comment.id)}
                             className={`flex items-center space-x-2 text-xs font-medium transition-all duration-200 hover:scale-105 ${
                               comment.user_has_liked 
-                                ? 'text-red-400 hover:text-red-300' 
-                                : 'text-gray-400 hover:text-red-400'
+                                ? 'text-calico-red-400 hover:text-calico-red-300' 
+                                : 'text-calico-gray-400 hover:text-calico-red-400'
                             }`}
                           >
                             <svg 
@@ -623,7 +623,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
                             </svg>
                             <span>{comment.like_count}</span>
                           </button>
-                          <button className="flex items-center space-x-2 text-xs font-medium text-gray-400 hover:text-blue-400 transition-all duration-200 hover:scale-105">
+                          <button className="flex items-center space-x-2 text-xs font-medium text-calico-gray-400 hover:text-calico-blue-400 transition-all duration-200 hover:scale-105">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                             </svg>
@@ -637,13 +637,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
               </div>
             ) : (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-gradient-to-br from-calico-gray-600 to-calico-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-calico-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <p className="text-gray-400 font-medium mb-2">No hay comentarios aún</p>
-                <p className="text-gray-500 text-sm">¡Sé el primero en compartir tu opinión!</p>
+                <p className="text-calico-gray-400 font-medium mb-2">No hay comentarios aún</p>
+                <p className="text-calico-gray-500 text-sm">¡Sé el primero en compartir tu opinión!</p>
               </div>
             )}
           </div>

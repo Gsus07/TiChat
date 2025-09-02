@@ -105,7 +105,7 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
               />
             </div>
             
-            <div class="text-white">
+            <div class="text-calico-white">
               <h1 class="title-size font-bold font-game mb-2">{game.name}</h1>
               <p class="body-size opacity-90 max-w-2xl">
                 {game.description || `Explora los diferentes servidores de ${game.name} y encuentra tu comunidad perfecta.`}
@@ -117,7 +117,7 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
                     {game.genre}
                   </span>
                   {game.platform && (
-                    <span class="px-3 py-1 bg-secondary rounded-full text-sm font-medium">
+                    <span class="px-3 py-1 bg-calico-gray rounded-full text-sm font-medium">
                       {game.platform}
                     </span>
                   )}
@@ -129,22 +129,22 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
           <!-- Estadísticas del juego -->
           {themeConfig.layout?.showStats && (
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-              <div class="glass rounded-xl p-6 text-center text-white">
-                <div class="text-3xl font-bold text-accent mb-2">{gameServers.length}</div>
+              <div class="glass rounded-xl p-6 text-center text-calico-white">
+                <div class="text-3xl font-bold text-calico-orange-500 mb-2">{gameServers.length}</div>
                 <div class="text-sm opacity-80">Servidores Activos</div>
               </div>
-              <div class="glass rounded-xl p-6 text-center text-white">
-                <div class="text-3xl font-bold text-accent mb-2">{featuredServers.length}</div>
+              <div class="glass rounded-xl p-6 text-center text-calico-white">
+                <div class="text-3xl font-bold text-calico-orange-500 mb-2">{featuredServers.length}</div>
                 <div class="text-sm opacity-80">Servidores Destacados</div>
               </div>
-              <div class="glass rounded-xl p-6 text-center text-white">
-                <div class="text-3xl font-bold text-accent mb-2">
+              <div class="glass rounded-xl p-6 text-center text-calico-white">
+                <div class="text-3xl font-bold text-calico-orange-500 mb-2">
                   {gameServers.reduce((total, server) => total + server.max_players, 0)}
                 </div>
                 <div class="text-sm opacity-80">Capacidad Total</div>
               </div>
-              <div class="glass rounded-xl p-6 text-center text-white">
-                <div class="text-3xl font-bold text-accent mb-2">
+              <div class="glass rounded-xl p-6 text-center text-calico-white">
+                <div class="text-3xl font-bold text-calico-orange-500 mb-2">
                   {new Set(gameServers.map(server => server.server_type)).size}
                 </div>
                 <div class="text-sm opacity-80">Tipos de Servidor</div>
@@ -162,13 +162,13 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
           {featuredServers.length > 0 && (
             <div class="mb-16">
               <div class="flex items-center justify-between mb-8">
-                <h2 class="text-3xl font-bold text-white font-game flex items-center">
-                  <svg class="w-8 h-8 text-accent mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <h2 class="text-3xl font-bold text-calico-white font-game flex items-center">
+                  <svg class="w-8 h-8 text-calico-orange-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                   </svg>
                   Servidores Destacados
                 </h2>
-                <div class="text-accent font-medium">
+                <div class="text-calico-orange-500 font-medium">
                   {featuredServers.length} {featuredServers.length === 1 ? 'servidor' : 'servidores'}
                 </div>
               </div>
@@ -177,46 +177,46 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
                 {featuredServers.map((server) => (
                   <div class="transform transition-all duration-300 hover:scale-105">
                     <a href={`/${game.name.toLowerCase().replace(/\s+/g, '-')}/${server.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                      <div class="glass-dark rounded-2xl p-6 h-full border-2 border-accent hover:border-primary transition-colors duration-300">
+                      <div class="glass-dark rounded-2xl p-6 h-full border-2 border-calico-orange-500 hover:border-calico-orange-400 transition-colors duration-300">
                         <div class="flex items-start justify-between mb-4">
                           <div class="flex-1">
-                            <h3 class="text-xl font-bold text-white mb-2 font-game">{server.name}</h3>
-                            <p class="text-gray-300 text-sm mb-3 line-clamp-2">
+                            <h3 class="text-xl font-bold text-calico-white mb-2 font-game">{server.name}</h3>
+                            <p class="text-calico-gray-300 text-sm mb-3 line-clamp-2">
                               {server.description || `Servidor ${server.server_type} de ${game.name}`}
                             </p>
                           </div>
-                          <span class="px-3 py-1 bg-accent text-white text-xs font-medium rounded-full ml-2">
+                          <span class="px-3 py-1 bg-calico-orange-500 text-calico-white text-xs font-medium rounded-full ml-2">
                             DESTACADO
                           </span>
                         </div>
                         
                         <div class="space-y-3">
                           <div class="flex items-center justify-between">
-                            <span class="text-gray-400 text-sm">Tipo:</span>
-                            <span class="text-white font-medium capitalize">{server.server_type}</span>
+                            <span class="text-calico-gray-400 text-sm">Tipo:</span>
+                            <span class="text-calico-white font-medium capitalize">{server.server_type}</span>
                           </div>
                           
                           <div class="flex items-center justify-between">
-                            <span class="text-gray-400 text-sm">Jugadores:</span>
-                            <span class="text-white font-medium">0/{server.max_players}</span>
+                            <span class="text-calico-gray-400 text-sm">Jugadores:</span>
+                            <span class="text-calico-white font-medium">0/{server.max_players}</span>
                           </div>
                           
                           {server.server_ip && (
                             <div class="flex items-center justify-between">
-                              <span class="text-gray-400 text-sm">IP:</span>
-                              <span class="text-accent font-mono text-sm">{server.server_ip}</span>
+                              <span class="text-calico-gray-400 text-sm">IP:</span>
+                              <span class="text-calico-orange-500 font-mono text-sm">{server.server_ip}</span>
                             </div>
                           )}
                           
                           {server.server_version && (
                             <div class="flex items-center justify-between">
-                              <span class="text-gray-400 text-sm">Versión:</span>
-                              <span class="text-white text-sm">{server.server_version}</span>
+                              <span class="text-calico-gray-400 text-sm">Versión:</span>
+                              <span class="text-calico-white text-sm">{server.server_version}</span>
                             </div>
                           )}
                         </div>
                         
-                        <div class="mt-6 pt-4 border-t border-gray-600">
+                        <div class="mt-6 pt-4 border-t border-calico-gray-600">
                           <div class="btn-primary w-full text-center py-3 rounded-lg font-semibold">
                             Entrar al Servidor
                           </div>
@@ -232,10 +232,10 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
           <!-- Todos los servidores -->
           <div class="mb-16">
             <div class="flex items-center justify-between mb-8">
-              <h2 class="text-3xl font-bold text-white font-game">
+              <h2 class="text-3xl font-bold text-calico-white font-game">
                 {featuredServers.length > 0 ? 'Todos los Servidores' : 'Servidores Disponibles'}
               </h2>
-              <div class="text-accent font-medium">
+              <div class="text-calico-orange-500 font-medium">
                 {gameServers.length} {gameServers.length === 1 ? 'servidor' : 'servidores'}
               </div>
             </div>
@@ -249,9 +249,9 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
                         server.is_featured ? 'border border-accent' : 'border border-transparent hover:border-primary'
                       }`}>
                         <div class="flex items-start justify-between mb-3">
-                          <h3 class="text-lg font-bold text-white font-game">{server.name}</h3>
+                          <h3 class="text-lg font-bold text-calico-white font-game">{server.name}</h3>
                           {server.is_featured && (
-                            <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-5 h-5 text-calico-orange-500" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                             </svg>
                           )}
@@ -259,13 +259,13 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
                         
                         <div class="space-y-2 mb-4">
                           <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-400">Tipo:</span>
-                            <span class="text-white capitalize">{server.server_type}</span>
+                            <span class="text-calico-gray-400">Tipo:</span>
+                            <span class="text-calico-white capitalize">{server.server_type}</span>
                           </div>
                           
                           <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-400">Jugadores:</span>
-                            <span class="text-accent font-medium">0/{server.max_players}</span>
+                            <span class="text-calico-gray-400">Jugadores:</span>
+                            <span class="text-calico-orange-500 font-medium">0/{server.max_players}</span>
                           </div>
                         </div>
                         
@@ -280,15 +280,15 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
             ) : (
               <div class="text-center py-16">
                 <div class="glass rounded-2xl p-12 max-w-md mx-auto">
-                  <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-accent flex items-center justify-center">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-calico-orange-500 flex items-center justify-center">
+                    <svg class="w-10 h-10 text-calico-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
                     </svg>
                   </div>
-                  <h3 class="text-xl font-bold text-white mb-4 font-game">
+                  <h3 class="text-xl font-bold text-calico-white mb-4 font-game">
                     No hay servidores disponibles
                   </h3>
-                  <p class="text-gray-300 mb-6">
+                  <p class="text-calico-gray-300 mb-6">
                     Aún no hay servidores configurados para {game.name}.
                     <span id="create-first-text" style="display: none;"> ¡Puedes crear el primero!</span>
                   </p>
@@ -317,7 +317,7 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
           <!-- Formulario para crear post -->
           <div class="mb-12" id="post-form-container">
             <div class="glass-dark rounded-2xl p-8">
-              <h2 class="text-2xl font-bold text-white mb-6 font-game">
+              <h2 class="text-2xl font-bold text-calico-white mb-6 font-game">
                 Comparte tu experiencia en {game.name}
               </h2>
               <PostForm 
@@ -332,10 +332,10 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
           <!-- Lista de posts -->
           <div class="space-y-8">
             <div class="flex items-center justify-between">
-              <h2 class="text-3xl font-bold text-white font-game">
+              <h2 class="text-3xl font-bold text-calico-white font-game">
                 Últimas publicaciones
               </h2>
-              <div class="text-accent font-medium">
+              <div class="text-calico-orange-500 font-medium">
                 {gamePosts.length} {gamePosts.length === 1 ? 'post' : 'posts'}
               </div>
             </div>
@@ -397,30 +397,30 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
     return `
       <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg post-card transform transition-all duration-300 hover:scale-[1.02]" data-post-id="${post.id}">
         <div class="flex items-center mb-4">
-          <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+          <div class="w-10 h-10 bg-gradient-to-br from-calico-orange-400 to-calico-gray-500 rounded-full flex items-center justify-center text-calico-white font-bold text-sm">
             ${authorInitial}
           </div>
           <div class="ml-3 flex-1">
             <div class="flex items-center gap-2">
-              <h3 class="font-semibold text-white">${post.author}</h3>
+              <h3 class="font-semibold text-calico-white">${post.author}</h3>
             </div>
-            <div class="flex items-center gap-2 text-sm text-gray-400">
+            <div class="flex items-center gap-2 text-sm text-calico-gray-400">
               <span>${timeAgo}</span>
             </div>
           </div>
         </div>
         <div class="mb-4">
-          <p class="text-gray-200 leading-relaxed whitespace-pre-wrap">${post.content}</p>
+          <p class="text-calico-gray-200 leading-relaxed whitespace-pre-wrap">${post.content}</p>
         </div>
-        <div class="flex items-center justify-between pt-4 border-t border-white/10">
+        <div class="flex items-center justify-between pt-4 border-t border-calico-stripe-light/10">
           <div class="flex items-center space-x-6">
-            <button class="flex items-center space-x-2 text-gray-400 hover:text-red-400 transition-colors">
+            <button class="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-red-400 transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
               </svg>
               <span>${post.likes || 0}</span>
             </button>
-            <button class="flex items-center space-x-2 text-gray-400 hover:text-blue-400 transition-colors">
+            <button class="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-blue-400 transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
               </svg>

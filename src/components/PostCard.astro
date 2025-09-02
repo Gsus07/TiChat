@@ -56,7 +56,7 @@ const timeAgo = formatDate(post.created_at);
 const authorInitial = post.profiles.username.charAt(0).toUpperCase();
 ---
 
-<div class="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg post-card" data-post-id={post.id}>
+<div class="glass-calico backdrop-blur-md rounded-xl p-6 shadow-lg post-card" data-post-id={post.id}>
   <!-- Header del post -->
   <div class="flex items-center mb-4">
     {post.profiles.avatar_url ? (
@@ -66,23 +66,23 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         class="w-10 h-10 rounded-full object-cover"
       />
     ) : (
-      <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+      <div class="w-10 h-10 bg-gradient-to-br from-calico-orange-400 to-calico-brown-500 rounded-full flex items-center justify-center text-calico-white font-bold text-sm">
         {authorInitial}
       </div>
     )}
     <div class="ml-3 flex-1">
       <div class="flex items-center gap-2">
-        <h3 class="font-semibold text-white">{post.profiles.full_name || post.profiles.username}</h3>
+        <h3 class="font-semibold text-calico-white">{post.profiles.full_name || post.profiles.username}</h3>
         {post.profiles.username !== (post.profiles.full_name || post.profiles.username) && (
-          <span class="text-sm text-gray-400">@{post.profiles.username}</span>
+          <span class="text-sm text-calico-gray-400">@{post.profiles.username}</span>
         )}
       </div>
-      <div class="flex items-center gap-2 text-sm text-gray-400">
+      <div class="flex items-center gap-2 text-sm text-calico-gray-400">
         <span>{timeAgo}</span>
         {(post.games || post.game_servers) && (
           <>
             <span>•</span>
-            <span class="text-green-400">
+            <span class="text-calico-orange-400">
               {post.game_servers ? `${post.game_servers.name}` : post.games?.name}
             </span>
           </>
@@ -93,7 +93,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   
   <!-- Contenido del post -->
   <div class="mb-4">
-    <p class="text-gray-200 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+    <p class="text-calico-gray-200 leading-relaxed whitespace-pre-wrap">{post.content}</p>
   </div>
   
   <!-- Imagen del post (si existe) -->
@@ -109,15 +109,15 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   )}
   
   <!-- Estadísticas y acciones -->
-  <div class="flex items-center justify-between pt-4 border-t border-white/10">
+  <div class="flex items-center justify-between pt-4 border-t border-calico-stripe-light/20">
     <div class="flex items-center space-x-6">
       <!-- Likes -->
       <button 
         onclick={`togglePostLike('${post.id}')`}
         class={`flex items-center space-x-2 transition-colors group ${
           post.user_has_liked 
-            ? 'text-red-400 hover:text-red-300' 
-            : 'text-gray-400 hover:text-red-400'
+            ? 'text-calico-orange-400 hover:text-calico-orange-300' 
+            : 'text-calico-gray-400 hover:text-calico-orange-400'
         }`}
         data-post-id={post.id}
         data-liked={post.user_has_liked}
@@ -138,7 +138,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
       <!-- Comentarios -->
       <button 
         onclick={`toggleComments('${post.id}')`}
-        class="flex items-center space-x-2 text-gray-400 hover:text-blue-400 transition-colors group"
+        class="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-gray-300 transition-colors group"
       >
         <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
@@ -149,7 +149,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
       <!-- Compartir -->
       <button 
         onclick={`sharePost('${post.id}')`}
-        class="flex items-center space-x-2 text-gray-400 hover:text-green-400 transition-colors group"
+        class="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-orange-400 transition-colors group"
       >
         <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
@@ -163,22 +163,22 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
       <div class="relative">
         <button 
           onclick={`togglePostOptions('${post.id}')`}
-          class="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+          class="text-calico-gray-400 hover:text-calico-white transition-colors p-1 rounded-full hover:bg-white/10"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
           </svg>
         </button>
-        <div id={`post-options-${post.id}`} class="hidden absolute right-0 top-8 bg-slate-800 rounded-lg shadow-lg border border-white/10 py-2 min-w-[120px] z-10">
+        <div id={`post-options-${post.id}`} class="hidden absolute right-0 top-8 glass-calico rounded-lg shadow-lg border border-calico-stripe-light/20 py-2 min-w-[120px] z-10">
           <button 
             onclick={`editPost('${post.id}')`}
-            class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+            class="w-full text-left px-4 py-2 text-sm text-calico-gray-300 hover:bg-white/10 hover:text-calico-white transition-colors"
           >
             Editar
           </button>
           <button 
             onclick={`deletePost('${post.id}')`}
-            class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+            class="w-full text-left px-4 py-2 text-sm text-calico-orange-400 hover:bg-calico-orange-500/10 hover:text-calico-orange-300 transition-colors"
           >
             Eliminar
           </button>
@@ -189,21 +189,21 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   
   <!-- Sección de comentarios rápidos -->
   {currentUserId && (
-    <div class="mt-4 pt-4 border-t border-white/10">
+    <div class="mt-4 pt-4 border-t border-calico-stripe-light/20">
       <div class="flex items-center space-x-3">
-        <div class="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+        <div class="w-8 h-8 bg-gradient-to-br from-calico-orange-400 to-calico-brown-500 rounded-full flex items-center justify-center text-calico-white font-bold text-xs">
           {currentUserId.charAt(0).toUpperCase()}
         </div>
         <input 
           type="text" 
           placeholder="Escribe un comentario..." 
-          class="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-full text-white placeholder-gray-500 text-sm focus:outline-none focus:border-white/30 transition-colors"
+          class="flex-1 px-3 py-2 bg-white/5 border border-calico-stripe-light/20 rounded-full text-calico-white placeholder-calico-gray-500 text-sm focus:outline-none focus:border-calico-stripe-light/40 transition-colors"
           id={`comment-input-${post.id}`}
           onkeypress={`handleCommentKeyPress(event, '${post.id}')`}
         />
         <button 
           onclick={`submitComment('${post.id}')`}
-          class="text-green-400 hover:text-green-300 transition-colors p-2 rounded-full hover:bg-green-500/10"
+          class="text-calico-orange-400 hover:text-calico-orange-300 transition-colors p-2 rounded-full hover:bg-calico-orange-500/10"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
@@ -214,7 +214,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   )}
   
   <!-- Sección de comentarios expandida (inicialmente oculta) -->
-  <div id={`comments-section-${post.id}`} class="hidden mt-4 pt-4 border-t border-white/10">
+  <div id={`comments-section-${post.id}`} class="hidden mt-4 pt-4 border-t border-calico-stripe-light/20">
     <div class="space-y-3 max-h-60 overflow-y-auto" id={`comments-list-${post.id}`}>
       <!-- Los comentarios se cargarán dinámicamente aquí -->
     </div>
@@ -263,13 +263,13 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         // Actualizar estado visual
         if (button && svg && likeCount) {
           if (data.liked) {
-            button.classList.remove('text-gray-400', 'hover:text-red-400');
-            button.classList.add('text-red-400', 'hover:text-red-300');
+            button.classList.remove('text-calico-gray-400', 'hover:text-calico-orange-400');
+            button.classList.add('text-calico-orange-400', 'hover:text-calico-orange-300');
             svg.setAttribute('fill', 'currentColor');
             svg.classList.add('fill-current');
           } else {
-            button.classList.remove('text-red-400', 'hover:text-red-300');
-            button.classList.add('text-gray-400', 'hover:text-red-400');
+            button.classList.remove('text-calico-orange-400', 'hover:text-calico-orange-300');
+            button.classList.add('text-calico-gray-400', 'hover:text-calico-orange-400');
             svg.setAttribute('fill', 'none');
             svg.classList.remove('fill-current');
           }
@@ -306,15 +306,15 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         if (commentsList) {
           commentsList.innerHTML = comments.map((comment: any) => `
           <div class="flex items-start space-x-3 p-3 bg-white/5 rounded-lg">
-            <div class="w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+            <div class="w-6 h-6 bg-gradient-to-br from-calico-orange-400 to-calico-brown-500 rounded-full flex items-center justify-center text-calico-white font-bold text-xs">
               ${comment.profiles.username.charAt(0).toUpperCase()}
             </div>
             <div class="flex-1">
               <div class="flex items-center gap-2 mb-1">
-                <span class="text-sm font-medium text-white">${comment.profiles.username}</span>
-                <span class="text-xs text-gray-400">${formatTimeAgo(comment.created_at)}</span>
+                <span class="text-sm font-medium text-calico-white">${comment.profiles.username}</span>
+                <span class="text-xs text-calico-gray-400">${formatTimeAgo(comment.created_at)}</span>
               </div>
-              <p class="text-sm text-gray-200">${comment.content}</p>
+              <p class="text-sm text-calico-gray-200">${comment.content}</p>
             </div>
           </div>
         `).join('');
@@ -436,7 +436,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
     modal.innerHTML = `
       <div class="relative max-w-4xl max-h-full">
         <img src="${imageSrc}" class="max-w-full max-h-full object-contain rounded-lg" />
-        <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors">
+        <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-calico-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
@@ -457,7 +457,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   function showNotification(message: string) {
     const notification = document.createElement('div');
     notification.textContent = message;
-    notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300';
+    notification.className = 'fixed top-4 right-4 bg-calico-orange-600 text-calico-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300';
     document.body.appendChild(notification);
     
     setTimeout(() => {

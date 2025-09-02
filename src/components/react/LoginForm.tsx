@@ -163,7 +163,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Email Field */}
         <div className="space-y-2">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+          <label htmlFor="email" className="block text-sm font-medium text-calico-gray-300">
             Correo Electrónico
           </label>
           <input
@@ -171,10 +171,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
             id="email"
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
+            className={`w-full px-4 py-3 bg-calico-stripe-dark/50 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
               errors.email 
                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
-                : 'border-white/20 focus:border-purple-500 focus:ring-purple-500/20'
+                : 'border-calico-stripe-light/30 focus:border-calico-orange-500 focus:ring-calico-orange-500/20'
             }`}
             placeholder="tu@email.com"
             disabled={isLoading}
@@ -191,7 +191,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
 
         {/* Password Field */}
         <div className="space-y-2">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+          <label htmlFor="password" className="block text-sm font-medium text-calico-gray-300">
             Contraseña
           </label>
           <div className="relative">
@@ -200,10 +200,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
               id="password"
               value={formData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              className={`w-full px-4 py-3 pr-12 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
+              className={`w-full px-4 py-3 pr-12 bg-calico-stripe-dark/50 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
                 errors.password 
                   ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
-                  : 'border-white/20 focus:border-purple-500 focus:ring-purple-500/20'
+                  : 'border-calico-stripe-light/30 focus:border-calico-orange-500 focus:ring-calico-orange-500/20'
               }`}
               placeholder="Tu contraseña"
               disabled={isLoading}
@@ -264,7 +264,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         <button
           type="submit"
           disabled={isLoading || !!errors.email || !!errors.password}
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white py-3 px-4 rounded-xl transition-all duration-300 font-medium flex items-center justify-center"
+          className="w-full bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 hover:from-calico-orange-700 hover:to-calico-orange-600 disabled:from-calico-gray-600 disabled:to-calico-gray-700 disabled:cursor-not-allowed text-calico-white py-3 px-4 rounded-xl transition-all duration-300 font-medium flex items-center justify-center hover-glow-orange"
         >
           {isLoading ? (
             <>
@@ -283,7 +283,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         <div className="text-center">
           <p className="text-gray-400">
             ¿No tienes cuenta?{' '}
-            <a href="/register" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
+            <a href="/register" className="text-calico-orange-400 hover:text-calico-orange-300 transition-colors font-medium">
               Regístrate aquí
             </a>
           </p>

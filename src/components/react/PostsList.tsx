@@ -168,17 +168,22 @@ const PostsList: React.FC<PostsListProps> = ({
   if (loading && posts.length === 0) {
     return (
       <div className="flex justify-center items-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-        <span className="ml-2 text-gray-300">Cargando publicaciones...</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-calico-orange-500 border-t-transparent"></div>
+        <span className="ml-3 text-calico-gray-400">Cargando publicaciones...</span>
       </div>
     );
   }
 
   if (posts.length === 0) {
     return (
-      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 text-center">
-        <p className="text-gray-300 text-lg">{emptyMessage}</p>
-        <p className="text-gray-400 mt-2">¡Sé el primero en compartir algo!</p>
+      <div className="text-center py-12">
+        <div className="w-16 h-16 bg-calico-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-calico-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <p className="text-calico-gray-400 text-lg mb-2">No hay publicaciones aún</p>
+        <p className="text-calico-gray-500">¡Sé el primero en compartir algo!</p>
       </div>
     );
   }
@@ -186,10 +191,10 @@ const PostsList: React.FC<PostsListProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white mb-6">
+        <h2 className="text-2xl font-bold text-calico-white mb-6">
           {serverId ? 'Muro del Servidor' : 'Últimas publicaciones'}
         </h2>
-        <div className="text-green-400 font-medium">
+        <div className="text-calico-orange-400 font-medium">
           {posts.length} {posts.length === 1 ? 'post' : 'posts'}
         </div>
       </div>

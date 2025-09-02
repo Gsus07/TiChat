@@ -224,7 +224,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
     if (errors[field]) {
       return 'border-red-500 focus:border-red-500 focus:ring-red-500/20';
     }
-    return 'border-white/20 focus:border-purple-500 focus:ring-purple-500/20';
+    return 'border-white/20 focus:border-calico-orange-500 focus:ring-calico-orange-500/20';
   };
 
   if (!isOpen) return null;
@@ -236,14 +236,14 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
         onClick={handleBackdropClick}
       >
-        <div className="bg-slate-800/95 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl w-full max-w-md">
+        <div className="glass-calico backdrop-blur-xl rounded-2xl border border-calico-stripe-light/20 shadow-2xl w-full max-w-md">
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">Editar Perfil</h3>
+              <h3 className="text-xl font-bold text-calico-white">Editar Perfil</h3>
               <button 
                 onClick={handleClose}
                 disabled={isLoading}
-                className="text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+                className="text-calico-gray-400 hover:text-calico-white transition-colors disabled:opacity-50"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -301,7 +301,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Name field */}
               <div>
-                <label htmlFor="editName" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="editName" className="block text-sm font-medium text-calico-gray-300 mb-2">
                   Nombre
                 </label>
                 <input 
@@ -309,7 +309,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
                   id="editName"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('name')}`}
+                  className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('name')}`}
                   placeholder="Tu nombre completo"
                   disabled={isLoading}
                   required
@@ -321,7 +321,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
               
               {/* Email field */}
               <div>
-                <label htmlFor="editEmail" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="editEmail" className="block text-sm font-medium text-calico-gray-300 mb-2">
                   Email
                 </label>
                 <input 
@@ -329,7 +329,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
                   id="editEmail"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('email')}`}
+                  className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${getFieldBorderClass('email')}`}
                   placeholder="tu@email.com"
                   disabled={isLoading}
                   required
@@ -351,7 +351,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
                 <button 
                   type="submit" 
                   disabled={isLoading}
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 px-4 rounded-xl transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="flex-1 bg-gradient-to-r from-calico-orange-600 to-calico-orange-700 hover:from-calico-orange-700 hover:to-calico-orange-800 text-calico-white py-3 px-4 rounded-xl transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {isLoading ? (
                     <>
@@ -369,7 +369,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
                   type="button" 
                   onClick={handleClose}
                   disabled={isLoading}
-                  className="flex-1 bg-white/10 hover:bg-white/20 text-gray-300 py-3 px-4 rounded-xl transition-all duration-300 font-medium border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-white/10 hover:bg-white/20 text-calico-gray-300 py-3 px-4 rounded-xl transition-all duration-300 font-medium border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancelar
                 </button>

@@ -85,7 +85,7 @@ try {
 ---
 
 <Layout title={`${serverData.name} - Minecraft Server`}>
-  <main class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+  <main class="min-h-screen bg-gradient-to-br from-calico-gray-900 via-calico-orange-900 to-calico-gray-900 relative overflow-hidden">
     <!-- Elementos animados de fondo -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div class="absolute top-20 left-10 w-32 h-32 bg-green-500/10 rounded-full blur-xl animate-pulse"></div>
@@ -96,37 +96,37 @@ try {
 
     <div class="relative z-10 container mx-auto px-4 py-8">
       <!-- Header del servidor -->
-      <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 mb-8">
+      <div class="glass-calico rounded-2xl p-8 border border-calico-stripe-light/30 mb-8">
         <div class="flex flex-col lg:flex-row items-start lg:items-center gap-6">
           <div class="relative">
             <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 rounded-2xl blur opacity-75"></div>
-            <img src={serverData.image} alt={serverData.name} class="relative w-24 h-24 rounded-2xl object-cover border-2 border-white/20">
+            <img src={serverData.image} alt={serverData.name} class="relative w-24 h-24 rounded-2xl object-cover border-2 border-calico-stripe-light/20">
           </div>
           
           <div class="flex-1">
-            <h1 class="text-4xl font-bold text-white mb-2">{serverData.name}</h1>
-            <p class="text-gray-300 text-lg mb-4">{serverData.description}</p>
+            <h1 class="text-4xl font-bold text-calico-white mb-2">{serverData.name}</h1>
+            <p class="text-calico-gray-300 text-lg mb-4">{serverData.description}</p>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-                <div class="text-sm text-gray-400 mb-1">Jugadores</div>
+              <div class="glass-calico rounded-lg p-4 border border-calico-stripe-light/20">
+                <div class="text-sm text-calico-gray-400 mb-1">Jugadores</div>
                 <div class="text-xl font-bold text-green-400">{serverData.players}</div>
               </div>
-              <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-                <div class="text-sm text-gray-400 mb-1">Estado</div>
+              <div class="glass-calico rounded-lg p-4 border border-calico-stripe-light/20">
+                <div class="text-sm text-calico-gray-400 mb-1">Estado</div>
                 <div class="text-xl font-bold text-green-400">{serverData.status}</div>
               </div>
-              <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-                <div class="text-sm text-gray-400 mb-1">Versión</div>
-                <div class="text-xl font-bold text-white">{serverData.version}</div>
+              <div class="glass-calico rounded-lg p-4 border border-calico-stripe-light/20">
+                <div class="text-sm text-calico-gray-400 mb-1">Versión</div>
+                <div class="text-xl font-bold text-calico-white">{serverData.version}</div>
               </div>
             </div>
           </div>
           
-          <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-            <div class="text-sm text-gray-400 mb-2">Dirección del servidor</div>
+          <div class="glass-calico rounded-lg p-4 border border-calico-stripe-light/20">
+            <div class="text-sm text-calico-gray-400 mb-2">Dirección del servidor</div>
             <div class="text-green-400 font-mono text-lg">{serverData.ip}:{serverData.port}</div>
-            <button class="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors w-full">
+            <button class="mt-3 bg-calico-green-600 hover:bg-calico-green-700 text-calico-white px-4 py-2 rounded-lg transition-colors w-full">
               Copiar IP
             </button>
           </div>

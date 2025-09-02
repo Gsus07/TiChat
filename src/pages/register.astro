@@ -5,24 +5,118 @@ import RegisterForm from '../components/react/RegisterForm.tsx';
 
 <Layout title="Registro - Gaming Hub">
   <!-- Background with animated elements -->
-  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+  <div class="min-h-screen bg-gradient-to-br from-calico-gray-900 via-calico-orange-900 to-calico-gray-900 relative overflow-hidden">
     <!-- Animated background elements -->
     <div class="absolute inset-0">
-      <div class="absolute top-20 left-10 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-      <div class="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div class="absolute top-20 left-10 w-72 h-72 bg-calico-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
+<div class="absolute bottom-20 right-10 w-96 h-96 bg-calico-gray-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
       <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-green-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
     </div>
 
-    <!-- Floating particles -->
+    <!-- Floating particles and cat elements -->
     <div class="absolute inset-0 overflow-hidden">
-      <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-bounce delay-300"></div>
-      <div class="absolute top-3/4 left-3/4 w-1 h-1 bg-purple-400/50 rounded-full animate-bounce delay-700"></div>
-      <div class="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-blue-400/40 rounded-full animate-bounce delay-1000"></div>
+      <!-- Cat paw prints -->
+      <div class="absolute top-1/4 left-1/4 w-8 h-8 text-calico-orange-400/30 animate-pulse delay-300">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+          <!-- Cat paw print SVG -->
+          <ellipse cx="8" cy="6" rx="2" ry="3" fill="currentColor"/>
+          <ellipse cx="16" cy="6" rx="2" ry="3" fill="currentColor"/>
+          <ellipse cx="6" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+          <ellipse cx="18" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+          <ellipse cx="12" cy="16" rx="4" ry="5" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute top-3/4 left-3/4 w-7 h-7 text-calico-orange-400/30 animate-bounce delay-700">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+          <!-- Cat paw print SVG -->
+          <ellipse cx="8" cy="6" rx="2" ry="3" fill="currentColor"/>
+          <ellipse cx="16" cy="6" rx="2" ry="3" fill="currentColor"/>
+          <ellipse cx="6" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+          <ellipse cx="18" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+          <ellipse cx="12" cy="16" rx="4" ry="5" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute top-1/2 right-1/4 w-6 h-6 text-calico-gray-400/25 animate-pulse delay-1000">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+          <path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 10H4l1.5 9h13L20 10z"/>
+        </svg>
+      </div>
+      
+      <!-- Additional decorative elements -->
+      <div class="absolute top-16 right-16 w-8 h-8 text-calico-gray-300/15 animate-bounce delay-500">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+          <path d="M21,6H18V4A2,2 0 0,0 16,2H8A2,2 0 0,0 6,4V6H3A1,1 0 0,0 2,7V8A3,3 0 0,0 5,11H6.83L7.83,15.72C7.96,16.32 8.5,16.76 9.11,16.76H14.89C15.5,16.76 16.04,16.32 16.17,15.72L17.17,11H19A3,3 0 0,0 22,8V7A1,1 0 0,0 21,6M8,4H16V6H8V4M6.2,8H17.8L17,11H7L6.2,8Z"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-16 left-16 w-7 h-7 text-calico-orange-200/20 animate-pulse delay-1200">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+          <!-- Cat paw print SVG -->
+          <ellipse cx="8" cy="6" rx="2" ry="3" fill="currentColor"/>
+          <ellipse cx="16" cy="6" rx="2" ry="3" fill="currentColor"/>
+          <ellipse cx="6" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+          <ellipse cx="18" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+          <ellipse cx="12" cy="16" rx="4" ry="5" fill="currentColor"/>
+        </svg>
+      </div>
     </div>
 
     <!-- Main content -->
     <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
-      <RegisterForm client:load />
+      <div class="glass-calico backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-calico-stripe-light/20 w-full max-w-md calico-pattern">
+        <h1 class="text-3xl font-bold text-center text-calico-white mb-8">Crear Cuenta</h1>
+        
+        <form class="space-y-6">
+          <div>
+            <label for="username" class="block text-sm font-medium text-calico-gray-300 mb-2">Nombre de usuario</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+              class="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-lg text-calico-white placeholder-calico-gray-400 focus:outline-none focus:border-calico-orange-500 focus:ring-2 focus:ring-calico-orange-500/20 transition-all duration-300"
+              placeholder="tu_usuario"
+            />
+          </div>
+
+          <div>
+            <label for="email" class="block text-sm font-medium text-calico-gray-300 mb-2">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-lg text-calico-white placeholder-calico-gray-400 focus:outline-none focus:border-calico-orange-500 focus:ring-2 focus:ring-calico-orange-500/20 transition-all duration-300"
+              placeholder="tu@email.com"
+            />
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-medium text-calico-gray-300 mb-2">Contraseña</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              class="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-lg text-calico-white placeholder-calico-gray-400 focus:outline-none focus:border-calico-orange-500 focus:ring-2 focus:ring-calico-orange-500/20 transition-all duration-300"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 hover:from-calico-orange-700 hover:to-calico-orange-600 text-calico-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 hover-glow-orange transform hover:scale-[1.02]"
+          >
+            Crear Cuenta
+          </button>
+
+          <p class="text-center text-calico-gray-400 mt-6">
+            ¿Ya tienes cuenta?
+            <a href="/login" class="text-calico-orange-400 hover:text-calico-orange-300 font-medium transition-colors ml-1">
+              Inicia sesión aquí
+            </a>
+          </p>
+        </form>
+      </div>
     </div>
   </div>
 

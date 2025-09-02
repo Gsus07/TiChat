@@ -237,12 +237,12 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="glass-calico backdrop-blur-sm border border-calico-stripe-light/20 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white">Crear Nuevo Servidor</h2>
+          <h2 className="text-2xl font-bold text-calico-white">Crear Nuevo Servidor</h2>
           <button
             onClick={handleCancel}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-calico-gray-400 hover:text-calico-white transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -253,7 +253,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Nombre del servidor */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
+            <label htmlFor="name" className="block text-sm font-medium text-calico-white mb-2">
               Nombre del Servidor *
             </label>
             <input
@@ -262,7 +262,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent"
               placeholder="Ej: Mi Servidor Survival"
               disabled={isSubmitting}
             />
@@ -273,7 +273,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
 
           {/* Descripción */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-white mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-calico-white mb-2">
               Descripción *
             </label>
             <textarea
@@ -282,7 +282,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
               value={formData.description}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent resize-none"
               placeholder="Describe tu servidor, sus características y reglas..."
               disabled={isSubmitting}
             />
@@ -294,7 +294,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
           {/* IP y Puerto */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="server_ip" className="block text-sm font-medium text-white mb-2">
+              <label htmlFor="server_ip" className="block text-sm font-medium text-calico-white mb-2">
                 IP del Servidor *
               </label>
               <input
@@ -303,7 +303,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
                 name="server_ip"
                 value={formData.server_ip}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent"
                 placeholder="Ej: play.miservidor.com"
                 disabled={isSubmitting}
               />
@@ -313,7 +313,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
             </div>
 
             <div>
-              <label htmlFor="server_port" className="block text-sm font-medium text-white mb-2">
+              <label htmlFor="server_port" className="block text-sm font-medium text-calico-white mb-2">
                 Puerto *
               </label>
               <input
@@ -324,7 +324,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
                 onChange={handleInputChange}
                 min="1"
                 max="65535"
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent"
                 disabled={isSubmitting}
               />
               {errors.server_port && (
@@ -336,7 +336,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
           {/* Versión y Máximo de jugadores */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="server_version" className="block text-sm font-medium text-white mb-2">
+              <label htmlFor="server_version" className="block text-sm font-medium text-calico-white mb-2">
                 Versión *
               </label>
               <input
@@ -345,7 +345,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
                 name="server_version"
                 value={formData.server_version}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent"
                 placeholder="Ej: 1.20.1"
                 disabled={isSubmitting}
               />
@@ -355,7 +355,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
             </div>
 
             <div>
-              <label htmlFor="max_players" className="block text-sm font-medium text-white mb-2">
+              <label htmlFor="max_players" className="block text-sm font-medium text-calico-white mb-2">
                 Máximo de Jugadores *
               </label>
               <input
@@ -366,7 +366,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
                 onChange={handleInputChange}
                 min="1"
                 max="1000"
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent"
                 disabled={isSubmitting}
               />
               {errors.max_players && (
@@ -377,7 +377,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
 
           {/* Tipo de servidor */}
           <div>
-            <label htmlFor="server_type" className="block text-sm font-medium text-white mb-2">
+            <label htmlFor="server_type" className="block text-sm font-medium text-calico-white mb-2">
               Tipo de Servidor *
             </label>
             <select
@@ -385,7 +385,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
               name="server_type"
               value={formData.server_type}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-xl text-calico-white focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent"
               disabled={isSubmitting}
             >
               <option value="survival">Survival</option>
@@ -412,7 +412,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white font-medium py-3 px-6 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              className="flex-1 bg-calico-orange-600 hover:bg-calico-orange-700 disabled:bg-calico-orange-600/50 text-calico-white font-medium py-3 px-6 rounded-xl transition-colors hover-glow-orange focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:ring-offset-2 focus:ring-offset-calico-stripe-dark"
             >
               {isSubmitting ? 'Creando...' : 'Crear Servidor'}
             </button>
@@ -420,7 +420,7 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className="flex-1 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-700/50 text-white font-medium py-3 px-6 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              className="flex-1 bg-calico-stripe-dark hover:bg-calico-stripe-light/20 disabled:bg-calico-stripe-dark/50 text-calico-white font-medium py-3 px-6 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-calico-stripe-light focus:ring-offset-2 focus:ring-offset-calico-stripe-dark"
             >
               Cancelar
             </button>

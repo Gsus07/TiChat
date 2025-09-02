@@ -1,26 +1,34 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
+
+// Mock user data - in a real app, this would come from authentication
+const user = {
+  username: 'Usuario',
+  email: 'usuario@ejemplo.com',
+  bio: 'Gamer apasionado que disfruta de diversos juegos multijugador.'
+};
 ---
 
-<Layout title="Perfil de Usuario - Gaming Hub">
-  <main class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4 relative overflow-hidden">
+<Layout title="Perfil de Usuario">
+  <div class="min-h-screen bg-gradient-to-br from-calico-gray-900 via-calico-orange-900 to-calico-gray-900 py-8">
     <!-- Animated background elements -->
-    <div class="absolute inset-0 overflow-hidden">
-      <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse animation-delay-4000"></div>
+    <div class="absolute inset-0 overflow-hidden z-0">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-calico-orange-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse z-0"></div>
+<div class="absolute -bottom-40 -left-40 w-80 h-80 bg-calico-gray-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000 z-0"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse animation-delay-4000 z-0"></div>
     </div>
 
-    <div class="max-w-4xl mx-auto relative z-10">
-      <!-- Profile Header -->
-      <div class="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden mb-8">
-        <div class="bg-gradient-to-r from-purple-600/20 to-blue-600/20 p-8 border-b border-white/10">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <!-- Header del perfil -->
+        <div class="glass-calico rounded-xl p-6 mb-8">
+        <div class="bg-gradient-to-r from-calico-orange/20 to-calico-brown/20 p-8 border-b border-calico-stripe-light/20">
           <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
             <!-- Avatar -->
             <div class="relative">
               <img id="profileAvatar" src="/default-avatar.png" alt="Avatar" class="w-32 h-32 rounded-full border-4 border-purple-500 shadow-lg">
-              <button id="changeAvatarBtn" class="absolute bottom-2 right-2 bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors shadow-lg">
+              <button id="changeAvatarBtn" class="absolute bottom-2 right-2 bg-calico-orange-600 hover:bg-calico-orange-700 text-calico-white p-2 rounded-full transition-colors shadow-lg">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -30,16 +38,16 @@ import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
 
             <!-- User Info -->
             <div class="flex-1 text-center md:text-left">
-              <h1 id="profileName" class="text-3xl font-bold text-white mb-2">Usuario</h1>
-              <p id="profileEmail" class="text-gray-300 mb-4">usuario@email.com</p>
+            <h1 class="text-3xl font-bold text-calico-white mb-2">{user.username}</h1>
+            <p class="text-calico-gray-300 mb-4">{user.email}</p>
               <div class="flex flex-wrap justify-center md:justify-start gap-2">
-                <span class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm border border-purple-500/30">Gamer</span>
-                <span class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm border border-blue-500/30">Miembro desde <span id="memberSince">2024</span></span>
+                <span class="bg-calico-orange/20 text-calico-orange px-3 py-1 rounded-full text-sm border border-calico-orange/30">Gamer</span>
+                <span class="bg-calico-brown/20 text-calico-brown px-3 py-1 rounded-full text-sm border border-calico-brown/30">Miembro desde <span id="memberSince">2024</span></span>
               </div>
             </div>
 
             <!-- Edit Button -->
-            <button id="editProfileBtn" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl transition-all duration-300 hover:shadow-xl shadow-lg">
+            <button id="editProfileBtn" class="bg-gradient-to-r from-calico-orange to-calico-brown hover:from-calico-orange/80 hover:to-calico-brown/80 text-calico-white px-6 py-3 rounded-xl transition-all duration-300 hover:shadow-xl shadow-lg">
               <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
               </svg>
@@ -54,9 +62,9 @@ import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-8">
           <!-- Gaming Stats -->
-          <div class="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
-            <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-              <svg class="w-6 h-6 mr-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="glass-calico backdrop-blur-xl rounded-2xl border border-calico-stripe-light/20 p-6">
+            <h2 class="text-2xl font-bold text-calico-white mb-6 flex items-center">
+              <svg class="w-6 h-6 mr-3 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
               </svg>
               Estadísticas de Juego
@@ -67,7 +75,7 @@ import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="text-green-300 text-sm font-medium">Horas Jugadas</p>
-                    <p class="text-2xl font-bold text-white">247</p>
+                    <p class="text-2xl font-bold text-calico-white">247</p>
                   </div>
                   <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,9 +89,9 @@ import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="text-blue-300 text-sm font-medium">Partidas Jugadas</p>
-                    <p class="text-2xl font-bold text-white">156</p>
+                    <p class="text-2xl font-bold text-calico-white">156</p>
                   </div>
-                  <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                  <div class="w-12 h-12 bg-calico-blue-500/20 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
@@ -95,9 +103,9 @@ import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="text-purple-300 text-sm font-medium">Logros</p>
-                    <p class="text-2xl font-bold text-white">23</p>
+                    <p class="text-2xl font-bold text-calico-white">23</p>
                   </div>
-                  <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                  <div class="w-12 h-12 bg-calico-orange-500/20 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                     </svg>
@@ -213,6 +221,7 @@ import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
                   <p class="text-gray-400 text-sm">31 horas</p>
                 </div>
               </div>
+            {user.bio && <p class="text-calico-gray-400 mb-4">{user.bio}</p>}
             </div>
           </div>
         </div>

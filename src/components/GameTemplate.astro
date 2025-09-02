@@ -39,8 +39,47 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
       <div class="absolute inset-0 bg-gradient-game opacity-90"></div>
       
-      <!-- Partículas animadas -->
+      <!-- Partículas animadas y elementos gaming -->
       <div class="absolute inset-0">
+        <!-- Gaming controller decorations -->
+        <div class="absolute top-20 left-10 w-8 h-8 text-accent/20 animate-bounce" style="animation-delay: 0.5s;">
+          <svg fill="currentColor" viewBox="0 0 24 24">
+            <path d="M21,6H18V4A2,2 0 0,0 16,2H8A2,2 0 0,0 6,4V6H3A1,1 0 0,0 2,7V8A3,3 0 0,0 5,11H6.83L7.83,15.72C7.96,16.32 8.5,16.76 9.11,16.76H14.89C15.5,16.76 16.04,16.32 16.17,15.72L17.17,11H19A3,3 0 0,0 22,8V7A1,1 0 0,0 21,6M8,4H16V6H8V4M6.2,8H17.8L17,11H7L6.2,8Z"/>
+          </svg>
+        </div>
+        <div class="absolute bottom-20 right-10 w-6 h-6 text-accent/15 animate-pulse" style="animation-delay: 1s;">
+          <svg fill="currentColor" viewBox="0 0 24 24">
+            <path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 10H4l1.5 9h13L20 10z"/>
+          </svg>
+        </div>
+        <div class="absolute top-1/2 right-20 w-7 h-7 text-accent/10 animate-bounce" style="animation-delay: 1.5s;">
+          <svg fill="currentColor" viewBox="0 0 24 24">
+            <path d="M21,6H18V4A2,2 0 0,0 16,2H8A2,2 0 0,0 6,4V6H3A1,1 0 0,0 2,7V8A3,3 0 0,0 5,11H6.83L7.83,15.72C7.96,16.32 8.5,16.76 9.11,16.76H14.89C15.5,16.76 16.04,16.32 16.17,15.72L17.17,11H19A3,3 0 0,0 22,8V7A1,1 0 0,0 21,6M8,4H16V6H8V4M6.2,8H17.8L17,11H7L6.2,8Z"/>
+          </svg>
+        </div>
+        
+        <!-- Cat paw prints -->
+        <div class="absolute top-32 right-32 w-7 h-7 text-accent/12 animate-pulse" style="animation-delay: 2s;">
+          <svg fill="currentColor" viewBox="0 0 24 24">
+            <!-- Cat paw print SVG -->
+            <ellipse cx="8" cy="6" rx="2" ry="3" fill="currentColor"/>
+            <ellipse cx="16" cy="6" rx="2" ry="3" fill="currentColor"/>
+            <ellipse cx="6" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+            <ellipse cx="18" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+            <ellipse cx="12" cy="16" rx="4" ry="5" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="absolute bottom-32 left-32 w-6 h-6 text-accent/12 animate-bounce" style="animation-delay: 2.5s;">
+          <svg fill="currentColor" viewBox="0 0 24 24">
+            <!-- Cat paw print SVG -->
+            <ellipse cx="8" cy="6" rx="2" ry="3" fill="currentColor"/>
+            <ellipse cx="16" cy="6" rx="2" ry="3" fill="currentColor"/>
+            <ellipse cx="6" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+            <ellipse cx="18" cy="12" rx="1.5" ry="2" fill="currentColor"/>
+            <ellipse cx="12" cy="16" rx="4" ry="5" fill="currentColor"/>
+          </svg>
+        </div>
+        
         {Array.from({ length: 20 }).map((_, i) => (
           <div 
             class="absolute w-2 h-2 bg-accent rounded-full animate-pulse-custom"
@@ -95,18 +134,18 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
             </div>
             
             <div class="text-white">
-              <h1 class="title-size font-bold font-game mb-2">{game.name}</h1>
-              <p class="body-size opacity-90 max-w-2xl">
+              <h1 class="title-size font-bold font-game mb-2 text-calico-white">{game.name}</h1>
+              <p class="body-size opacity-90 max-w-2xl text-calico-gray-300">
                 {game.description || `Únete a la comunidad de ${game.name} y comparte tus experiencias de juego.`}
               </p>
               
               {game.genre && (
                 <div class="flex items-center space-x-2 mt-4">
-                  <span class="px-3 py-1 bg-accent rounded-full text-sm font-medium">
+                  <span class="px-3 py-1 bg-calico-orange-600/20 text-calico-orange-300 rounded-full text-sm font-medium">
                     {game.genre}
                   </span>
                   {game.platform && (
-                    <span class="px-3 py-1 bg-secondary rounded-full text-sm font-medium">
+                    <span class="px-3 py-1 bg-calico-gray-600/20 text-calico-gray-300 rounded-full text-sm font-medium">
                       {game.platform}
                     </span>
                   )}
@@ -118,18 +157,18 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
           <!-- Estadísticas del juego -->
           {themeConfig.layout?.showStats && (
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <div class="glass rounded-xl p-6 text-center text-white">
-                <div class="text-3xl font-bold text-accent mb-2">{gamePosts.length}</div>
-                <div class="text-sm opacity-80">Posts Totales</div>
+              <div class="glass-calico rounded-xl p-6 text-center text-calico-white">
+                <div class="text-3xl font-bold text-calico-orange-500 mb-2">{gamePosts.length}</div>
+                <div class="text-sm opacity-80 text-calico-gray-300">Posts Totales</div>
               </div>
-              <div class="glass rounded-xl p-6 text-center text-white">
-                <div class="text-3xl font-bold text-accent mb-2">
+              <div class="glass-calico rounded-xl p-6 text-center text-calico-white">
+                <div class="text-3xl font-bold text-calico-orange-500 mb-2">
                   {new Set(gamePosts.map(post => post.user_id)).size}
                 </div>
-                <div class="text-sm opacity-80">Jugadores Activos</div>
+                <div class="text-sm opacity-80 text-calico-gray-300">Jugadores Activos</div>
               </div>
-              <div class="glass rounded-xl p-6 text-center text-white">
-                <div class="text-3xl font-bold text-accent mb-2">
+              <div class="glass-calico rounded-xl p-6 text-center text-calico-white">
+                <div class="text-3xl font-bold text-calico-orange-500 mb-2">
                   {gamePosts.filter(post => {
                     const postDate = new Date(post.created_at);
                     const weekAgo = new Date();
@@ -137,7 +176,7 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
                     return postDate > weekAgo;
                   }).length}
                 </div>
-                <div class="text-sm opacity-80">Posts Esta Semana</div>
+                <div class="text-sm opacity-80 text-calico-gray-300">Posts Esta Semana</div>
               </div>
             </div>
           )}
@@ -149,8 +188,8 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
         <div class="max-w-4xl mx-auto">
           <!-- Formulario para crear post -->
           <div class="mb-12" id="post-form-container">
-            <div class="glass-dark rounded-2xl p-8">
-              <h2 class="text-2xl font-bold text-white mb-6 font-game">
+            <div class="glass-calico-dark rounded-2xl p-8">
+              <h2 class="text-2xl font-bold text-calico-white mb-6 font-game">
                 Comparte tu experiencia en {game.name}
               </h2>
               <PostForm 
@@ -165,10 +204,10 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
           <!-- Lista de posts -->
           <div class="space-y-8">
             <div class="flex items-center justify-between">
-              <h2 class="text-3xl font-bold text-white font-game">
+              <h2 class="text-3xl font-bold text-calico-white font-game">
                 Últimas publicaciones
               </h2>
-              <div class="text-accent font-medium">
+              <div class="text-calico-orange-500 font-medium">
                 {gamePosts.length} {gamePosts.length === 1 ? 'post' : 'posts'}
               </div>
             </div>
@@ -211,30 +250,30 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
     return `
       <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg post-card transform transition-all duration-300 hover:scale-[1.02]" data-post-id="${post.id}">
         <div class="flex items-center mb-4">
-          <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+          <div class="w-10 h-10 bg-gradient-to-br from-calico-orange-400 to-calico-orange-600 rounded-full flex items-center justify-center text-calico-white font-bold text-sm">
             ${authorInitial}
           </div>
           <div class="ml-3 flex-1">
             <div class="flex items-center gap-2">
-              <h3 class="font-semibold text-white">${post.author}</h3>
+              <h3 class="font-semibold text-calico-white">${post.author}</h3>
             </div>
-            <div class="flex items-center gap-2 text-sm text-gray-400">
+            <div class="flex items-center gap-2 text-sm text-calico-gray-400">
               <span>${timeAgo}</span>
             </div>
           </div>
         </div>
         <div class="mb-4">
-          <p class="text-gray-200 leading-relaxed whitespace-pre-wrap">${post.content}</p>
+          <p class="text-calico-gray-200 leading-relaxed whitespace-pre-wrap">${post.content}</p>
         </div>
         <div class="flex items-center justify-between pt-4 border-t border-white/10">
           <div class="flex items-center space-x-6">
-            <button class="flex items-center space-x-2 text-gray-400 hover:text-red-400 transition-colors">
+            <button class="flex items-center space-x-2 text-calico-gray-400 hover:text-red-400 transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
               </svg>
               <span>${post.likes || 0}</span>
             </button>
-            <button class="flex items-center space-x-2 text-gray-400 hover:text-blue-400 transition-colors">
+            <button class="flex items-center space-x-2 text-calico-gray-400 hover:text-blue-400 transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
               </svg>

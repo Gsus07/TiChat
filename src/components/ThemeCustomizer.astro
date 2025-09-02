@@ -44,9 +44,9 @@ const config = {
 };
 ---
 
-<div class="theme-customizer bg-gray-900 rounded-xl p-6 border border-gray-700">
+<div class="theme-customizer glass-calico rounded-xl p-6 border border-calico-stripe-light">
   <div class="flex items-center justify-between mb-6">
-    <h3 class="text-xl font-bold text-white font-game">
+    <h3 class="text-xl font-bold text-calico-white font-game">
       Personalizar Tema - {entityType === 'game' ? 'Juego' : 'Servidor'}
     </h3>
     <button 
@@ -61,131 +61,131 @@ const config = {
     <form id="theme-form" class="space-y-8">
       <!-- Sección de Colores -->
       <div class="space-y-4">
-        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+        <h4 class="text-lg font-semibold text-calico-white border-b border-calico-stripe-light pb-2">
           🎨 Colores
         </h4>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Color Primario</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Color Primario</label>
             <div class="flex items-center space-x-2">
               <input 
                 type="color" 
                 name="colors.primary" 
                 value={config.colors.primary}
-                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                class="w-12 h-10 rounded border border-calico-stripe-light bg-transparent cursor-pointer"
               />
               <input 
                 type="text" 
                 value={config.colors.primary}
-                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                class="flex-1 px-3 py-2 bg-calico-gray-800 border border-calico-stripe-light rounded text-calico-white text-sm font-mono"
                 readonly
               />
             </div>
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Color Secundario</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Color Secundario</label>
             <div class="flex items-center space-x-2">
               <input 
                 type="color" 
                 name="colors.secondary" 
                 value={config.colors.secondary}
-                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                class="w-12 h-10 rounded border border-calico-gray-600 bg-transparent cursor-pointer"
               />
               <input 
                 type="text" 
                 value={config.colors.secondary}
-                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                class="flex-1 px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white text-sm font-mono"
                 readonly
               />
             </div>
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Color de Acento</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Color de Acento</label>
             <div class="flex items-center space-x-2">
               <input 
                 type="color" 
                 name="colors.accent" 
                 value={config.colors.accent}
-                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                class="w-12 h-10 rounded border border-calico-gray-600 bg-transparent cursor-pointer"
               />
               <input 
                 type="text" 
                 value={config.colors.accent}
-                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                class="flex-1 px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white text-sm font-mono"
                 readonly
               />
             </div>
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Fondo (Desde)</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Fondo (Desde)</label>
             <div class="flex items-center space-x-2">
               <input 
                 type="color" 
                 name="colors.background.from" 
                 value={typeof config.colors.background === 'object' ? config.colors.background.from : config.colors.background}
-                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                class="w-12 h-10 rounded border border-calico-gray-600 bg-transparent cursor-pointer"
               />
               <input 
                 type="text" 
                 value={typeof config.colors.background === 'object' ? config.colors.background.from : config.colors.background}
-                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                class="flex-1 px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white text-sm font-mono"
                 readonly
               />
             </div>
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Fondo (Hasta)</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Fondo (Hasta)</label>
             <div class="flex items-center space-x-2">
               <input 
                 type="color" 
                 name="colors.background.to" 
                 value={typeof config.colors.background === 'object' ? config.colors.background.to : config.colors.background}
-                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                class="w-12 h-10 rounded border border-calico-gray-600 bg-transparent cursor-pointer"
               />
               <input 
                 type="text" 
                 value={typeof config.colors.background === 'object' ? config.colors.background.to : config.colors.background}
-                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                class="flex-1 px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white text-sm font-mono"
                 readonly
               />
             </div>
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Superficie</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Superficie</label>
             <div class="flex items-center space-x-2">
               <input 
                 type="color" 
                 name="colors.surface" 
                 value={config.colors.surface}
-                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                class="w-12 h-10 rounded border border-calico-gray-600 bg-transparent cursor-pointer"
               />
               <input 
                 type="text" 
                 value={config.colors.surface}
-                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                class="flex-1 px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white text-sm font-mono"
                 readonly
               />
             </div>
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Texto</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Texto</label>
             <div class="flex items-center space-x-2">
               <input 
                 type="color" 
                 name="colors.text" 
                 value={config.colors.text}
-                class="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                class="w-12 h-10 rounded border border-calico-gray-600 bg-transparent cursor-pointer"
               />
               <input 
                 type="text" 
                 value={config.colors.text}
-                class="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                class="flex-1 px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white text-sm font-mono"
                 readonly
               />
             </div>
@@ -195,15 +195,15 @@ const config = {
       
       <!-- Sección de Tipografía -->
       <div class="space-y-4">
-        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+        <h4 class="text-lg font-semibold text-calico-white border-b border-calico-stripe-light pb-2">
           📝 Tipografía
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Fuente Principal</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Fuente Principal</label>
             <select 
               name="typography.fontFamily" 
-              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+              class="w-full px-3 py-2 bg-calico-gray-800 border border-calico-stripe-light rounded text-calico-white"
             >
               <option value="Inter, system-ui, sans-serif" selected={config.typography.fontFamily === 'Inter, system-ui, sans-serif'}>
                 Inter (Sans-serif)
@@ -224,10 +224,10 @@ const config = {
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Fuente de Títulos</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Fuente de Títulos</label>
             <select 
               name="typography.headingFont" 
-              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+              class="w-full px-3 py-2 bg-calico-gray-800 border border-calico-stripe-light rounded text-calico-white"
             >
               <option value="Orbitron, monospace" selected={config.typography.headingFont === 'Orbitron, monospace'}>
                 Orbitron (Gaming)
@@ -251,40 +251,40 @@ const config = {
       
       <!-- Sección de Imágenes -->
       <div class="space-y-4">
-        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+        <h4 class="text-lg font-semibold text-calico-white border-b border-calico-stripe-light pb-2">
           🖼️ Imágenes
         </h4>
         <div class="space-y-4">
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Imagen Hero (URL)</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Imagen Hero (URL)</label>
             <input 
               type="url" 
               name="images.hero" 
               value={config.images.hero}
               placeholder="https://ejemplo.com/imagen-hero.jpg"
-              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+              class="w-full px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white"
             />
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Icono (URL)</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Icono (URL)</label>
             <input 
               type="url" 
               name="images.icon" 
               value={config.images.icon}
               placeholder="/icons/mi-icono.svg"
-              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+              class="w-full px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white"
             />
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Patrón de Fondo (URL)</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Patrón de Fondo (URL)</label>
             <input 
               type="url" 
               name="images.pattern" 
               value={config.images.pattern}
               placeholder="/patterns/mi-patron.svg"
-              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+              class="w-full px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white"
             />
           </div>
         </div>
@@ -292,15 +292,15 @@ const config = {
       
       <!-- Sección de Layout -->
       <div class="space-y-4">
-        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+        <h4 class="text-lg font-semibold text-calico-white border-b border-calico-stripe-light pb-2">
           📐 Layout
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Radio de Bordes</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Radio de Bordes</label>
             <select 
               name="layout.borderRadius" 
-              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+              class="w-full px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white"
             >
               <option value="4px" selected={config.layout.borderRadius === '4px'}>Pequeño (4px)</option>
               <option value="8px" selected={config.layout.borderRadius === '8px'}>Mediano (8px)</option>
@@ -311,10 +311,10 @@ const config = {
           </div>
           
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-300">Espaciado</label>
+            <label class="block text-sm font-medium text-calico-gray-300">Espaciado</label>
             <select 
               name="layout.spacing" 
-              class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+              class="w-full px-3 py-2 bg-calico-gray-800 border border-calico-gray-600 rounded text-calico-white"
             >
               <option value="0.75rem" selected={config.layout.spacing === '0.75rem'}>Compacto (0.75rem)</option>
               <option value="1rem" selected={config.layout.spacing === '1rem'}>Normal (1rem)</option>
@@ -327,10 +327,10 @@ const config = {
       
       <!-- Vista Previa -->
       <div class="space-y-4">
-        <h4 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+        <h4 class="text-lg font-semibold text-calico-white border-b border-calico-stripe-light pb-2">
           👁️ Vista Previa
         </h4>
-        <div id="theme-preview" class="p-6 rounded-lg border-2 border-dashed border-gray-600">
+        <div id="theme-preview" class="p-6 rounded-lg border-2 border-dashed border-calico-stripe-light">
           <div class="preview-card p-4 rounded-lg">
             <h5 class="preview-heading text-lg font-bold mb-2">Título de Ejemplo</h5>
             <p class="preview-text mb-4">Este es un texto de ejemplo para mostrar cómo se verá el tema.</p>
@@ -342,19 +342,19 @@ const config = {
       </div>
       
       <!-- Botones de Acción -->
-      <div class="flex items-center justify-between pt-6 border-t border-gray-700">
+      <div class="flex items-center justify-between pt-6 border-t border-calico-stripe-light">
         <div class="flex space-x-3">
           <button 
             type="button" 
             id="reset-theme" 
-            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+            class="px-4 py-2 bg-calico-gray-700 hover:bg-calico-gray-600 text-calico-white rounded-lg transition-colors"
           >
             Restablecer
           </button>
           <button 
             type="button" 
             id="preview-theme" 
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            class="px-4 py-2 bg-calico-blue-600 hover:bg-calico-blue-700 text-calico-white rounded-lg transition-colors"
           >
             Vista Previa
           </button>
@@ -364,13 +364,13 @@ const config = {
           <button 
             type="button" 
             id="export-theme" 
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            class="px-4 py-2 bg-calico-green-600 hover:bg-calico-green-700 text-calico-white rounded-lg transition-colors"
           >
             Exportar JSON
           </button>
           <button 
             type="submit" 
-            class="px-6 py-2 bg-accent hover:bg-accent/90 text-white rounded-lg font-semibold transition-colors"
+            class="px-6 py-2 bg-calico-accent hover:bg-calico-accent/90 text-calico-white rounded-lg font-semibold transition-colors"
           >
             Guardar Tema
           </button>
@@ -557,17 +557,17 @@ const config = {
   }
   
   .theme-customizer::-webkit-scrollbar-track {
-    background: #374151;
+    background: var(--calico-gray-700);
     border-radius: 4px;
   }
   
   .theme-customizer::-webkit-scrollbar-thumb {
-    background: #6b7280;
+    background: var(--calico-gray-500);
     border-radius: 4px;
   }
   
   .theme-customizer::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
+    background: var(--calico-gray-400);
   }
   
   input[type="color"] {

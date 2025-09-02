@@ -16,6 +16,12 @@ if (!gameName || typeof gameName !== 'string') {
   return Astro.redirect('/404');
 }
 
+// Excluir rutas específicas que no son juegos
+const excludedRoutes = ['profile', 'login', 'register', 'admin', 'api', 'settings'];
+if (excludedRoutes.includes((gameName as string).toLowerCase())) {
+  return Astro.redirect('/404');
+}
+
 // Convertir el slug de la URL al nombre del juego
 let gameNameFormatted = (gameName as string)
   .split('-')
