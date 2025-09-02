@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ProfileEditModal from '../components/react/ProfileEditModal.tsx';
+import { getFavoriteGamesByPosts, getUserRecentActivity } from '../utils/favorites';
 
 // Mock user data - in a real app, this would come from authentication
 const user = {
@@ -8,6 +9,25 @@ const user = {
   email: 'usuario@ejemplo.com',
   bio: 'Gamer apasionado que disfruta de diversos juegos multijugador.'
 };
+
+// Mock user ID for demonstration - in real app, get from session
+const userId = '550e8400-e29b-41d4-a716-446655440000';
+
+// Get dynamic data
+let favoriteGames: any[] = [];
+let recentActivity: any[] = [];
+
+try {
+  const [favGamesResult, activityResult] = await Promise.all([
+    getFavoriteGamesByPosts(userId, 3),
+    getUserRecentActivity(userId, 5)
+  ]);
+  
+  favoriteGames = favGamesResult.data || [];
+  recentActivity = activityResult.data || [];
+} catch (error) {
+  console.error('Error loading profile data:', error);
+}
 ---
 
 <Layout title="Perfil de Usuario">
@@ -38,8 +58,8 @@ const user = {
 
             <!-- User Info -->
             <div class="flex-1 text-center md:text-left">
-            <h1 class="text-3xl font-bold text-calico-white mb-2">{user.username}</h1>
-            <p class="text-calico-gray-300 mb-4">{user.email}</p>
+            <h1 id="profileName" class="text-3xl font-bold text-calico-white mb-2">{user.username}</h1>
+            <p id="profileEmail" class="text-calico-gray-300 mb-4">{user.email}</p>
               <div class="flex flex-wrap justify-center md:justify-start gap-2">
                 <span class="bg-calico-orange/20 text-calico-orange px-3 py-1 rounded-full text-sm border border-calico-orange/30">Gamer</span>
                 <span class="bg-calico-brown/20 text-calico-brown px-3 py-1 rounded-full text-sm border border-calico-brown/30">Miembro desde <span id="memberSince">2024</span></span>
@@ -116,50 +136,42 @@ const user = {
           </div>
 
           <!-- Recent Activity -->
-          <div class="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
-            <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-              <svg class="w-6 h-6 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="glass-calico backdrop-blur-xl rounded-2xl border border-calico-stripe-light/20 p-6">
+            <h2 class="text-2xl font-bold text-calico-white mb-6 flex items-center">
+              <svg class="w-6 h-6 mr-3 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
               </svg>
               Actividad Reciente
             </h2>
             
-            <div class="space-y-4">
-              <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl border border-white/10">
-                <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-                  </svg>
+            <div id="recentActivityContainer" class="space-y-4">
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity) => (
+                  <div class="flex items-center space-x-4 p-4 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
+                    <div class="w-10 h-10 bg-calico-orange/20 rounded-lg flex items-center justify-center">
+                      <svg class="w-5 h-5 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-calico-gray-900 font-medium">{activity.text}</p>
+                      <p class="text-calico-gray-600 text-sm">{activity.time}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div class="flex items-center space-x-4 p-4 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
+                  <div class="w-10 h-10 bg-calico-orange/20 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-calico-gray-900 font-medium">No hay actividad reciente</p>
+                    <p class="text-calico-gray-600 text-sm">Comienza a publicar en tus juegos favoritos</p>
+                  </div>
                 </div>
-                <div class="flex-1">
-                  <p class="text-white font-medium">Conectado a Servidor Minecraft PvP</p>
-                  <p class="text-gray-400 text-sm">Hace 2 horas</p>
-                </div>
-              </div>
-              
-              <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl border border-white/10">
-                <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="text-white font-medium">Logro desbloqueado: "Constructor Maestro"</p>
-                  <p class="text-gray-400 text-sm">Hace 1 día</p>
-                </div>
-              </div>
-              
-              <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl border border-white/10">
-                <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="text-white font-medium">Partida de Among Us completada</p>
-                  <p class="text-gray-400 text-sm">Hace 3 días</p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -167,24 +179,24 @@ const user = {
         <!-- Sidebar -->
         <div class="space-y-8">
           <!-- Quick Actions -->
-          <div class="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
-            <h3 class="text-xl font-bold text-white mb-4">Acciones Rápidas</h3>
+          <div class="glass-calico backdrop-blur-xl rounded-2xl border border-calico-stripe-light/20 p-6">
+            <h3 class="text-xl font-bold text-calico-white mb-4">Acciones Rápidas</h3>
             <div class="space-y-3">
-              <button class="w-full bg-gradient-to-r from-green-600/20 to-emerald-600/20 hover:from-green-600/30 hover:to-emerald-600/30 text-green-300 border border-green-500/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
+              <button class="w-full bg-gradient-to-r from-calico-orange/20 to-calico-brown/20 hover:from-calico-orange/30 hover:to-calico-brown/30 text-calico-orange border border-calico-orange/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
                 </svg>
                 Conectar a Minecraft
               </button>
               
-              <button class="w-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 text-purple-300 border border-purple-500/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
+              <button class="w-full bg-gradient-to-r from-calico-gray/20 to-calico-orange/20 hover:from-calico-gray/30 hover:to-calico-orange/30 text-calico-gray-200 border border-calico-gray/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
                 Buscar Partida
               </button>
               
-              <button class="w-full bg-gradient-to-r from-blue-600/20 to-cyan-600/20 hover:from-blue-600/30 hover:to-cyan-600/30 text-blue-300 border border-blue-500/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
+              <button class="w-full bg-gradient-to-r from-calico-brown/20 to-calico-orange/20 hover:from-calico-brown/30 hover:to-calico-orange/30 text-calico-brown border border-calico-brown/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -195,34 +207,34 @@ const user = {
           </div>
 
           <!-- Favorite Games -->
-          <div class="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
-            <h3 class="text-xl font-bold text-white mb-4">Juegos Favoritos</h3>
-            <div class="space-y-3">
-              <div class="flex items-center space-x-3 p-3 bg-white/5 rounded-xl border border-white/10">
-                <img src="/minecraft-icon.png" alt="Minecraft" class="w-10 h-10 rounded-lg">
-                <div>
-                  <p class="text-white font-medium">Minecraft</p>
-                  <p class="text-gray-400 text-sm">127 horas</p>
+          <div class="glass-calico backdrop-blur-xl rounded-2xl border border-calico-stripe-light/20 p-6">
+            <h3 class="text-xl font-bold text-calico-white mb-4">Juegos Favoritos</h3>
+            <div id="favoriteGamesContainer" class="space-y-3">
+              {favoriteGames.length > 0 ? (
+                favoriteGames.map((game) => (
+                  <div class="flex items-center space-x-3 p-3 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
+                    <img src={game.cover_image_url || '/default-game-icon.png'} alt={game.name} class="w-10 h-10 rounded-lg object-cover">
+                    <div>
+                      <p class="text-calico-gray-900 font-medium">{game.name}</p>
+                      <p class="text-calico-gray-600 text-sm">{game.post_count} post{game.post_count !== 1 ? 's' : ''}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div class="flex items-center space-x-3 p-3 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
+                  <div class="w-10 h-10 bg-calico-orange/20 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-calico-gray-900 font-medium">No hay juegos favoritos</p>
+                    <p class="text-calico-gray-600 text-sm">Haz posts en tus juegos favoritos</p>
+                  </div>
                 </div>
-              </div>
-              
-              <div class="flex items-center space-x-3 p-3 bg-white/5 rounded-xl border border-white/10">
-                <img src="/among-us-icon.png" alt="Among Us" class="w-10 h-10 rounded-lg">
-                <div>
-                  <p class="text-white font-medium">Among Us</p>
-                  <p class="text-gray-400 text-sm">89 horas</p>
-                </div>
-              </div>
-              
-              <div class="flex items-center space-x-3 p-3 bg-white/5 rounded-xl border border-white/10">
-                <img src="/uno-icon.png" alt="UNO" class="w-10 h-10 rounded-lg">
-                <div>
-                  <p class="text-white font-medium">UNO</p>
-                  <p class="text-gray-400 text-sm">31 horas</p>
-                </div>
-              </div>
-            {user.bio && <p class="text-calico-gray-400 mb-4">{user.bio}</p>}
+              )}
             </div>
+            {user.bio && <p class="text-calico-gray-300 mt-4 text-sm">{user.bio}</p>}
           </div>
         </div>
       </div>
@@ -237,41 +249,186 @@ const user = {
     function checkAuth() {
       const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
       if (!userSession) {
-        window.location.href = '/login';
+        console.log('No user session found in storage');
         return null;
       }
       
       try {
-        return JSON.parse(userSession);
+        const session = JSON.parse(userSession);
+        console.log('Found valid user session:', session.user?.username);
+        return session;
       } catch (error) {
         console.error('Error parsing user session:', error);
         localStorage.removeItem('userSession');
         sessionStorage.removeItem('userSession');
-        window.location.href = '/login';
         return null;
       }
     }
 
+    // Create a test user session if none exists
+    function createTestSession() {
+      const testSession = {
+        user: {
+          id: '550e8400-e29b-41d4-a716-446655440000',
+          username: 'TestUser',
+          email: 'test@example.com',
+          full_name: 'Usuario de Prueba',
+          avatar: '/default-avatar.png',
+          createdAt: '2024-01-01T00:00:00Z'
+        },
+        access_token: 'test-token',
+        loginTime: new Date().toISOString(),
+        rememberMe: false
+      };
+      
+      localStorage.setItem('userSession', JSON.stringify(testSession));
+      console.log('Created test user session:', testSession);
+      return testSession;
+    }
+
+    // Load favorite games dynamically
+    async function loadFavoriteGames(userId: string) {
+      try {
+        const response = await fetch(`/api/users/${userId}/favorite-games`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch favorite games');
+        }
+        const result = await response.json();
+        const favoriteGames = result.data || [];
+        
+        const container = document.getElementById('favoriteGamesContainer');
+        if (!container) return;
+        
+        if (favoriteGames.length > 0) {
+          container.innerHTML = favoriteGames.map((game: any) => `
+            <div class="flex items-center space-x-3 p-3 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
+              <img src="${game.cover_image_url || '/default-game-icon.png'}" alt="${game.name}" class="w-10 h-10 rounded-lg object-cover">
+              <div>
+                <p class="text-calico-gray-900 font-medium">${game.name}</p>
+                <p class="text-calico-gray-600 text-sm">${game.post_count} post${game.post_count !== 1 ? 's' : ''}</p>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = `
+            <div class="flex items-center space-x-3 p-3 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
+              <div class="w-10 h-10 bg-calico-orange/20 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-calico-gray-900 font-medium">No hay juegos favoritos</p>
+                <p class="text-calico-gray-600 text-sm">Haz posts en tus juegos favoritos</p>
+              </div>
+            </div>
+          `;
+        }
+        
+        console.log('Loaded favorite games:', favoriteGames);
+      } catch (error) {
+        console.error('Error loading favorite games:', error);
+      }
+    }
+    
+    // Load recent activity dynamically
+    async function loadRecentActivity(userId: string) {
+      try {
+        const response = await fetch(`/api/users/${userId}/recent-activity`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch recent activity');
+        }
+        const result = await response.json();
+        const recentActivity = result.data || [];
+        
+        const container = document.getElementById('recentActivityContainer');
+        if (!container) return;
+        
+        if (recentActivity.length > 0) {
+          container.innerHTML = recentActivity.map((activity: any) => `
+            <div class="flex items-center space-x-4 p-4 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
+              <div class="w-10 h-10 bg-calico-orange/20 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <p class="text-calico-gray-900 font-medium">${activity.text}</p>
+                <p class="text-calico-gray-600 text-sm">${activity.time}</p>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = `
+            <div class="flex items-center space-x-4 p-4 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
+              <div class="w-10 h-10 bg-calico-orange/20 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <p class="text-calico-gray-900 font-medium">No hay actividad reciente</p>
+                <p class="text-calico-gray-600 text-sm">Comienza a publicar en tus juegos favoritos</p>
+              </div>
+            </div>
+          `;
+        }
+        
+        console.log('Loaded recent activity:', recentActivity);
+      } catch (error) {
+        console.error('Error loading recent activity:', error);
+      }
+    }
+
     // Load user profile data
-    function loadProfile() {
-      const session = checkAuth();
-      if (!session) return;
+    async function loadProfile() {
+      let session = checkAuth();
+      
+      // If no session exists, create a test session for development
+      if (!session) {
+        console.log('No session found, creating test session...');
+        session = createTestSession();
+      }
       
       const user = session.user;
+      console.log('Loading profile for user:', user);
       
       // Update profile elements
       const profileName = document.getElementById('profileName');
       const profileEmail = document.getElementById('profileEmail');
       const profileAvatar = document.getElementById('profileAvatar') as HTMLImageElement;
       
-      if (profileName) profileName.textContent = user.full_name || user.username || 'Usuario';
-      if (profileEmail) profileEmail.textContent = user.email;
-      if (profileAvatar) profileAvatar.src = user.avatar || '/default-avatar.png';
+      if (profileName) {
+        profileName.textContent = user.full_name || user.username || 'Usuario';
+        console.log('Updated profile name:', profileName.textContent);
+      }
+      if (profileEmail) {
+        profileEmail.textContent = user.email;
+        console.log('Updated profile email:', profileEmail.textContent);
+      }
+      if (profileAvatar) {
+        profileAvatar.src = user.avatar || '/default-avatar.png';
+        console.log('Updated profile avatar:', profileAvatar.src);
+      }
       
       // Calculate member since
       const createdDate = new Date(user.createdAt || session.loginTime);
       const memberSince = document.getElementById('memberSince');
-      if (memberSince) memberSince.textContent = createdDate.getFullYear().toString();
+      if (memberSince) {
+        memberSince.textContent = createdDate.getFullYear().toString();
+        console.log('Updated member since:', memberSince.textContent);
+      }
+      
+      // Load dynamic data if user is authenticated
+      if (user.id) {
+        try {
+          console.log('Loading dynamic profile data for user:', user.id);
+          await loadFavoriteGames(user.id);
+          await loadRecentActivity(user.id);
+        } catch (error) {
+          console.error('Error loading dynamic profile data:', error);
+        }
+      }
     }
 
     // React Profile Edit Modal integration handled via custom events

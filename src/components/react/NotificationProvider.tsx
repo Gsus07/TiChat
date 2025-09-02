@@ -82,9 +82,9 @@ export const useNotifications = (): NotificationContextType => {
   if (context === undefined) {
     // Return a safe fallback instead of throwing an error
     // Solo mostrar warning una vez para evitar spam en consola
-    if (typeof window !== 'undefined' && !window.__notificationWarningShown) {
+    if (typeof window !== 'undefined' && !(window as any).__notificationWarningShown) {
       console.warn('useNotifications called outside of NotificationProvider, using fallback');
-      window.__notificationWarningShown = true;
+      (window as any).__notificationWarningShown = true;
     }
     return {
       notifications: [],
