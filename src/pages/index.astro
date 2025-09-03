@@ -11,7 +11,9 @@ const { data: games, error } = await getAllGames();
 
 // Obtener el usuario actual si está autenticado
 const { data: { user } } = await supabase.auth.getUser();
-const currentUserId = user?.id;
+// En desarrollo, mostrar el botón siempre para facilitar las pruebas
+const isDevelopment = import.meta.env.DEV;
+const currentUserId = user?.id || (isDevelopment ? '550e8400-e29b-41d4-a716-446655440000' : null);
 ---
 
 <Layout title="Juegos que Jugamos">
@@ -197,7 +199,7 @@ const currentUserId = user?.id;
             {currentUserId && (
               <button 
                 id="add-game-btn"
-                class="group relative px-6 py-3 bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 hover:from-calico-orange-600 hover:to-calico-orange-700 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-calico-orange-500/25 flex items-center space-x-2"
+                class="group relative px-6 py-3 bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 hover:from-calico-orange-600 hover:to-calico-orange-700 text-black font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-calico-orange-500/25 flex items-center space-x-2"
               >
                 <svg class="w-5 h-5 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -211,7 +213,7 @@ const currentUserId = user?.id;
                games.map((game) => (
                  <GameCard 
                    game={game}
-                   userId={currentUserId}
+                   userId={currentUserId || undefined}
                  />
                ))
              ) : (
