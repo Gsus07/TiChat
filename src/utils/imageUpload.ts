@@ -43,11 +43,11 @@ export async function uploadGameImage(file: File, gameId?: string): Promise<Imag
     const randomString = Math.random().toString(36).substring(2, 15);
     const fileExtension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     
-    // Crear path organizado
+    // Crear path simple para el bucket gamesimg
     const fileName = `${timestamp}_${randomString}.${fileExtension}`;
-    const filePath = gameId ? `games/${gameId}/${fileName}` : `games/${fileName}`;
+    const filePath = gameId ? `${gameId}/${fileName}` : fileName;
 
-    // Subir archivo al bucket
+    // Subir archivo al bucket gamesimg
     const { data, error } = await supabase.storage
       .from('gamesimg')
       .upload(filePath, file, {
@@ -65,7 +65,7 @@ export async function uploadGameImage(file: File, gameId?: string): Promise<Imag
 
     // Obtener URL pública
     const { data: publicUrlData } = supabase.storage
-      .from('gamesimg')
+      .from('avatars')
       .getPublicUrl(filePath);
 
     if (!publicUrlData?.publicUrl) {

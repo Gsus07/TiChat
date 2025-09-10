@@ -178,11 +178,41 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
     setErrors({});
 
     try {
-      // Obtener token de autenticación
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        setErrors({ general: 'Debes iniciar sesión para editar juegos' });
-        return;
+      // Obtener el token de autenticación de Supabase
+      let { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session?.access_token) {
+        console.error('❌ Error de sesión Supabase:', sessionError);
+        console.log('📊 Estado de sesión:', { session, sessionError });
+        
+        // Intentar obtener sesión desde localStorage como fallback
+        const localSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+        if (localSession) {
+          try {
+            const parsedSession = JSON.parse(localSession);
+            if (parsedSession.access_token) {
+              console.log('✅ Usando token desde localStorage');
+              // Usar el token del localStorage
+              session = {
+                access_token: parsedSession.access_token,
+                refresh_token: parsedSession.refresh_token || '',
+                expires_in: parsedSession.expires_in || 3600,
+                token_type: parsedSession.token_type || 'bearer',
+                user: parsedSession.user || null
+              };
+            } else {
+              setErrors({ general: 'Debes iniciar sesión para editar juegos' });
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing localStorage session:', e);
+            setErrors({ general: 'Debes iniciar sesión para editar juegos' });
+            return;
+          }
+        } else {
+          setErrors({ general: 'Debes iniciar sesión para editar juegos' });
+          return;
+        }
       }
 
       let imageUrl = game.cover_image_url; // Mantener imagen actual por defecto
@@ -193,7 +223,11 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
         
         try {
           const uploadResult: ImageUploadResult = await uploadGameImage(imageUpload.file, game.id);
-          imageUrl = uploadResult.url;
+          if (uploadResult.success && uploadResult.url) {
+            imageUrl = uploadResult.url;
+          } else {
+            throw new Error(uploadResult.error || 'Error al subir la imagen');
+          }
           
           // Si había una imagen anterior y era del bucket, eliminarla
           if (game.cover_image_url && game.cover_image_url.includes('supabase')) {
@@ -229,7 +263,7 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${session?.access_token || ''}`
         },
         body: JSON.stringify(gameDataToSend)
       });
@@ -254,8 +288,8 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-calico-stripe-dark border border-calico-stripe-light/20 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-calico-stripe-dark bg-white  rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl sm:text-3xl font-bold text-calico-white">
@@ -476,7 +510,7 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 hover:from-calico-orange-600 hover:to-calico-orange-700 text-white px-4 py-2.5 sm:py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-calico-orange-600 hover:to-calico-orange-700 text-white px-4 py-2.5 sm:py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 disabled={isSubmitting || imageUpload.uploading}
               >
                 {isSubmitting ? 'Actualizando...' : 'Actualizar Juego'}

@@ -281,9 +281,7 @@ export const PUT: APIRoute = async ({ request }) => {
     }
 
     // Preparar datos de actualización
-    const updateData: any = {
-      updated_at: new Date().toISOString()
-    };
+    const updateData: any = {};
 
     if (gameData.name) updateData.name = gameData.name.trim();
     if (gameData.description !== undefined) updateData.description = gameData.description?.trim() || null;
