@@ -233,6 +233,7 @@ const currentUserId = user?.id || (isDevelopment ? '550e8400-e29b-41d4-a716-4466
   import React from 'react';
   import { createRoot } from 'react-dom/client';
   import CreateGameForm from '../components/CreateGameForm';
+  import EditGameForm from '../components/EditGameForm';
   import type { Game } from '../types/game';
 
   // Function to fetch updated games list
@@ -311,11 +312,58 @@ const currentUserId = user?.id || (isDevelopment ? '550e8400-e29b-41d4-a716-4466
     );
   }
 
+  // Function to show the edit game modal
+  function showEditGameModal(gameData: any) {
+    // Create modal container
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'edit-game-modal';
+    document.body.appendChild(modalContainer);
+
+    // Create React root and render the form
+    const root = createRoot(modalContainer);
+    
+    const handleGameUpdated = async (updatedGame: Game) => {
+      console.log('✅ Juego actualizado:', updatedGame);
+      
+      // Close modal
+      root.unmount();
+      document.body.removeChild(modalContainer);
+      
+      // Update games list dynamically
+      await updateGamesGrid();
+    };
+
+    const handleCancel = () => {
+      root.unmount();
+      document.body.removeChild(modalContainer);
+    };
+
+    root.render(
+      React.createElement(EditGameForm, {
+        game: gameData,
+        isOpen: true,
+        onClose: handleCancel,
+        onSuccess: handleGameUpdated
+      })
+    );
+  }
+
+  // Make showEditGameModal available globally
+  (window as any).showEditGameModal = showEditGameModal;
+
   // Add event listener to the add game button
   document.addEventListener('DOMContentLoaded', () => {
     const addGameBtn = document.getElementById('add-game-btn');
     if (addGameBtn) {
       addGameBtn.addEventListener('click', showCreateGameModal);
     }
+
+    // Add event listener for edit game events
+    window.addEventListener('openEditGameModal', (event: any) => {
+      const gameData = event.detail;
+      if (gameData && gameData.id) {
+        showEditGameModal(gameData);
+      }
+    });
   });
 </script>

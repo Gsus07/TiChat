@@ -2,19 +2,16 @@ import { createClient } from '@supabase/supabase-js';
 
 // Función para obtener variables de entorno que funcione en navegador y Node.js
 function getEnvVar(name: string): string {
-  // En el navegador (Astro)
+  // En el navegador (Astro client-side)
   if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env[name];
+    const value = import.meta.env[name];
+    if (value) return value;
   }
   
-  // En Node.js
+  // En Node.js (Astro server-side)
   if (typeof process !== 'undefined' && process.env) {
-    return process.env[name] || '';
-  }
-  
-  // Fallback para contextos especiales
-  if (typeof globalThis !== 'undefined' && (globalThis as any).importMeta?.env) {
-    return (globalThis as any).importMeta.env[name];
+    const value = process.env[name];
+    if (value) return value;
   }
   
   throw new Error(`No se pudo obtener la variable de entorno: ${name}`);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Game } from '../types/game';
 import { supabase } from '../utils/supabaseClient';
 import { useNotifications } from './react/NotificationProvider';
+import { uploadGameImage, validateImageFile } from '../utils/imageUpload';
 
 interface CreateGameFormProps {
   onGameCreated: (game: Game) => void;
@@ -17,12 +18,19 @@ interface FormData {
   has_servers: boolean;
 }
 
+interface ImageUploadState {
+  file: File | null;
+  preview: string | null;
+  uploading: boolean;
+}
+
 interface FormErrors {
   name?: string;
   description?: string;
   genre?: string;
   platform?: string;
   cover_image_url?: string;
+  image?: string;
   general?: string;
 }
 
@@ -34,6 +42,12 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
     platform: '',
     cover_image_url: '',
     has_servers: false
+  });
+
+  const [imageUpload, setImageUpload] = useState<ImageUploadState>({
+    file: null,
+    preview: null,
+    uploading: false
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -53,8 +67,12 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
       newErrors.description = 'La descripción no puede exceder 500 caracteres';
     }
 
-    if (formData.cover_image_url && !isValidUrl(formData.cover_image_url)) {
-      newErrors.cover_image_url = 'Debe ser una URL válida';
+    // Validar imagen si se seleccionó un archivo
+    if (imageUpload.file) {
+      const imageValidation = validateImageFile(imageUpload.file);
+      if (!imageValidation.valid) {
+        newErrors.image = imageValidation.error;
+      }
     }
 
     setErrors(newErrors);
@@ -84,6 +102,45 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    
+    if (!file) {
+      setImageUpload({ file: null, preview: null, uploading: false });
+      return;
+    }
+
+    // Validar archivo
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      setErrors(prev => ({ ...prev, image: validation.error }));
+      return;
+    }
+
+    // Crear preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setImageUpload({
+        file,
+        preview: event.target?.result as string,
+        uploading: false
+      });
+    };
+    reader.readAsDataURL(file);
+
+    // Limpiar errores de imagen
+    if (errors.image) {
+      setErrors(prev => ({ ...prev, image: undefined }));
+    }
+  };
+
+  const removeImage = () => {
+    setImageUpload({ file: null, preview: null, uploading: false });
+    if (errors.image) {
+      setErrors(prev => ({ ...prev, image: undefined }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -102,13 +159,35 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
         throw new Error('No estás autenticado. Por favor, inicia sesión.');
       }
 
+      let imageUrl = formData.cover_image_url;
+
+      // Subir imagen si se seleccionó un archivo
+      if (imageUpload.file) {
+        setImageUpload(prev => ({ ...prev, uploading: true }));
+        
+        const uploadResult = await uploadGameImage(imageUpload.file);
+        
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Error al subir la imagen');
+        }
+        
+        imageUrl = uploadResult.url || '';
+        setImageUpload(prev => ({ ...prev, uploading: false }));
+      }
+
+      // Preparar datos del juego con la URL de imagen
+      const gameDataToSend = {
+        ...formData,
+        cover_image_url: imageUrl
+      };
+
       const response = await fetch('/api/games', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(gameDataToSend)
       });
 
       const result = await response.json();
@@ -126,6 +205,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
       const errorMessage = error instanceof Error ? error.message : 'Error al crear el juego';
       setErrors({ general: errorMessage });
       addNotification(errorMessage, 'error');
+      setImageUpload(prev => ({ ...prev, uploading: false }));
     } finally {
       setIsSubmitting(false);
     }
@@ -253,27 +333,73 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
             </select>
           </div>
 
-          {/* URL de imagen */}
+          {/* Subida de imagen */}
           <div>
-            <label htmlFor="cover_image_url" className="block text-sm font-medium text-calico-gray-300 mb-1.5 sm:mb-2">
-              URL de imagen de portada
+            <label className="block text-sm font-medium text-calico-gray-300 mb-1.5 sm:mb-2">
+              Imagen de portada
             </label>
-            <input
-              type="url"
-              id="cover_image_url"
-              name="cover_image_url"
-              value={formData.cover_image_url}
-              onChange={handleInputChange}
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-calico-stripe-dark/50 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all text-sm sm:text-base ${
-                errors.cover_image_url 
-                  ? 'border-red-500 focus:ring-red-500/50' 
-                  : 'border-calico-stripe-light/30 focus:border-calico-orange-500 focus:ring-calico-orange-500/20'
-              }`}
-              placeholder="https://ejemplo.com/imagen.jpg"
-              disabled={isSubmitting}
-            />
-            {errors.cover_image_url && (
-              <p className="mt-1 text-sm text-red-400">{errors.cover_image_url}</p>
+            
+            {/* Preview de imagen */}
+            {imageUpload.preview && (
+              <div className="mb-3 relative">
+                <img 
+                  src={imageUpload.preview} 
+                  alt="Preview" 
+                  className="w-full h-32 sm:h-40 object-cover rounded-xl border border-calico-stripe-light/30"
+                />
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="absolute top-2 right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                  disabled={isSubmitting || imageUpload.uploading}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                {imageUpload.uploading && (
+                  <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
+                    <div className="flex items-center space-x-2 text-white">
+                      <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span className="text-sm">Subiendo...</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Input de archivo */}
+            <div className={`relative border-2 border-dashed rounded-xl p-4 sm:p-6 transition-all ${
+              errors.image 
+                ? 'border-red-500 bg-red-500/5' 
+                : 'border-calico-stripe-light/30 hover:border-calico-orange-500/50 bg-calico-stripe-dark/20'
+            }`}>
+              <input
+                type="file"
+                id="image-upload"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={handleImageChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={isSubmitting || imageUpload.uploading}
+              />
+              <div className="text-center">
+                <svg className="mx-auto h-8 w-8 sm:h-12 sm:w-12 text-calico-gray-400 mb-2" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <p className="text-sm sm:text-base text-calico-gray-300 mb-1">
+                  {imageUpload.preview ? 'Cambiar imagen' : 'Seleccionar imagen'}
+                </p>
+                <p className="text-xs text-calico-gray-400">
+                  JPG, PNG, WEBP hasta 5MB
+                </p>
+              </div>
+            </div>
+            
+            {errors.image && (
+              <p className="mt-1 text-sm text-red-400">{errors.image}</p>
             )}
           </div>
 

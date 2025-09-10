@@ -1,10 +1,14 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { config } from 'dotenv';
 
 import react from '@astrojs/react';
 import node from '@astrojs/node';
 
 import tailwindcss from '@tailwindcss/vite';
+
+// Cargar variables de entorno desde .env
+config();
 
 // https://astro.build/config
 export default defineConfig({
