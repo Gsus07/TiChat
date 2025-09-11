@@ -322,8 +322,8 @@ const currentUserId = user?.id || (isDevelopment ? '550e8400-e29b-41d4-a716-4466
     // Create React root and render the form
     const root = createRoot(modalContainer);
     
-    const handleGameUpdated = async (updatedGame: Game) => {
-      console.log('✅ Juego actualizado:', updatedGame);
+    const handleGameUpdated = async () => {
+      console.log('✅ Juego actualizado');
       
       // Close modal
       root.unmount();

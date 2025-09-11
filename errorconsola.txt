@@ -1,0 +1,157 @@
+chunk-JQKKP4PT.js?v=b9f4b965:17995 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+NotificationProvider.tsx:86 useNotifications called outside of NotificationProvider, using fallback
+useNotifications @ NotificationProvider.tsx:86
+Navigation @ Navigation.tsx:19
+react_stack_bottom_frame @ chunk-JQKKP4PT.js?v=b9f4b965:17424
+renderWithHooks @ chunk-JQKKP4PT.js?v=b9f4b965:4206
+updateFunctionComponent @ chunk-JQKKP4PT.js?v=b9f4b965:6619
+beginWork @ chunk-JQKKP4PT.js?v=b9f4b965:7654
+runWithFiberInDEV @ chunk-JQKKP4PT.js?v=b9f4b965:1485
+performUnitOfWork @ chunk-JQKKP4PT.js?v=b9f4b965:10868
+workLoopConcurrentByScheduler @ chunk-JQKKP4PT.js?v=b9f4b965:10864
+renderRootConcurrent @ chunk-JQKKP4PT.js?v=b9f4b965:10844
+performWorkOnRoot @ chunk-JQKKP4PT.js?v=b9f4b965:10330
+performWorkOnRootViaSchedulerTask @ chunk-JQKKP4PT.js?v=b9f4b965:11623
+performWorkUntilDeadline @ chunk-JQKKP4PT.js?v=b9f4b965:36
+<Navigation>
+exports.createElement @ chunk-FDMQADGV.js?v=b9f4b965:776
+(anonymous) @ @astrojs_react_client__js.js?v=b9f4b965:101
+(anonymous) @ (index):3519
+e @ (index):3519
+await in e
+start @ (index):3519
+childrenConnectedCallback @ (index):3519
+await in childrenConnectedCallback
+connectedCallback @ (index):3519
+Navigation.tsx:106 Navigation component mounted and hydrated
+Navigation.tsx:112 Navigation component state updated: {user: null, isUserDropdownOpen: false}
+Navigation.tsx:112 Navigation component state updated: {user: {…}, isUserDropdownOpen: false}
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+EditGameForm.tsx:185 ❌ Error de sesión Supabase: null
+handleSubmit @ EditGameForm.tsx:185
+await in handleSubmit
+executeDispatch @ chunk-JQKKP4PT.js?v=b9f4b965:11736
+runWithFiberInDEV @ chunk-JQKKP4PT.js?v=b9f4b965:1485
+processDispatchQueue @ chunk-JQKKP4PT.js?v=b9f4b965:11772
+(anonymous) @ chunk-JQKKP4PT.js?v=b9f4b965:12182
+batchedUpdates$1 @ chunk-JQKKP4PT.js?v=b9f4b965:2628
+dispatchEventForPluginEventSystem @ chunk-JQKKP4PT.js?v=b9f4b965:11877
+dispatchEvent @ chunk-JQKKP4PT.js?v=b9f4b965:14792
+dispatchDiscreteEvent @ chunk-JQKKP4PT.js?v=b9f4b965:14773
+<form>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=b9f4b965:250
+EditGameForm @ EditGameForm.tsx:309
+react_stack_bottom_frame @ chunk-JQKKP4PT.js?v=b9f4b965:17424
+renderWithHooks @ chunk-JQKKP4PT.js?v=b9f4b965:4206
+updateFunctionComponent @ chunk-JQKKP4PT.js?v=b9f4b965:6619
+beginWork @ chunk-JQKKP4PT.js?v=b9f4b965:7654
+runWithFiberInDEV @ chunk-JQKKP4PT.js?v=b9f4b965:1485
+performUnitOfWork @ chunk-JQKKP4PT.js?v=b9f4b965:10868
+workLoopSync @ chunk-JQKKP4PT.js?v=b9f4b965:10728
+renderRootSync @ chunk-JQKKP4PT.js?v=b9f4b965:10711
+performWorkOnRoot @ chunk-JQKKP4PT.js?v=b9f4b965:10330
+performWorkOnRootViaSchedulerTask @ chunk-JQKKP4PT.js?v=b9f4b965:11623
+performWorkUntilDeadline @ chunk-JQKKP4PT.js?v=b9f4b965:36
+<EditGameForm>
+exports.createElement @ chunk-FDMQADGV.js?v=b9f4b965:776
+showEditGameModal @ ..\..\..\..\PROYECTOS PERSONALES\TiChat\src\pages\index.astro:342
+(anonymous) @ ..\..\..\..\PROYECTOS PERSONALES\TiChat\src\pages\index.astro:365
+(anonymous) @ ..\..\..\..\PROYECTOS PERSONALES\TiChat\src\components\GameCard.astro:295
+EditGameForm.tsx:186 📊 Estado de sesión: {session: null, sessionError: null}
+EditGameForm.tsx:194 ✅ Usando token desde localStorage
+imageUpload.ts:53  POST https://ibzkjlmwbtlfmqzbxsib.supabase.co/storage/v1/object/gamesimg/458af48b-70e0-4c40-a17d-d6ff2eb56f2b/1757622902521_ozq9iwql91k.png 400 (Bad Request)
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:4205
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:4226
+fulfilled @ @supabase_supabase-js.js?v=b9f4b965:4178
+Promise.then
+step @ @supabase_supabase-js.js?v=b9f4b965:4191
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:4193
+__awaiter6 @ @supabase_supabase-js.js?v=b9f4b965:4175
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:4216
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3264
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3264
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3355
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3354
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3318
+__awaiter3 @ @supabase_supabase-js.js?v=b9f4b965:3300
+_handleRequest @ @supabase_supabase-js.js?v=b9f4b965:3353
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3372
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3318
+__awaiter3 @ @supabase_supabase-js.js?v=b9f4b965:3300
+post @ @supabase_supabase-js.js?v=b9f4b965:3371
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3479
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3416
+__awaiter4 @ @supabase_supabase-js.js?v=b9f4b965:3398
+uploadOrUpdate @ @supabase_supabase-js.js?v=b9f4b965:3447
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3500
+(anonymous) @ @supabase_supabase-js.js?v=b9f4b965:3416
+__awaiter4 @ @supabase_supabase-js.js?v=b9f4b965:3398
+upload @ @supabase_supabase-js.js?v=b9f4b965:3499
+uploadGameImage @ imageUpload.ts:53
+handleSubmit @ EditGameForm.tsx:225
+await in handleSubmit
+executeDispatch @ chunk-JQKKP4PT.js?v=b9f4b965:11736
+runWithFiberInDEV @ chunk-JQKKP4PT.js?v=b9f4b965:1485
+processDispatchQueue @ chunk-JQKKP4PT.js?v=b9f4b965:11772
+(anonymous) @ chunk-JQKKP4PT.js?v=b9f4b965:12182
+batchedUpdates$1 @ chunk-JQKKP4PT.js?v=b9f4b965:2628
+dispatchEventForPluginEventSystem @ chunk-JQKKP4PT.js?v=b9f4b965:11877
+dispatchEvent @ chunk-JQKKP4PT.js?v=b9f4b965:14792
+dispatchDiscreteEvent @ chunk-JQKKP4PT.js?v=b9f4b965:14773
+<form>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=b9f4b965:250
+EditGameForm @ EditGameForm.tsx:309
+react_stack_bottom_frame @ chunk-JQKKP4PT.js?v=b9f4b965:17424
+renderWithHooks @ chunk-JQKKP4PT.js?v=b9f4b965:4206
+updateFunctionComponent @ chunk-JQKKP4PT.js?v=b9f4b965:6619
+beginWork @ chunk-JQKKP4PT.js?v=b9f4b965:7654
+runWithFiberInDEV @ chunk-JQKKP4PT.js?v=b9f4b965:1485
+performUnitOfWork @ chunk-JQKKP4PT.js?v=b9f4b965:10868
+workLoopSync @ chunk-JQKKP4PT.js?v=b9f4b965:10728
+renderRootSync @ chunk-JQKKP4PT.js?v=b9f4b965:10711
+performWorkOnRoot @ chunk-JQKKP4PT.js?v=b9f4b965:10330
+performWorkOnRootViaSchedulerTask @ chunk-JQKKP4PT.js?v=b9f4b965:11623
+performWorkUntilDeadline @ chunk-JQKKP4PT.js?v=b9f4b965:36
+<EditGameForm>
+exports.createElement @ chunk-FDMQADGV.js?v=b9f4b965:776
+showEditGameModal @ ..\..\..\..\PROYECTOS PERSONALES\TiChat\src\pages\index.astro:342
+(anonymous) @ ..\..\..\..\PROYECTOS PERSONALES\TiChat\src\pages\index.astro:365
+(anonymous) @ ..\..\..\..\PROYECTOS PERSONALES\TiChat\src\components\GameCard.astro:295
+imageUpload.ts:59 Error subiendo imagen: StorageApiError: new row violates row-level security policy
+    at @supabase_supabase-js.js?v=b9f4b965:3328:14
+uploadGameImage @ imageUpload.ts:59
+await in uploadGameImage
+handleSubmit @ EditGameForm.tsx:225
+await in handleSubmit
+executeDispatch @ chunk-JQKKP4PT.js?v=b9f4b965:11736
+runWithFiberInDEV @ chunk-JQKKP4PT.js?v=b9f4b965:1485
+processDispatchQueue @ chunk-JQKKP4PT.js?v=b9f4b965:11772
+(anonymous) @ chunk-JQKKP4PT.js?v=b9f4b965:12182
+batchedUpdates$1 @ chunk-JQKKP4PT.js?v=b9f4b965:2628
+dispatchEventForPluginEventSystem @ chunk-JQKKP4PT.js?v=b9f4b965:11877
+dispatchEvent @ chunk-JQKKP4PT.js?v=b9f4b965:14792
+dispatchDiscreteEvent @ chunk-JQKKP4PT.js?v=b9f4b965:14773
+EditGameForm.tsx:243 Error subiendo imagen: Error: Error al subir la imagen: new row violates row-level security policy
+    at handleSubmit (EditGameForm.tsx:229:19)
+handleSubmit @ EditGameForm.tsx:243
+await in handleSubmit
+executeDispatch @ chunk-JQKKP4PT.js?v=b9f4b965:11736
+runWithFiberInDEV @ chunk-JQKKP4PT.js?v=b9f4b965:1485
+processDispatchQueue @ chunk-JQKKP4PT.js?v=b9f4b965:11772
+(anonymous) @ chunk-JQKKP4PT.js?v=b9f4b965:12182
+batchedUpdates$1 @ chunk-JQKKP4PT.js?v=b9f4b965:2628
+dispatchEventForPluginEventSystem @ chunk-JQKKP4PT.js?v=b9f4b965:11877
+dispatchEvent @ chunk-JQKKP4PT.js?v=b9f4b965:14792
+dispatchDiscreteEvent @ chunk-JQKKP4PT.js?v=b9f4b965:14773
+
