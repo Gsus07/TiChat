@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { uploadGameImage, deleteGameImage, type ImageUploadResult } from '../utils/imageUpload';
 import { supabase } from '../utils/supabaseClient';
+import { getUserSession } from '../utils/auth';
 
 interface Game {
   id: string;
@@ -178,42 +179,27 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
     setErrors({});
 
     try {
-      // Obtener el token de autenticación de Supabase
-      let { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      // Verificar autenticación usando la función de utilidad
+      const userSession = getUserSession();
       
-      if (sessionError || !session?.access_token) {
-        console.error('❌ Error de sesión Supabase:', sessionError);
-        console.log('📊 Estado de sesión:', { session, sessionError });
-        
-        // Intentar obtener sesión desde localStorage como fallback
-        const localSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
-        if (localSession) {
-          try {
-            const parsedSession = JSON.parse(localSession);
-            if (parsedSession.access_token) {
-              console.log('✅ Usando token desde localStorage');
-              // Usar el token del localStorage
-              session = {
-                access_token: parsedSession.access_token,
-                refresh_token: parsedSession.refresh_token || '',
-                expires_in: parsedSession.expires_in || 3600,
-                token_type: parsedSession.token_type || 'bearer',
-                user: parsedSession.user || null
-              };
-            } else {
-              setErrors({ general: 'Debes iniciar sesión para editar juegos' });
-              return;
-            }
-          } catch (e) {
-            console.error('Error parsing localStorage session:', e);
-            setErrors({ general: 'Debes iniciar sesión para editar juegos' });
-            return;
-          }
-        } else {
-          setErrors({ general: 'Debes iniciar sesión para editar juegos' });
-          return;
-        }
+      if (!userSession || !userSession.access_token) {
+        setErrors({ general: 'Debes iniciar sesión para editar juegos' });
+        return;
       }
+      
+      // Configurar la sesión en Supabase
+      const { data, error } = await supabase.auth.setSession({
+        access_token: userSession.access_token,
+        refresh_token: userSession.refresh_token || ''
+      });
+      
+      if (error) {
+        console.error('❌ Error configurando sesión Supabase:', error);
+        setErrors({ general: 'Error de autenticación. Inicia sesión nuevamente.' });
+        return;
+      }
+      
+      console.log('✅ Sesión configurada correctamente en Supabase');
 
       let imageUrl = game.cover_image_url; // Mantener imagen actual por defecto
 
@@ -259,21 +245,27 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
       };
 
       // Enviar datos al servidor
+      console.log('🚀 Enviando datos al servidor:', JSON.stringify(gameDataToSend, null, 2));
+      
       const response = await fetch('/api/games', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token || ''}`
+          'Authorization': `Bearer ${userSession.access_token}`
         },
         body: JSON.stringify(gameDataToSend)
       });
 
+      console.log('📡 Respuesta del servidor - Status:', response.status);
       const result = await response.json();
+      console.log('📋 Resultado del servidor:', JSON.stringify(result, null, 2));
 
       if (response.ok && result.success) {
+        console.log('✅ Juego actualizado exitosamente');
         onSuccess();
         onClose();
       } else {
+        console.error('❌ Error al actualizar juego:', result);
         setErrors({ general: result.error || 'Error al actualizar el juego' });
       }
     } catch (error) {

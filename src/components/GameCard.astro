@@ -88,9 +88,10 @@ const { count: postCount } = await supabase
     <!-- Image container with overlay effects -->
     <div class="relative h-56 sm:h-60 md:h-64 lg:h-72 overflow-hidden flex-shrink-0">
       <img 
-        src={game.cover_image_url || '/images/default-game.jpg'} 
+        src={game.cover_image_url || '/tina-logo.png'} 
         alt={game.name}
         class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+        onerror="this.src='/tina-logo.png'"
       />
       <!-- Gradient overlay -->
       <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500"></div>

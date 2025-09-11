@@ -65,7 +65,7 @@ export async function uploadGameImage(file: File, gameId?: string): Promise<Imag
 
     // Obtener URL pública
     const { data: publicUrlData } = supabase.storage
-      .from('avatars')
+      .from('gamesimg')
       .getPublicUrl(filePath);
 
     if (!publicUrlData?.publicUrl) {

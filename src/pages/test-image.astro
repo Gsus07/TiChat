@@ -1,0 +1,57 @@
+---
+// Página de prueba para verificar imágenes
+import { supabase } from '../utils/supabaseClient';
+
+// Obtener un juego específico para probar
+const { data: games } = await supabase
+  .from('games')
+  .select('*')
+  .eq('name', 'Pinturillo')
+  .limit(1);
+
+const game = games?.[0];
+---
+
+<html>
+<head>
+  <title>Test de Imagen</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .test-container { max-width: 600px; margin: 0 auto; }
+    .image-test { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+    img { max-width: 100%; height: auto; border: 1px solid #ddd; }
+    .url-display { background: #f5f5f5; padding: 10px; margin: 10px 0; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>Test de Imagen - Pinturillo</h1>
+    
+    {game ? (
+      <div class="image-test">
+        <h2>Datos del juego:</h2>
+        <p><strong>ID:</strong> {game.id}</p>
+        <p><strong>Nombre:</strong> {game.name}</p>
+        <p><strong>URL de imagen:</strong></p>
+        <div class="url-display">{game.cover_image_url}</div>
+        
+        <h3>Imagen actual:</h3>
+        <img 
+          src={game.cover_image_url || '/tina-logo.png'} 
+          alt={game.name}
+          onerror="this.style.border='2px solid red'; this.alt='ERROR: No se pudo cargar la imagen';"
+        />
+        
+        <h3>Imagen de fallback:</h3>
+        <img 
+          src="/tina-logo.png" 
+          alt="Imagen por defecto"
+          onerror="this.style.border='2px solid red'; this.alt='ERROR: No se pudo cargar la imagen de fallback';"
+        />
+      </div>
+    ) : (
+      <p>No se encontró el juego Pinturillo</p>
+    )}
+  </div>
+</body>
+</html>

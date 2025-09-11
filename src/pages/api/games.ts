@@ -237,7 +237,7 @@ export const PUT: APIRoute = async ({ request }) => {
 
     // Obtener datos del juego del cuerpo de la petición
     const gameData = await request.json();
-    console.log('📊 Datos del juego para actualizar:', gameData);
+    console.log('📊 Datos del juego para actualizar:', JSON.stringify(gameData, null, 2));
     
     // Validar que se proporcione el ID
     if (!gameData.id) {
@@ -291,23 +291,33 @@ export const PUT: APIRoute = async ({ request }) => {
     if (gameData.has_servers !== undefined) updateData.has_servers = gameData.has_servers;
     if (gameData.theme_config !== undefined) updateData.theme_config = gameData.theme_config;
 
-    console.log('🎯 Actualizando juego con datos:', updateData);
+    console.log('🎯 Actualizando juego con datos:', JSON.stringify(updateData, null, 2));
+    console.log('🔍 ID del juego a actualizar:', gameData.id);
 
     // Actualizar el juego
-    const { data: updatedGame, error: updateError } = await supabase
+    const { data: updatedGames, error: updateError } = await supabase
       .from('games')
       .update(updateData)
       .eq('id', gameData.id)
-      .select()
-      .single();
+      .select();
 
     if (updateError) {
-      console.error('❌ Error actualizando juego:', updateError);
+      console.error('❌ Error actualizando juego:', JSON.stringify(updateError, null, 2));
       return new Response(
-        JSON.stringify({ error: 'Error al actualizar el juego' }),
+        JSON.stringify({ error: 'Error al actualizar el juego', details: updateError.message }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
+
+    if (!updatedGames || updatedGames.length === 0) {
+      console.error('❌ No se encontró el juego para actualizar');
+      return new Response(
+        JSON.stringify({ error: 'Juego no encontrado para actualizar' }),
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const updatedGame = updatedGames[0];
 
     console.log('🎉 Juego actualizado exitosamente:', updatedGame.name);
     
