@@ -6,6 +6,7 @@ import PostsList from './react/PostsList.tsx';
 import ThemeProvider from './ThemeProvider.astro';
 import { getPostsByGameId } from '../utils/posts';
 import { getCurrentUser } from '../utils/auth';
+import { getDynamicTextStyles } from '../utils/colorAnalysis';
 import type { Game, ThemeConfig } from '../utils/games';
 import type { Post } from '../utils/posts';
 
@@ -28,9 +29,12 @@ if (postsError) {
 
 const gamePosts = posts || [];
 
-// Configurar imágenes desde el tema
-const heroImage = themeConfig.images?.hero || game.cover_image_url || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop';
-const gameIcon = themeConfig.images?.icon || '/default-game.svg';
+// Configurar imágenes desde el juego
+const heroImage = game.cover_image_url || themeConfig.images?.hero || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop';
+const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/default-game.svg';
+
+// Obtener estilos dinámicos basados en la imagen del juego
+const dynamicStyles = await getDynamicTextStyles(heroImage);
 ---
 
 <Layout title={`${game.name} - Gaming Community`}>
@@ -133,9 +137,9 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
               />
             </div>
             
-            <div class="text-white">
-              <h1 class="title-size font-bold font-game mb-2 text-calico-white">{game.name}</h1>
-              <p class="body-size opacity-90 max-w-2xl text-calico-gray-300">
+            <div class="text-white" style={`${Object.entries(dynamicStyles.styles).map(([key, value]) => `${key}: ${value}`).join('; ')}`}>
+              <h1 class="title-size font-bold font-game mb-2" style="color: var(--dynamic-text-primary)">{game.name}</h1>
+              <p class="body-size opacity-90 max-w-2xl" style="color: var(--dynamic-text-secondary)">
                 {game.description || `Únete a la comunidad de ${game.name} y comparte tus experiencias de juego.`}
               </p>
               
@@ -189,7 +193,7 @@ const gameIcon = themeConfig.images?.icon || '/default-game.svg';
           <!-- Formulario para crear post -->
           <div class="mb-12" id="post-form-container">
             <div class="glass-calico-dark rounded-2xl p-8">
-              <h2 class="text-2xl font-bold text-calico-white mb-6 font-game">
+              <h2 class="text-2xl font-bold mb-6 font-game" style="color: var(--dynamic-text-primary)">
                 Comparte tu experiencia en {game.name}
               </h2>
               <PostForm 
