@@ -7,15 +7,15 @@ import node from '@astrojs/node';
 
 import tailwindcss from '@tailwindcss/vite';
 
+import vercel from '@astrojs/vercel';
+
 // Cargar variables de entorno desde .env
 config();
 
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  adapter: node({
-    mode: 'standalone'
-  }),
+  adapter: vercel(),
   integrations: [react()],
   
   // Enable View Transitions (no longer experimental in Astro 5)

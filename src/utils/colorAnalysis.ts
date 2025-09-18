@@ -50,8 +50,18 @@ export function getOptimalTextColor(backgroundColor: { r: number; g: number; b: 
 }
 
 // Función para obtener colores de texto con diferentes niveles de opacidad
-export function getTextColorVariants(backgroundColor: { r: number; g: number; b: number }) {
+export function getTextColorVariants(backgroundColor: { r: number; g: number; b: number }, isHighContrast: boolean = false) {
   const isLight = isLightColor(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+  
+  if (isHighContrast) {
+    // Para imágenes de alto contraste, usar naranja vibrante que se ve bien contra fondos oscuros y claros
+    return {
+      primary: '#ff6600',
+      secondary: 'rgba(255, 102, 0, 0.95)',
+      tertiary: 'rgba(255, 102, 0, 0.85)',
+      accent: '#ff6600'
+    };
+  }
   
   if (isLight) {
     // Fondo claro - usar textos oscuros
@@ -73,29 +83,66 @@ export function getTextColorVariants(backgroundColor: { r: number; g: number; b:
 }
 
 // Función para extraer color dominante de una imagen (simulada para el lado del servidor)
-export function getDominantColorFromImage(imageUrl: string): Promise<{ r: number; g: number; b: number }> {
+export function getDominantColorFromImage(imageUrl: string, gameName?: string): Promise<{ r: number; g: number; b: number; isHighContrast?: boolean }> {
   return new Promise((resolve) => {
     // En el servidor, no podemos analizar la imagen directamente
     // Usaremos una aproximación basada en el nombre del juego o URL
     
     // Colores predeterminados basados en juegos conocidos
-    const gameColors: { [key: string]: { r: number; g: number; b: number } } = {
+    // Marcamos juegos con imágenes de alto contraste
+    const gameColors: { [key: string]: { r: number; g: number; b: number; isHighContrast?: boolean } } = {
       'minecraft': { r: 87, g: 132, b: 45 }, // Verde Minecraft
       'pinturillo': { r: 255, g: 193, b: 7 }, // Amarillo
       'among-us': { r: 197, g: 17, b: 17 }, // Rojo Among Us
-      'call-of-duty': { r: 51, g: 51, b: 51 }, // Gris oscuro
+      'call-of-duty': { r: 20, g: 20, b: 20, isHighContrast: true }, // Negro para mejor contraste
       'fortnite': { r: 0, g: 174, b: 255 }, // Azul Fortnite
       'uno': { r: 227, g: 6, b: 19 } // Rojo UNO
     };
     
-    // Intentar detectar el juego por la URL
-    const gameKey = Object.keys(gameColors).find(game => 
-      imageUrl.toLowerCase().includes(game.replace('-', ''))
-    );
+    console.log('Analyzing image URL:', imageUrl);
+    console.log('Game name provided:', gameName);
+    
+    let gameKey: string | undefined;
+    
+    // Primero intentar detectar por el nombre del juego si está disponible
+    if (gameName) {
+      const gameNameLower = gameName.toLowerCase();
+      
+      // Detección específica por nombre
+      if (gameNameLower.includes('call of duty') || gameNameLower.includes('cod')) {
+        gameKey = 'call-of-duty';
+      } else if (gameNameLower.includes('minecraft')) {
+        gameKey = 'minecraft';
+      } else if (gameNameLower.includes('among us')) {
+        gameKey = 'among-us';
+      } else if (gameNameLower.includes('fortnite')) {
+        gameKey = 'fortnite';
+      } else if (gameNameLower.includes('pinturillo')) {
+        gameKey = 'pinturillo';
+      } else if (gameNameLower.includes('uno')) {
+        gameKey = 'uno';
+      }
+    }
+    
+    // Si no se detectó por nombre, intentar por URL
+    if (!gameKey) {
+      const urlLower = imageUrl.toLowerCase();
+      
+      gameKey = Object.keys(gameColors).find(game => 
+        urlLower.includes(game.replace('-', '')) || urlLower.includes(game)
+      );
+      
+      // Detección específica para Call of Duty por URL
+      if (urlLower.includes('cod') || urlLower.includes('call') || urlLower.includes('duty') || urlLower.includes('cod-bg')) {
+        gameKey = 'call-of-duty';
+      }
+    }
     
     if (gameKey) {
+      console.log('Game detected:', gameKey, 'Config:', gameColors[gameKey]);
       resolve(gameColors[gameKey]);
     } else {
+      console.log('No game detected, using default color');
       // Color por defecto si no se puede determinar
       resolve({ r: 100, g: 100, b: 100 });
     }
@@ -103,15 +150,17 @@ export function getDominantColorFromImage(imageUrl: string): Promise<{ r: number
 }
 
 // Función principal para obtener estilos de texto dinámicos
-export async function getDynamicTextStyles(imageUrl: string) {
+export async function getDynamicTextStyles(imageUrl: string, gameName?: string) {
   try {
-    const dominantColor = await getDominantColorFromImage(imageUrl);
-    const textColors = getTextColorVariants(dominantColor);
+    const dominantColor = await getDominantColorFromImage(imageUrl, gameName);
+    const isHighContrast = dominantColor.isHighContrast || false;
+    const textColors = getTextColorVariants(dominantColor, isHighContrast);
     
     return {
       dominantColor,
       textColors,
       isLightBackground: isLightColor(dominantColor.r, dominantColor.g, dominantColor.b),
+      isHighContrast,
       styles: {
         '--dynamic-text-primary': textColors.primary,
         '--dynamic-text-secondary': textColors.secondary,
@@ -131,6 +180,7 @@ export async function getDynamicTextStyles(imageUrl: string) {
         accent: 'rgba(255, 255, 255, 0.9)'
       },
       isLightBackground: false,
+      isHighContrast: false,
       styles: {
         '--dynamic-text-primary': 'rgba(255, 255, 255, 0.95)',
         '--dynamic-text-secondary': 'rgba(255, 255, 255, 0.8)',
