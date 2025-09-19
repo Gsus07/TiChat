@@ -113,7 +113,7 @@ const Navigation: React.FC = () => {
   }, [user, isUserDropdownOpen]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-calico-cream via-white to-calico-orange-50 backdrop-blur-md border-b-2 border-calico-orange-200 shadow-lg transition-all duration-300 relative overflow-hidden">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-calico-cream via-white to-calico-orange-50 backdrop-blur-md border-b-2 border-calico-orange-200 shadow-lg transition-all duration-300 overflow-hidden">
       {/* Decorative paw prints */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-2 left-10 w-4 h-4 text-calico-orange-400">

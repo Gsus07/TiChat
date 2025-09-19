@@ -4,6 +4,7 @@ import { ClientRouter } from "astro:transitions";
 import '../styles/global.css';
 import Navigation from '../components/react/Navigation.tsx';
 import NotificationProvider from '../components/react/NotificationProvider.tsx';
+import SessionManager from '../components/react/SessionManager.tsx';
 const { title } = Astro.props;
 ---
 <!doctype html>
@@ -31,12 +32,11 @@ const { title } = Astro.props;
 	</head>
 	<body class="font-sans bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 min-h-screen">
 		<NotificationProvider client:load>
+			<SessionManager client:load />
 			<Navigation client:only="react" />
 
-			<!-- Main content with top padding to account for fixed navbar -->
-			<div class="pt-16">
-				<slot />
-			</div>
+			<!-- Main content - pages control their own top spacing -->
+			<slot />
 		</NotificationProvider>
 
 	</body>

@@ -131,9 +131,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         rememberMe: formData.rememberMe
       };
 
-      // Guardar sesión
-      const storage = formData.rememberMe ? localStorage : sessionStorage;
-      storage.setItem('userSession', JSON.stringify(sessionData));
+      // Guardar sesión usando la función mejorada
+      const { saveUserSession } = await import('../../utils/auth');
+      saveUserSession(sessionData, formData.rememberMe);
 
       addNotification('¡Bienvenido de vuelta!', 'success');
       

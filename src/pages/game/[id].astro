@@ -1,0 +1,62 @@
+---
+import { getGameById, getServersByGameId, getGameWithThemeById } from '../../utils/games';
+import { getPostsByGameId } from '../../utils/posts';
+import GameTemplate from '../../components/GameTemplate.astro';
+import GameWithServersTemplate from '../../components/GameWithServersTemplate.astro';
+
+export async function getStaticPaths() {
+  // En desarrollo, retornamos un array vacío para permitir generación bajo demanda
+  // En producción, aquí generaríamos todas las rutas estáticas
+  return [];
+}
+
+const { id } = Astro.params;
+
+if (!id || typeof id !== 'string') {
+  return Astro.redirect('/404');
+}
+
+// Obtener datos del juego por ID con tema
+const { data: game, error: gameError } = await getGameWithThemeById(id);
+
+if (gameError || !game) {
+  console.error('Error fetching game by ID:', gameError);
+  return Astro.redirect('/404');
+}
+
+// Obtener servidores del juego
+const { data: servers, error: serversError } = await getServersByGameId(game.id);
+
+if (serversError) {
+  console.error('Error fetching servers:', serversError);
+}
+
+const gameServers = servers || [];
+
+// Determinar qué plantilla usar basado en si el juego tiene servidores
+const hasServers = gameServers.length > 0;
+
+// Si el juego no tiene servidores, obtener posts del juego
+let gamePosts: any[] = [];
+if (!hasServers) {
+  const { data: posts, error: postsError } = await getPostsByGameId(game.id);
+  
+  if (postsError) {
+    console.error('Error fetching posts:', postsError);
+  }
+  
+  gamePosts = posts || [];
+}
+---
+
+{!hasServers ? (
+  <GameTemplate 
+    game={game} 
+    themeConfig={game.theme_config || {}}
+  />
+) : (
+  <GameWithServersTemplate 
+    game={game}
+    themeConfig={game.theme_config || {}}
+  />
+)}
