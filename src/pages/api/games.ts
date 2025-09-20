@@ -248,6 +248,7 @@ export const PUT: APIRoute = async ({ request }) => {
     }
 
     // Verificar que el juego existe
+    console.log('🔍 Buscando juego con ID:', gameData.id);
     const { data: existingGame, error: fetchError } = await supabase
       .from('games')
       .select('*')
@@ -255,7 +256,10 @@ export const PUT: APIRoute = async ({ request }) => {
       .eq('is_active', true)
       .single();
 
+    console.log('📋 Resultado de búsqueda:', { existingGame, fetchError });
+
     if (fetchError || !existingGame) {
+      console.error('❌ Juego no encontrado en verificación inicial:', { fetchError, gameId: gameData.id });
       return new Response(
         JSON.stringify({ error: 'Juego no encontrado' }),
         { status: 404, headers: { 'Content-Type': 'application/json' } }
@@ -299,6 +303,7 @@ export const PUT: APIRoute = async ({ request }) => {
       .from('games')
       .update(updateData)
       .eq('id', gameData.id)
+      .eq('is_active', true)
       .select();
 
     if (updateError) {
@@ -309,8 +314,20 @@ export const PUT: APIRoute = async ({ request }) => {
       );
     }
 
+    console.log('📊 Resultado de actualización:', { updatedGames, count: updatedGames?.length });
+
     if (!updatedGames || updatedGames.length === 0) {
       console.error('❌ No se encontró el juego para actualizar');
+      console.error('🔍 Verificando si el juego existe sin filtro is_active...');
+      
+      // Verificación adicional sin filtro is_active para diagnóstico
+      const { data: gameCheck } = await supabase
+        .from('games')
+        .select('id, name, is_active')
+        .eq('id', gameData.id);
+      
+      console.log('🔍 Verificación sin filtro is_active:', gameCheck);
+      
       return new Response(
         JSON.stringify({ error: 'Juego no encontrado para actualizar' }),
         { status: 404, headers: { 'Content-Type': 'application/json' } }
