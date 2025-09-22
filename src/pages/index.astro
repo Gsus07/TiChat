@@ -90,14 +90,24 @@ const currentUserId = user?.id || (isDevelopment ? '550e8400-e29b-41d4-a716-4466
           <div class="w-3 h-3 bg-calico-orange-400 rounded-full opacity-60 animate-pulse" style="animation-delay: 0.5s;"></div>
         </div>
         
-        <!-- TTina mascot image -->
-        <div class="mb-8">
+        <!-- TTina mascot image with Easter Egg -->
+        <div class="mb-8 relative">
           <img 
+            id="ttina-easter-egg"
             src="/TTina.png" 
             alt="TTina - Mascota de TiChat" 
-            class="w-40 h-40 mx-auto rounded-full shadow-2xl border-4 border-calico-orange-400 hover:scale-105 transition-transform duration-300 animate-pulse"
+            class="w-40 h-40 mx-auto rounded-full shadow-2xl border-4 border-calico-orange-400 hover:scale-105 transition-transform duration-300 animate-pulse cursor-pointer select-none"
+            title="¡Haz clic en TTina! 🐱"
           />
-          <p class="text-calico-gray-800 text-lg mt-3 font-semibold">¡Tina te da la bienvenida! 🐾</p>
+          <p id="ttina-message" class="text-calico-gray-800 text-lg mt-3 font-semibold transition-all duration-500">¡TTina te da la bienvenida! 🐾</p>
+          
+          <!-- Contador secreto de clics -->
+          <div id="ttina-counter" class="absolute -top-2 -right-2 bg-calico-orange-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center opacity-0 transition-opacity duration-300">
+            0
+          </div>
+          
+          <!-- Contenedor para efectos visuales -->
+          <div id="ttina-effects" class="absolute inset-0 pointer-events-none"></div>
         </div>
         
         <div class="inline-block p-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mb-6 relative">
@@ -375,5 +385,215 @@ const currentUserId = user?.id || (isDevelopment ? '550e8400-e29b-41d4-a716-4466
         showEditGameModal(gameData);
       }
     });
+
+    // 🐱 TTina Easter Egg Implementation
+    let ttinaClickCount = 0;
+    const ttinaMessages = [
+      "¡Miau! 🐱",
+      "¡TTina está feliz! 😸",
+      "¡Ronroneo activado! 😻",
+      "¡Más caricias por favor! 🐾",
+      "¡Soy la mejor mascota! 💖",
+      "¡Miau miau! 🎵",
+      "¡Hora de jugar! 🎮",
+      "¡TTina te ama! ❤️",
+      "¡Purr purr! 😽",
+      "¡Secreto desbloqueado! ✨"
+    ];
+
+    function createHeartEffect(x: number, y: number) {
+      const heart = document.createElement('div');
+      heart.innerHTML = '💖';
+      heart.style.cssText = `
+        position: fixed;
+        left: ${x}px;
+        top: ${y}px;
+        font-size: 20px;
+        pointer-events: none;
+        z-index: 1000;
+        animation: heartFloat 2s ease-out forwards;
+      `;
+      
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 2000);
+    }
+
+    function createPawEffect(container: HTMLElement) {
+      const paw = document.createElement('div');
+      paw.innerHTML = '🐾';
+      paw.style.cssText = `
+        position: absolute;
+        font-size: 24px;
+        animation: pawSpin 1s ease-out forwards;
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+      `;
+      
+      container.appendChild(paw);
+      setTimeout(() => paw.remove(), 1000);
+    }
+
+    function playMeowSound() {
+      // Crear sonido de maullido usando Web Audio API
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    }
+
+    const ttinaImg = document.getElementById('ttina-easter-egg');
+    const ttinaMessage = document.getElementById('ttina-message');
+    const ttinaCounter = document.getElementById('ttina-counter');
+    const ttinaEffects = document.getElementById('ttina-effects');
+
+    if (ttinaImg && ttinaMessage && ttinaCounter && ttinaEffects) {
+      ttinaImg.addEventListener('click', (e) => {
+        ttinaClickCount++;
+        
+        // Actualizar contador
+        ttinaCounter.textContent = ttinaClickCount.toString();
+        if (ttinaClickCount >= 3) {
+          ttinaCounter.style.opacity = '1';
+        }
+        
+        // Cambiar mensaje
+        const randomMessage = ttinaMessages[Math.floor(Math.random() * ttinaMessages.length)];
+        ttinaMessage.textContent = randomMessage;
+        
+        // Efectos visuales
+        const rect = ttinaImg.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        createHeartEffect(centerX + (Math.random() - 0.5) * 100, centerY + (Math.random() - 0.5) * 100);
+        createPawEffect(ttinaEffects);
+        
+        // Animaciones especiales
+        ttinaImg.style.animation = 'none';
+        setTimeout(() => {
+          if (ttinaClickCount % 5 === 0) {
+            ttinaImg.style.animation = 'spin 1s ease-in-out, bounce 0.5s ease-in-out';
+          } else if (ttinaClickCount % 3 === 0) {
+            ttinaImg.style.animation = 'wiggle 0.5s ease-in-out';
+          } else {
+            ttinaImg.style.animation = 'bounce 0.5s ease-in-out';
+          }
+        }, 10);
+        
+        // Sonido de maullido
+        try {
+          playMeowSound();
+        } catch (error) {
+          console.log('🔇 Audio no disponible');
+        }
+        
+        // Easter egg especial cada 10 clics
+        if (ttinaClickCount % 10 === 0) {
+          ttinaMessage.textContent = `¡SÚPER SECRETO! Has hecho clic ${ttinaClickCount} veces! 🌟`;
+          ttinaMessage.style.color = '#f97316';
+          ttinaImg.style.filter = 'hue-rotate(180deg)';
+          
+          // Lluvia de corazones
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+              createHeartEffect(
+                centerX + (Math.random() - 0.5) * 200,
+                centerY + (Math.random() - 0.5) * 200
+              );
+            }, i * 200);
+          }
+          
+          setTimeout(() => {
+            ttinaImg.style.filter = 'none';
+            ttinaMessage.style.color = '';
+          }, 3000);
+        }
+        
+        // Resetear animación después de un tiempo
+        setTimeout(() => {
+          ttinaImg.style.animation = 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite';
+        }, 1000);
+      });
+    }
   });
 </script>
+
+<!-- Estilos CSS para las animaciones del Easter Egg -->
+<style>
+  @keyframes heartFloat {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-100px) scale(0.5);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes pawSpin {
+    0% {
+      transform: rotate(0deg) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: rotate(360deg) scale(0);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  @keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+      transform: translate3d(0,0,0);
+    }
+    40%, 43% {
+      transform: translate3d(0,-30px,0);
+    }
+    70% {
+      transform: translate3d(0,-15px,0);
+    }
+    90% {
+      transform: translate3d(0,-4px,0);
+    }
+  }
+  
+  @keyframes wiggle {
+    0%, 7% {
+      transform: rotateZ(0);
+    }
+    15% {
+      transform: rotateZ(-15deg);
+    }
+    20% {
+      transform: rotateZ(10deg);
+    }
+    25% {
+      transform: rotateZ(-10deg);
+    }
+    30% {
+      transform: rotateZ(6deg);
+    }
+    35% {
+      transform: rotateZ(-4deg);
+    }
+    40%, 100% {
+      transform: rotateZ(0);
+    }
+  }
+</style>
