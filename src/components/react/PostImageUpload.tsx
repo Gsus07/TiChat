@@ -23,7 +23,7 @@ const PostImageUpload: React.FC<PostImageUploadProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { addNotification } = useNotifications();
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     
     if (!file) {
@@ -45,7 +45,10 @@ const PostImageUpload: React.FC<PostImageUploadProps> = ({
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       
-      addNotification(`Imagen seleccionada: ${file.name} (${fileInfo.sizeMB}MB)`, 'info');
+      addNotification(`Imagen seleccionada: ${file.name} (${fileInfo.sizeMB}MB) - Subiendo automáticamente...`, 'info');
+      
+      // Subir automáticamente la imagen
+      await handleUploadAutomatic(file);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Archivo no válido';
       addNotification(errorMessage, 'error');
@@ -53,17 +56,12 @@ const PostImageUpload: React.FC<PostImageUploadProps> = ({
     }
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      addNotification('Selecciona una imagen primero', 'error');
-      return;
-    }
-
+  const handleUploadAutomatic = async (file: File) => {
     setIsUploading(true);
     
     try {
-      console.log('🚀 Iniciando subida de imagen de post...');
-      const result = await uploadPostImage(selectedFile);
+      console.log('🚀 Iniciando subida automática de imagen de post...');
+      const result = await uploadPostImage(file);
       
       if (result.error) {
         throw new Error(result.error);
@@ -76,18 +74,29 @@ const PostImageUpload: React.FC<PostImageUploadProps> = ({
         // Notificar al componente padre
         onImageUploaded?.(result.data.publicUrl, result.data.path);
         
-        console.log('✅ Imagen subida:', {
+        console.log('✅ Imagen subida automáticamente:', {
           url: result.data.publicUrl,
           path: result.data.path
         });
       }
     } catch (error) {
-      console.error('❌ Error al subir imagen:', error);
+      console.error('❌ Error al subir imagen automáticamente:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error al subir imagen';
       addNotification(errorMessage, 'error');
+      // En caso de error, limpiar la selección
+      clearSelection();
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      addNotification('Selecciona una imagen primero', 'error');
+      return;
+    }
+
+    await handleUploadAutomatic(selectedFile);
   };
 
   const clearSelection = () => {
@@ -142,13 +151,14 @@ hover:border-calico-stripe-light/50 hover:bg-calico-white/5 transition-all durat
             </svg>
             <div>
               <p className="text-calico-white font-medium">Haz clic para seleccionar una imagen</p>
-<p className="text-calico-white/60 text-sm mt-1">JPEG, PNG, WebP (máx. 15MB)</p>
+              <p className="text-calico-white/60 text-sm mt-1">JPEG, PNG, WebP (máx. 15MB)</p>
+              <p className="text-calico-blue-400 text-xs mt-1 font-medium">✨ Se subirá automáticamente al seleccionar</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Vista previa de imagen seleccionada */}
+      {/* Vista previa de imagen seleccionada con subida automática */}
       {selectedFile && previewUrl && !uploadedImageUrl && (
         <div className="space-y-4">
           <div className="relative">
@@ -157,15 +167,29 @@ hover:border-calico-stripe-light/50 hover:bg-calico-white/5 transition-all durat
               alt="Vista previa"
               className="w-full max-h-64 object-cover rounded-lg border border-calico-stripe-light/20"
             />
-            <button
-              onClick={clearSelection}
-              className="absolute top-2 right-2 bg-calico-red-500 hover:bg-calico-red-600 text-calico-white rounded-full p-1 transition-colors"
-              disabled={isUploading}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            {/* Overlay de carga durante la subida automática */}
+            {isUploading && (
+              <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                <div className="flex items-center space-x-3 text-calico-white">
+                  <svg className="animate-spin w-6 h-6" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  <span className="font-medium">Subiendo automáticamente...</span>
+                </div>
+              </div>
+            )}
+            {/* Botón para cancelar solo si no está subiendo */}
+            {!isUploading && (
+              <button
+                onClick={clearSelection}
+                className="absolute top-2 right-2 bg-calico-red-500 hover:bg-calico-red-600 text-calico-white rounded-full p-1 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
           
           <div className="flex items-center justify-between">
@@ -174,28 +198,19 @@ hover:border-calico-stripe-light/50 hover:bg-calico-white/5 transition-all durat
               <p>{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
             </div>
             
-            <div className="flex space-x-2">
-              <button
-                onClick={clearSelection}
-                disabled={isUploading}
-                className="px-4 py-2 bg-calico-gray-600 hover:bg-calico-gray-700 disabled:bg-calico-gray-800 text-calico-white rounded-lg transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleUpload}
-                disabled={isUploading}
-                className="px-4 py-2 bg-calico-blue-600 hover:bg-calico-blue-700 disabled:bg-calico-blue-800 text-calico-white rounded-lg transition-colors flex items-center space-x-2"
-              >
-                {isUploading && (
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                )}
-                <span>{isUploading ? 'Subiendo...' : 'Subir Imagen'}</span>
-              </button>
-            </div>
+            {isUploading ? (
+              <div className="flex items-center space-x-2 text-calico-blue-400">
+                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span className="text-sm font-medium">Subiendo...</span>
+              </div>
+            ) : (
+              <div className="text-sm text-calico-green-400 font-medium">
+                ✓ Listo para subir automáticamente
+              </div>
+            )}
           </div>
         </div>
       )}

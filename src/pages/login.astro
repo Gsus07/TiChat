@@ -63,8 +63,23 @@ import LoginForm from '../components/react/LoginForm.tsx';
     </div>
 
     <!-- Main content -->
-    <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
-      <LoginForm client:load />
+    <div class="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
+      <div class="w-full max-w-md">
+        <!-- TTina mascot image -->
+        <div class="text-center mb-8">
+          <img 
+            src="/TTina.png" 
+            alt="TTina - Mascota de TiChat" 
+            class="w-32 h-32 mx-auto rounded-full shadow-2xl border-4 border-calico-orange-300 hover:scale-105 transition-transform duration-300"
+          />
+          <p class="text-calico-gray-700 text-sm mt-2 font-medium">¡Hola! Soy GelaTina 🐱</p>
+        </div>
+        
+        <!-- Login form container -->
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-calico-gray-200">
+          <LoginForm client:load />
+        </div>
+      </div>
     </div>
   </div>
 

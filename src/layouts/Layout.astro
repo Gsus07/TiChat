@@ -5,6 +5,7 @@ import '../styles/global.css';
 import Navigation from '../components/react/Navigation.tsx';
 import NotificationProvider from '../components/react/NotificationProvider.tsx';
 import SessionManager from '../components/react/SessionManager.tsx';
+import DynamicBackground from '../components/react/DynamicBackground.tsx';
 const { title } = Astro.props;
 ---
 <!doctype html>
@@ -30,23 +31,174 @@ const { title } = Astro.props;
 		<link rel="dns-prefetch" href="//fonts.googleapis.com">
 		<link rel="dns-prefetch" href="//fonts.gstatic.com">
 	</head>
-	<body class="font-sans bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 min-h-screen">
-		<NotificationProvider client:load>
-			<SessionManager client:load />
-			<Navigation client:only="react" />
+	<body class="font-sans min-h-screen overflow-x-hidden">
+		<!-- Fondo dinámico estático -->
+		<div class="fixed inset-0 z-0">
+			<!-- Luz central pulsante -->
+			<div class="central-light"></div>
+			
+			<!-- Patrón geométrico sutil -->
+			<div class="geometric-pattern"></div>
+		</div>
 
-			<!-- Main content - pages control their own top spacing -->
-			<slot />
-		</NotificationProvider>
+		<!-- Efectos dinámicos interactivos -->
+		<DynamicBackground client:load />
 
+		<!-- Contenido principal -->
+		<div class="relative z-10">
+			<NotificationProvider client:load>
+				<SessionManager client:load />
+				<Navigation client:only="react" />
+
+				<!-- Main content - pages control their own top spacing -->
+				<slot />
+			</NotificationProvider>
+		</div>
 	</body>
 </html>
 
 <style>
-	html,
-	body {
+	/* Estilos base */
+	html, body {
 		margin: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	/* Fondo base estático - sin animaciones de cambio de color */
+	body {
+		background: linear-gradient(135deg, 
+			#1e293b 0%,     /* slate-800 */
+			#334155 25%,    /* slate-700 */
+			#475569 50%,    /* slate-600 */
+			#64748b 75%,    /* slate-500 */
+			#94a3b8 100%    /* slate-400 */
+		);
+		background-attachment: fixed;
+		min-height: 100vh;
+		position: relative;
+		overflow-x: hidden;
+	}
+
+	/* Capa de efectos de luz - sin animación de gradiente */
+	body::before {
+		content: '';
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: 
+			radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+			radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+			radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	/* Efectos de brillo en esquinas - estáticos */
+	body::after {
+		content: '';
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: 
+			radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+			radial-gradient(ellipse at top right, rgba(147, 51, 234, 0.15) 0%, transparent 50%),
+			radial-gradient(ellipse at bottom left, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+			radial-gradient(ellipse at bottom right, rgba(34, 197, 94, 0.15) 0%, transparent 50%);
+		pointer-events: none;
+		z-index: 2;
+	}
+
+	/* Luz central pulsante - mantener animación sutil */
+	.central-light {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 300px;
+		height: 300px;
+		background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+		border-radius: 50%;
+		animation: pulse-slow 4s ease-in-out infinite;
+		pointer-events: none;
+		z-index: 3;
+	}
+
+	/* Patrón geométrico sutil */
+	.geometric-pattern {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-image: 
+			linear-gradient(45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%),
+			linear-gradient(-45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%),
+			linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%),
+			linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%);
+		background-size: 60px 60px;
+		background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	/* Animaciones - solo mantener las necesarias */
+	@keyframes pulse-slow {
+		0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+		50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+	}
+
+	@keyframes shimmer {
+		0% { background-position: -200% 0; }
+		100% { background-position: 200% 0; }
+	}
+
+	/* Optimizaciones de rendimiento */
+	* {
+		will-change: auto;
+		backface-visibility: hidden;
+	}
+
+	html {
+		scroll-behavior: smooth;
+	}
+
+	/* Ajustes para dispositivos táctiles */
+	@media (hover: none) and (pointer: coarse) {
+		.central-light {
+			animation-duration: 6s;
+		}
+	}
+
+	/* Reducir efectos en móviles para mejor rendimiento */
+	@media (max-width: 768px) {
+		body::before,
+		body::after {
+			opacity: 0.5;
+		}
+		
+		.geometric-pattern {
+			background-size: 40px 40px;
+		}
+	}
+
+	/* Modo de alto contraste */
+	@media (prefers-contrast: high) {
+		body::before,
+		body::after,
+		.central-light {
+			display: none;
+		}
+	}
+
+	/* Respetar preferencias de movimiento reducido */
+	@media (prefers-reduced-motion: reduce) {
+		.central-light {
+			animation: none;
+		}
 	}
 </style>
