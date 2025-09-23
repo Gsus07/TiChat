@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNotifications } from './NotificationProvider';
 import { supabase } from '../../utils/supabaseClient';
+import type { PostImageUploadRef } from './PostImageUpload';
 import PostImageUpload from './PostImageUpload';
+
 
 interface PostFormData {
   content: string;
@@ -37,6 +39,7 @@ const PostForm: React.FC<PostFormProps> = ({
   const [errors, setErrors] = useState<PostFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addNotification } = useNotifications();
+  const imageUploadRef = useRef<PostImageUploadRef>(null);
 
   const validateForm = (): boolean => {
     const newErrors: PostFormErrors = {};
@@ -122,6 +125,9 @@ const PostForm: React.FC<PostFormProps> = ({
       setFormData({ content: '', imageUrl: null, imagePath: null });
       setAuthorName('');
       
+      // Reset image upload component
+      imageUploadRef.current?.resetUpload();
+      
       // Show success notification
       addNotification('Post publicado exitosamente', 'success');
       
@@ -171,6 +177,7 @@ const PostForm: React.FC<PostFormProps> = ({
         
         {/* Componente de subida de imágenes */}
         <PostImageUpload
+          ref={imageUploadRef}
           onImageUploaded={handleImageUploaded}
           onImageRemoved={handleImageRemoved}
           disabled={isSubmitting}

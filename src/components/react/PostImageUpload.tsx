@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { uploadPostImage } from '../../utils/storage';
 import { useNotifications } from './NotificationProvider';
 import { validateImageFile, getImageInfo } from '../../utils/imageCompression';
@@ -10,12 +10,16 @@ interface PostImageUploadProps {
   disabled?: boolean;
 }
 
-const PostImageUpload: React.FC<PostImageUploadProps> = ({
+export interface PostImageUploadRef {
+  resetUpload: () => void;
+}
+
+const PostImageUpload = forwardRef<PostImageUploadRef, PostImageUploadProps>(({
   onImageUploaded,
   onImageRemoved,
   className = '',
   disabled = false
-}) => {
+}, ref) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -109,6 +113,24 @@ const PostImageUpload: React.FC<PostImageUploadProps> = ({
       fileInputRef.current.value = '';
     }
   };
+
+  const resetUpload = () => {
+    setSelectedFile(null);
+    setUploadedImageUrl(null);
+    setIsUploading(false);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Exponer la función resetUpload al componente padre
+  useImperativeHandle(ref, () => ({
+    resetUpload
+  }));
 
   const removeUploadedImage = () => {
     setUploadedImageUrl(null);
@@ -250,6 +272,8 @@ hover:border-calico-stripe-light/50 hover:bg-calico-white/5 transition-all durat
       )}
     </div>
   );
-};
+});
+
+PostImageUpload.displayName = 'PostImageUpload';
 
 export default PostImageUpload;
