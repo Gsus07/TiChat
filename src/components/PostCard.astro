@@ -98,12 +98,15 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   
   <!-- Imagen del post (si existe) -->
   {post.image_url && (
-    <div class="mb-4 rounded-lg overflow-hidden">
+    <div class="mb-4 rounded-lg bg-calico-gray-800/20 p-2">
       <img 
         src={post.image_url} 
         alt="Post image" 
-        class="w-full h-64 object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
+        class="w-full h-auto object-contain hover:scale-[1.02] transition-transform duration-300 cursor-pointer rounded-lg shadow-lg"
         onclick="openImageModal(this.src)"
+        loading="lazy"
+        onerror="this.parentElement.style.display = 'none'"
+        style="max-width: 100%; height: auto; display: block;"
       />
     </div>
   )}

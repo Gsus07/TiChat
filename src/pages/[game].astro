@@ -22,6 +22,11 @@ if (excludedRoutes.includes((gameName as string).toLowerCase())) {
   return Astro.redirect('/404');
 }
 
+// Excluir archivos con extensiones de imagen/recursos
+if ((gameName as string).includes('.')) {
+  return Astro.redirect('/404');
+}
+
 // Convertir el slug de la URL al nombre del juego
 let gameNameFormatted = (gameName as string)
   .split('-')

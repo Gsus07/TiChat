@@ -34,7 +34,7 @@ const heroImage = game.cover_image_url || themeConfig.images?.hero || 'https://i
 
 // Obtener estilos dinámicos basados en la imagen del juego
 const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);
-const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/default-game.svg';
+const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.svg';
 ---
 
 <Layout title={`${game.name} - Gaming Community`}>

@@ -42,7 +42,7 @@ const regularServers = gameServers.filter(server => !server.is_featured);
 
 // Configurar imágenes desde el juego
 const heroImage = game.cover_image_url || themeConfig.images?.hero || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop';
-const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/default-game.svg';
+const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.svg';
 
 // Obtener estilos dinámicos de texto basados en la imagen y el nombre del juego
 const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);

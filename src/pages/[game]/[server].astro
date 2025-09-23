@@ -2,6 +2,8 @@
 import { getGameByName, getServerByName, getGameWithTheme, getServerWithTheme } from '../../utils/games';
 import ServerTemplate from '../../components/ServerTemplate.astro';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   // En desarrollo, retornamos un array vacío para permitir generación bajo demanda
   // En producción, aquí generaríamos todas las rutas estáticas

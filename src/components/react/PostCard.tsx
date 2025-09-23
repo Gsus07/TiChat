@@ -384,12 +384,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
           
           {/* Imagen del post si existe */}
           {post.image_url && (
-            <div className="mb-4">
+            <div className="mb-4 rounded-lg bg-calico-gray-800/20 p-2">
               <img 
                 src={post.image_url} 
                 alt="Post image" 
-                className="w-full max-h-96 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                className="w-full h-auto object-contain rounded-lg cursor-pointer hover:scale-[1.02] transition-transform duration-300 shadow-lg"
                 onClick={() => window.open(post.image_url, '_blank')}
+                style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
               />
             </div>
           )}

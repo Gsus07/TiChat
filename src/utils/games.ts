@@ -488,7 +488,7 @@ export function getDefaultThemeConfig(): ThemeConfig {
     },
     images: {
       hero: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop',
-      icon: '/default-game.svg',
+      icon: '/favicon.svg',
       background: '/default-bg.jpg'
     },
     layout: {
