@@ -11,9 +11,8 @@ const { data: games, error } = await getAllGames();
 
 // Obtener el usuario actual si está autenticado
 const { data: { user } } = await supabase.auth.getUser();
-// En desarrollo, mostrar el botón siempre para facilitar las pruebas
-const isDevelopment = import.meta.env.DEV;
-const currentUserId = user?.id || (isDevelopment ? '550e8400-e29b-41d4-a716-446655440000' : null);
+// En desarrollo, NO mostrar el botón automáticamente para probar la funcionalidad real
+const currentUserId = user?.id || null;
 ---
 
 <Layout title="Juegos que Jugamos">
@@ -239,17 +238,16 @@ const currentUserId = user?.id || (isDevelopment ? '550e8400-e29b-41d4-a716-4466
                 Selecciona tu Juego
               </span>
             </h2>
-            {currentUserId && (
-              <button 
-                id="add-game-btn"
-                class="group relative px-6 py-3 bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 hover:from-calico-orange-600 hover:to-calico-orange-700 text-black font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-calico-orange-500/25 flex items-center space-x-2"
-              >
-                <svg class="w-5 h-5 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                <span>Añadir Juego</span>
-              </button>
-            )}
+            <button 
+              id="add-game-btn"
+              class="group relative px-6 py-3 bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 hover:from-calico-orange-600 hover:to-calico-orange-700 text-black font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-calico-orange-500/25 flex items-center space-x-2"
+              style="display: none;"
+            >
+              <svg class="w-5 h-5 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              <span>Añadir Juego</span>
+            </button>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {games && games.length > 0 ? (
@@ -394,12 +392,84 @@ const currentUserId = user?.id || (isDevelopment ? '550e8400-e29b-41d4-a716-4466
   // Make showEditGameModal available globally
   (window as any).showEditGameModal = showEditGameModal;
 
+  // Function to check authentication status
+  function checkAuthenticationStatus() {
+    const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+    
+    if (!userSession) {
+      return null;
+    }
+
+    try {
+      const session = JSON.parse(userSession);
+      if (session.user && session.access_token) {
+        return session;
+      }
+    } catch (error) {
+      console.error('Error parsing user session:', error);
+    }
+    
+    return null;
+  }
+
+  // Function to update UI based on authentication status
+  function updateUIForAuthentication() {
+    const session = checkAuthenticationStatus();
+    const addGameBtn = document.getElementById('add-game-btn');
+    const gameCards = document.querySelectorAll('[data-game-id]');
+    
+    if (session) {
+      // User is authenticated - show add game button
+      if (addGameBtn) {
+        addGameBtn.style.display = 'flex';
+      }
+      
+      // Show edit and delete buttons on game cards
+      gameCards.forEach(card => {
+        const editBtn = card.querySelector('.edit-game-btn');
+        const deleteBtn = card.querySelector('.delete-game-btn');
+        
+        if (editBtn && editBtn instanceof HTMLElement) editBtn.style.display = 'block';
+        if (deleteBtn && deleteBtn instanceof HTMLElement) deleteBtn.style.display = 'block';
+      });
+    } else {
+      // User is not authenticated - hide add game button
+      if (addGameBtn) {
+        addGameBtn.style.display = 'none';
+      }
+      
+      // Hide edit and delete buttons on game cards
+      gameCards.forEach(card => {
+        const editBtn = card.querySelector('.edit-game-btn');
+        const deleteBtn = card.querySelector('.delete-game-btn');
+        
+        if (editBtn && editBtn instanceof HTMLElement) editBtn.style.display = 'none';
+        if (deleteBtn && deleteBtn instanceof HTMLElement) deleteBtn.style.display = 'none';
+      });
+    }
+  }
+
   // Add event listener to the add game button
   document.addEventListener('DOMContentLoaded', () => {
+    // Check authentication status and update UI
+    updateUIForAuthentication();
+    
     const addGameBtn = document.getElementById('add-game-btn');
     if (addGameBtn) {
       addGameBtn.addEventListener('click', showCreateGameModal);
     }
+    
+    // Listen for authentication changes
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'userSession' || e.key === 'sessionStorage') {
+        updateUIForAuthentication();
+      }
+    });
+    
+    // Listen for custom authentication events
+    window.addEventListener('authStateChanged', () => {
+      updateUIForAuthentication();
+    });
 
     // Add event listener for edit game events
     window.addEventListener('openEditGameModal', (event: any) => {
