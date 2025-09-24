@@ -9,7 +9,7 @@ export default function SimpleThemeToggle() {
 
   useEffect(() => {
     // Obtener tema actual del localStorage o usar 'auto' por defecto
-    const savedTheme = localStorage.getItem('theme') as Theme || 'auto';
+    const savedTheme = localStorage.getItem('tichat-theme-preference') as Theme || 'auto';
     setTheme(savedTheme);
 
     // Función para detectar el tema del sistema
@@ -72,7 +72,7 @@ export default function SimpleThemeToggle() {
   // Función para cambiar el tema directamente
   const selectTheme = (selectedTheme: Theme) => {
     setTheme(selectedTheme);
-    localStorage.setItem('theme', selectedTheme);
+    localStorage.setItem('tichat-theme-preference', selectedTheme);
     
     const resolvedTheme = selectedTheme === 'auto' 
       ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
