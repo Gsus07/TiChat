@@ -56,19 +56,19 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
   };
 
   // Get notification styles
-  const getNotificationStyles = (type: Notification['type']) => {
-    const baseStyles = 'px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 border backdrop-blur-sm';
+  const getNotificationStyles = (type: Notification['type']): string => {
+    const baseStyles = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 border backdrop-blur-sm';
     
     switch (type) {
       case 'success':
-        return `${baseStyles} bg-calico-green-500/90 text-calico-white border-calico-green-400/50`;
+        return `${baseStyles} bg-green-500/90 text-white border-green-400/50`;
       case 'error':
-        return `${baseStyles} bg-calico-red-500/90 text-calico-white border-calico-red-400/50`;
+        return `${baseStyles} bg-red-500/90 text-white border-red-400/50`;
       case 'warning':
-        return `${baseStyles} bg-calico-yellow-500/90 text-calico-white border-calico-yellow-400/50`;
+        return `${baseStyles} bg-yellow-500/90 text-white border-yellow-400/50`;
       case 'info':
       default:
-        return `${baseStyles} bg-calico-blue-500/90 text-calico-white border-calico-blue-400/50`;
+        return `${baseStyles} bg-blue-500/90 text-white border-blue-400/50`;
     }
   };
 
@@ -120,7 +120,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
               <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {getNotificationIcon(notification.type)}
               </svg>
-              <span className="text-sm font-medium text-calico-white">{notification.message}</span>
+              <span className="text-sm font-medium text-white">{notification.message}</span>
             </div>
             <button
               onClick={() => removeNotification(notification.id)}

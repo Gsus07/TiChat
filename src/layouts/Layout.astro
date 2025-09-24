@@ -6,6 +6,10 @@ import Navigation from '../components/react/Navigation.tsx';
 import NotificationProvider from '../components/react/NotificationProvider.tsx';
 import SessionManager from '../components/react/SessionManager.tsx';
 import DynamicBackground from '../components/react/DynamicBackground.tsx';
+import { ThemeProvider } from '../components/react/ThemeProvider';
+import { getInitialTheme } from '../utils/themeManager';
+import SimpleThemeToggle from '../components/react/SimpleThemeToggle';
+
 const { title } = Astro.props;
 ---
 <!doctype html>
@@ -15,8 +19,13 @@ const { title } = Astro.props;
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
+		<meta name="theme-color" content="#ffffff" />
 		<title>{title}</title>
 		<ClientRouter />
+		
+		<!-- Script para inicializar tema antes del render -->
+		<script is:inline set:html={getInitialTheme()}></script>
+		
 		<!-- Preload critical resources -->
 		<!-- SVG preloads removed - images now loaded from database -->
 		<!-- Preload fonts and critical CSS -->
@@ -26,7 +35,7 @@ const { title } = Astro.props;
 		<link rel="dns-prefetch" href="//fonts.googleapis.com">
 		<link rel="dns-prefetch" href="//fonts.gstatic.com">
 	</head>
-	<body class="font-sans min-h-screen overflow-x-hidden">
+	<body class="font-sans min-h-screen overflow-x-hidden bg-primary text-primary">
 		<!-- Fondo dinámico estático -->
 		<div class="fixed inset-0 z-0">
 			<!-- Luz central pulsante -->
@@ -41,13 +50,18 @@ const { title } = Astro.props;
 
 		<!-- Contenido principal -->
 		<div class="relative z-10">
-			<NotificationProvider client:load>
-				<SessionManager client:load />
-				<Navigation client:only="react" />
+			<ThemeProvider client:load>
+				<NotificationProvider client:load>
+					<SessionManager client:load />
+					<Navigation client:only="react" />
 
-				<!-- Main content - pages control their own top spacing -->
-				<slot />
-			</NotificationProvider>
+					<!-- Main content - pages control their own top spacing -->
+					<slot />
+				</NotificationProvider>
+			</ThemeProvider>
+			
+			<!-- Theme Toggle - Outside of React context to avoid issues -->
+			<SimpleThemeToggle client:load />
 		</div>
 	</body>
 </html>
@@ -60,22 +74,23 @@ const { title } = Astro.props;
 		height: 100%;
 	}
 
-	/* Fondo base estático - sin animaciones de cambio de color */
+	/* Fondo base con soporte para temas */
 	body {
 		background: linear-gradient(135deg, 
-			#1e293b 0%,     /* slate-800 */
-			#334155 25%,    /* slate-700 */
-			#475569 50%,    /* slate-600 */
-			#64748b 75%,    /* slate-500 */
-			#94a3b8 100%    /* slate-400 */
+			var(--bg-primary) 0%,
+			var(--bg-secondary) 25%,
+			var(--bg-tertiary) 50%,
+			var(--bg-accent) 75%,
+			var(--bg-secondary) 100%
 		);
 		background-attachment: fixed;
 		min-height: 100vh;
 		position: relative;
 		overflow-x: hidden;
+		transition: background var(--theme-transition);
 	}
 
-	/* Capa de efectos de luz - sin animación de gradiente */
+	/* Capa de efectos de luz adaptable al tema */
 	body::before {
 		content: '';
 		position: fixed;
@@ -84,11 +99,13 @@ const { title } = Astro.props;
 		right: 0;
 		bottom: 0;
 		background: 
-			radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-			radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-			radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+			radial-gradient(circle at 20% 80%, var(--color-primary) 0%, transparent 50%),
+			radial-gradient(circle at 80% 20%, var(--color-secondary) 0%, transparent 50%),
+			radial-gradient(circle at 40% 40%, var(--calico-orange) 0%, transparent 50%);
+		opacity: 0.1;
 		pointer-events: none;
 		z-index: 1;
+		transition: background var(--theme-transition), opacity var(--theme-transition);
 	}
 
 	/* Efectos de brillo en esquinas - estáticos */

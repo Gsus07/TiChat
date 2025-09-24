@@ -1,49 +1,186 @@
 @import "tailwindcss";
 
-/* Variables CSS inspiradas en gata calico - Paleta clara y suave */
+/* Variables CSS para sistema de temas oscuro/claro */
 :root {
-  /* Colores principales calico - Base clara */
-  --calico-white: #FFFFFF;
-  --calico-white-soft: #FEFEFE;
-  --calico-white-warm: #FDF9F6;
-  --calico-cream: #FAF7F4;
-  --calico-ivory: #F8F6F3;
+  /* Transiciones suaves para cambios de tema */
+  --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
-  /* Grises suaves y pasteles */
-  --calico-gray-50: #FAFAFA;
-  --calico-gray-100: #F5F5F5;
-  --calico-gray-200: #EEEEEE;
-  --calico-gray-300: #E0E0E0;
-  --calico-gray-400: #BDBDBD;
-  --calico-gray-500: #9E9E9E;
-  --calico-gray-600: #757575;
-  --calico-gray-700: #616161;
-  --calico-gray-800: #424242;
-  --calico-gray-900: #212121;
+  /* Tema claro - Variables principales */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --bg-tertiary: #F1F5F9;
+  --bg-accent: #E2E8F0;
   
-  /* Naranjas suaves y pasteles */
-  --calico-orange-50: #FFF8F1;
-  --calico-orange-100: #FFECDB;
-  --calico-orange-200: #FFE0C4;
-  --calico-orange-300: #FFD4A3;
-  --calico-orange-400: #FFC182;
-  --calico-orange-500: #FFB366;
-  --calico-orange-600: #FF9F43;
-  --calico-orange-700: #E8883A;
-  --calico-orange-800: #D17332;
-  --calico-orange-900: #B85E2A;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-tertiary: #64748B;
+  --text-muted: #94A3B8;
+  --text-inverse: #FFFFFF;
   
-  /* Colores de acento suaves */
-  --calico-stripe-light: #F0F0F0;
-  --calico-stripe-medium: #D0D0D0;
-  --calico-stripe-dark: #A0A0A0;
+  --border-primary: #E2E8F0;
+  --border-secondary: #CBD5E1;
+  --border-accent: #94A3B8;
   
-  /* Colores de texto optimizados */
-  --text-primary: #2D3748;
-  --text-secondary: #4A5568;
-  --text-muted: #718096;
-  --text-light: #A0AEC0;
-  --text-accent: #e53e3e;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Colores de acento y marca */
+  --color-primary: #3B82F6;
+  --color-primary-hover: #2563EB;
+  --color-primary-light: #DBEAFE;
+  --color-secondary: #6366F1;
+  --color-secondary-hover: #4F46E5;
+  --color-secondary-light: #E0E7FF;
+  
+  /* Colores calico para tema claro */
+  --calico-orange: #FF9F43;
+  --calico-orange-light: #FFE0C4;
+  --calico-gray: #9E9E9E;
+  --calico-gray-light: #F5F5F5;
+  
+  /* Estados */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* Tema oscuro */
+.dark {
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-tertiary: #334155;
+  --bg-accent: #475569;
+  
+  --text-primary: #F8FAFC;
+  --text-secondary: #E2E8F0;
+  --text-tertiary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-inverse: #1E293B;
+  
+  --border-primary: #334155;
+  --border-secondary: #475569;
+  --border-accent: #64748B;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  
+  /* Colores de acento ajustados para tema oscuro */
+  --color-primary: #60A5FA;
+  --color-primary-hover: #3B82F6;
+  --color-primary-light: #1E3A8A;
+  --color-secondary: #818CF8;
+  --color-secondary-hover: #6366F1;
+  --color-secondary-light: #312E81;
+  
+  /* Colores calico para tema oscuro */
+  --calico-orange: #FB923C;
+  --calico-orange-light: #431407;
+  --calico-gray: #6B7280;
+  --calico-gray-light: #374151;
+  
+  /* Estados para tema oscuro */
+  --color-success: #34D399;
+  --color-warning: #FBBF24;
+  --color-error: #F87171;
+  --color-info: #60A5FA;
+  
+  /* Glassmorphism para tema oscuro */
+  --glass-bg: rgba(15, 23, 42, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Aplicar transiciones a todos los elementos que cambien con el tema */
+*,
+*::before,
+*::after {
+  transition: background-color var(--theme-transition),
+              border-color var(--theme-transition),
+              color var(--theme-transition),
+              box-shadow var(--theme-transition);
+}
+
+/* Clases utilitarias para usar las variables de tema */
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-tertiary { background-color: var(--bg-tertiary); }
+.bg-accent { background-color: var(--bg-accent); }
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-muted { color: var(--text-muted); }
+.text-inverse { color: var(--text-inverse); }
+
+.border-primary { border-color: var(--border-primary); }
+.border-secondary { border-color: var(--border-secondary); }
+.border-accent { border-color: var(--border-accent); }
+
+.shadow-theme-sm { box-shadow: var(--shadow-sm); }
+.shadow-theme-md { box-shadow: var(--shadow-md); }
+.shadow-theme-lg { box-shadow: var(--shadow-lg); }
+.shadow-theme-xl { box-shadow: var(--shadow-xl); }
+
+/* Glassmorphism con soporte para temas */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-calico {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Compatibilidad con variables calico existentes */
+:root {
+  --calico-white: var(--bg-primary);
+  --calico-white-soft: var(--bg-secondary);
+  --calico-white-warm: var(--bg-tertiary);
+  --calico-cream: var(--bg-tertiary);
+  --calico-ivory: var(--bg-secondary);
+  
+  --calico-gray-50: var(--bg-secondary);
+  --calico-gray-100: var(--bg-tertiary);
+  --calico-gray-200: var(--border-primary);
+  --calico-gray-300: var(--border-secondary);
+  --calico-gray-400: var(--border-accent);
+  --calico-gray-500: var(--text-muted);
+  --calico-gray-600: var(--text-tertiary);
+  --calico-gray-700: var(--text-secondary);
+  --calico-gray-800: var(--text-primary);
+  --calico-gray-900: var(--text-primary);
+  
+  --calico-orange-50: var(--calico-orange-light);
+  --calico-orange-100: var(--calico-orange-light);
+  --calico-orange-200: var(--calico-orange-light);
+  --calico-orange-300: var(--calico-orange);
+  --calico-orange-400: var(--calico-orange);
+  --calico-orange-500: var(--calico-orange);
+  --calico-orange-600: var(--calico-orange);
+  --calico-orange-700: var(--calico-orange);
+  --calico-orange-800: var(--calico-orange);
+  --calico-orange-900: var(--calico-orange);
+  
+  --calico-stripe-light: var(--border-primary);
+  --calico-stripe-medium: var(--border-secondary);
+  --calico-stripe-dark: var(--border-accent);
+  
+  --text-accent: var(--color-error);
 }
 
 /* Animaciones para partículas flotantes */
@@ -272,4 +409,25 @@ body::before {
 
 .animate-calico-pulse {
   animation: calico-pulse 3s ease-in-out infinite;
+}
+
+/* Estilos específicos para título y subtítulo con soporte de temas */
+.hero-title {
+  color: var(--text-primary);
+}
+
+.hero-title-accent {
+  color: var(--calico-orange);
+}
+
+.hero-subtitle {
+  color: var(--text-secondary);
+}
+
+.hero-subtitle-accent {
+  color: var(--calico-orange);
+}
+
+.hero-subtitle-emphasis {
+  color: var(--text-primary);
 }
