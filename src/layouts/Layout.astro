@@ -2,7 +2,7 @@
 // src/layouts/Layout.astro
 import { ClientRouter } from "astro:transitions";
 import '../styles/global.css';
-import Navigation from '../components/react/Navigation.tsx';
+import Navigation from '../components/Navigation.astro';
 import NotificationProvider from '../components/react/NotificationProvider.tsx';
 import SessionManager from '../components/react/SessionManager.tsx';
 import DynamicBackground from '../components/react/DynamicBackground.tsx';
@@ -53,7 +53,7 @@ const { title } = Astro.props;
 			<ThemeProvider client:load>
 				<NotificationProvider client:load>
 					<SessionManager client:load />
-					<Navigation client:only="react" />
+					<Navigation />
 
 					<!-- Main content - pages control their own top spacing -->
 					<slot />

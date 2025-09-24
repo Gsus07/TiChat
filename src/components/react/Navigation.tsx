@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNotifications } from './NotificationProvider';
+import type { Game } from '../../types/game';
+
 
 interface User {
   name: string;
@@ -11,17 +13,56 @@ interface UserSession {
   user: User;
 }
 
-const Navigation: React.FC = () => {
+interface NavigationProps {
+  games?: Game[];
+}
+
+const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
+  // State management
   const [user, setUser] = useState<User | null>(null);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isGamesDropdownOpen, setIsGamesDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [mobileSearchQuery, setMobileSearchQuery] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showMobileSearchResults, setShowMobileSearchResults] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+  
+  // Refs
   const { addNotification } = useNotifications();
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
+  const userButtonRef = useRef<HTMLButtonElement>(null);
+  const gamesDropdownRef = useRef<HTMLDivElement>(null);
+  const gamesButtonRef = useRef<HTMLButtonElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const mobileSearchInputRef = useRef<HTMLInputElement>(null);
+  const searchResultsRef = useRef<HTMLDivElement>(null);
+  const mobileSearchResultsRef = useRef<HTMLDivElement>(null);
 
-  // Check authentication status
-  const checkAuthStatus = () => {
+  // Memoized filtered games for search
+  const filteredGames = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return [];
+    
+    return games.filter(game => 
+      game.name.toLowerCase().includes(query) ||
+      (game.genre && game.genre.toLowerCase().includes(query))
+    );
+  }, [games, searchQuery]);
+
+  const mobileFilteredGames = useMemo(() => {
+    const query = mobileSearchQuery.toLowerCase().trim();
+    if (!query) return [];
+    
+    return games.filter(game => 
+      game.name.toLowerCase().includes(query) ||
+      (game.genre && game.genre.toLowerCase().includes(query))
+    );
+  }, [games, mobileSearchQuery]);
+
+  // Authentication functions
+  const checkAuthStatus = useCallback(() => {
     const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
     
     if (userSession) {
@@ -30,7 +71,6 @@ const Navigation: React.FC = () => {
         setUser(session.user);
       } catch (error) {
         console.error('Error parsing user session:', error);
-        // Clear invalid session
         localStorage.removeItem('userSession');
         sessionStorage.removeItem('userSession');
         setUser(null);
@@ -38,56 +78,116 @@ const Navigation: React.FC = () => {
     } else {
       setUser(null);
     }
-  };
+  }, []);
 
-  // Handle logout
-  const handleLogout = () => {
-    console.log('Logout function called');
-    // Clear session data
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('userSession');
     sessionStorage.removeItem('userSession');
     
-    // Show notification
     addNotification('Sesión cerrada exitosamente', 'success');
     
-    // Update state
     setUser(null);
     setIsUserDropdownOpen(false);
     
-    // Redirect to home
     setTimeout(() => {
       window.location.href = '/';
     }, 1000);
-  };
+  }, [addNotification]);
 
-  // Close dropdown when clicking outside
+  // Dropdown position calculation
+  const calculateDropdownPosition = useCallback((buttonElement: HTMLElement) => {
+    const rect = buttonElement.getBoundingClientRect();
+    return {
+      top: rect.bottom + window.scrollY + 8,
+      right: window.innerWidth - rect.right
+    };
+  }, []);
+
+  // Event handlers
+  const handleUserMenuClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!isUserDropdownOpen && userButtonRef.current) {
+      const position = calculateDropdownPosition(userButtonRef.current);
+      setDropdownPosition(position);
+    }
+    
+    setIsUserDropdownOpen(!isUserDropdownOpen);
+    setIsGamesDropdownOpen(false);
+  }, [isUserDropdownOpen, calculateDropdownPosition]);
+
+  const handleGamesMenuClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsGamesDropdownOpen(!isGamesDropdownOpen);
+    setIsUserDropdownOpen(false);
+  }, [isGamesDropdownOpen]);
+
+  const handleMobileMenuClick = useCallback(() => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  }, [isMobileMenuOpen]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    setShowSearchResults(value.trim().length > 0);
+  }, []);
+
+  const handleMobileSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setMobileSearchQuery(value);
+    setShowMobileSearchResults(value.trim().length > 0);
+  }, []);
+
+  const handleSearchFocus = useCallback(() => {
+    if (searchQuery.trim()) {
+      setShowSearchResults(true);
+    }
+  }, [searchQuery]);
+
+  const handleMobileSearchFocus = useCallback(() => {
+    if (mobileSearchQuery.trim()) {
+      setShowMobileSearchResults(true);
+    }
+  }, [mobileSearchQuery]);
+
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
       
-      // Check if click is outside both the button and the dropdown menu
-      const isClickOutsideButton = buttonRef.current && !buttonRef.current.contains(target);
-      const isClickOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(target);
-      
-      if (isClickOutsideButton && isClickOutsideDropdown) {
-        console.log('Click outside detected, closing dropdown');
+      // Close user dropdown
+      if (isUserDropdownOpen && 
+          userButtonRef.current && !userButtonRef.current.contains(target) &&
+          userDropdownRef.current && !userDropdownRef.current.contains(target)) {
         setIsUserDropdownOpen(false);
+      }
+      
+      // Close games dropdown
+      if (isGamesDropdownOpen && 
+          gamesButtonRef.current && !gamesButtonRef.current.contains(target) &&
+          gamesDropdownRef.current && !gamesDropdownRef.current.contains(target)) {
+        setIsGamesDropdownOpen(false);
+      }
+      
+      // Close search results
+      if (showSearchResults && 
+          searchInputRef.current && !searchInputRef.current.contains(target) &&
+          searchResultsRef.current && !searchResultsRef.current.contains(target)) {
+        setShowSearchResults(false);
+      }
+      
+      if (showMobileSearchResults && 
+          mobileSearchInputRef.current && !mobileSearchInputRef.current.contains(target) &&
+          mobileSearchResultsRef.current && !mobileSearchResultsRef.current.contains(target)) {
+        setShowMobileSearchResults(false);
       }
     };
 
-    if (isUserDropdownOpen) {
-      // Add a small delay to prevent immediate closure when opening
-      setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-      }, 100);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isUserDropdownOpen, isGamesDropdownOpen, showSearchResults, showMobileSearchResults]);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isUserDropdownOpen]);
-
-  // Listen for storage changes (for cross-tab logout)
+  // Listen for storage changes (cross-tab logout)
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'userSession' && !e.newValue) {
@@ -96,355 +196,393 @@ const Navigation: React.FC = () => {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  // Check auth status on mount
+  // Initialize authentication
   useEffect(() => {
-    console.log('Navigation component mounted and hydrated');
     checkAuthStatus();
-  }, []);
+  }, [checkAuthStatus]);
 
-  // Debug effect to check if component is working
-  useEffect(() => {
-    console.log('Navigation component state updated:', { user, isUserDropdownOpen });
-  }, [user, isUserDropdownOpen]);
+  // Game item component for reusability
+  const GameItem: React.FC<{ game: Game; onClick?: () => void }> = ({ game, onClick }) => (
+    <a
+      href={`/game/${game.id}`}
+      onClick={onClick}
+      className="group flex items-center px-4 py-3 text-sm text-calico-gray-300 hover:text-calico-white hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 transition-all duration-300 mx-2 rounded-xl"
+    >
+      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-calico-orange-500/20 group-hover:bg-calico-orange-500/30 transition-colors duration-300 mr-3 overflow-hidden">
+        {game.cover_image_url ? (
+          <img 
+            src={game.cover_image_url} 
+            alt={game.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        )}
+      </div>
+      <div className="flex flex-col flex-1">
+        <span className="font-medium">{game.name}</span>
+        {game.genre && (
+          <span className="text-xs text-calico-gray-400">{game.genre}</span>
+        )}
+      </div>
+    </a>
+  );
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-calico-cream via-white to-calico-orange-50 backdrop-blur-md border-b-2 border-calico-orange-200 shadow-lg transition-all duration-300 overflow-hidden">
-      {/* Decorative paw prints */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-2 left-10 w-4 h-4 text-calico-orange-400">
-          <svg fill="currentColor" viewBox="0 0 24 24">
-            {/* Real cat paw print */}
-            <ellipse cx="12" cy="8" rx="2.5" ry="3" fill="currentColor"/>
-            <ellipse cx="8" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-            <ellipse cx="16" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-            <ellipse cx="10" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-            <ellipse cx="14" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-          </svg>
-        </div>
-        <div className="absolute top-3 right-20 w-3 h-3 text-calico-orange-300 rotate-45">
-          <svg fill="currentColor" viewBox="0 0 24 24">
-            {/* Real cat paw print */}
-            <ellipse cx="12" cy="8" rx="2.5" ry="3" fill="currentColor"/>
-            <ellipse cx="8" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-            <ellipse cx="16" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-            <ellipse cx="10" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-            <ellipse cx="14" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-          </svg>
-        </div>
-        <div className="absolute bottom-2 left-1/3 w-3 h-3 text-calico-orange-300 -rotate-12">
-          <svg fill="currentColor" viewBox="0 0 24 24">
-            {/* Real cat paw print */}
-            <ellipse cx="12" cy="8" rx="2.5" ry="3" fill="currentColor"/>
-            <ellipse cx="8" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-            <ellipse cx="16" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-            <ellipse cx="10" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-            <ellipse cx="14" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-          </svg>
-        </div>
-      </div>
-      
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <a href="/" className="flex items-center space-x-3 text-gray-800 hover:text-calico-orange-600 transition-all duration-300 group">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden shadow-lg group-hover:shadow-calico-orange-300/50 transition-all duration-300">
-                  <img 
-                    src="/tina-logo.png" 
-                    alt="Tina Gaming Hub Logo" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-bold text-xl text-gray-800 drop-shadow-sm">Gaming Hub</span>
-                  <span className="text-xs text-calico-orange-600 font-semibold tracking-wide drop-shadow-sm">🐾 Calico Gaming</span>
-                </div>
-              </a>
-            </div>
+    <>
+      {/* Desktop Navigation Elements */}
+      <div className="hidden md:flex items-center justify-between w-full">
+        {/* Left spacer for balance */}
+        <div className="flex-1"></div>
+        
+        {/* Right-aligned section with Games, Search, and Authentication */}
+        <div className="flex items-center space-x-4 flex-1 justify-end">
+          {/* Games Dropdown */}
+          <div className="relative">
+            <button
+              ref={gamesButtonRef}
+              onClick={handleGamesMenuClick}
+              className="group relative px-4 py-2.5 rounded-xl text-sm font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25 hover:scale-105"
+            >
+            <span className="relative z-10 flex items-center space-x-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Juegos</span>
+              <svg
+                className={`w-4 h-4 transition-transform duration-300 ${isGamesDropdownOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+          </button>
 
-            {/* Navigation Links */}
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-2">
-                <a href="/" className="group flex items-center space-x-2 text-gray-700 hover:text-calico-orange-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-calico-orange-50 hover:shadow-sm">
-                  <svg className="w-4 h-4 text-calico-orange-500 group-hover:text-calico-orange-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                  </svg>
-                  <span>Inicio</span>
-                  <div className="w-1 h-1 bg-calico-orange-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </a>
-                <a href="/minecraft" className="group flex items-center space-x-2 text-gray-700 hover:text-calico-orange-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-calico-orange-50 hover:shadow-sm">
-                  <svg className="w-4 h-4 text-green-600 group-hover:text-green-700" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v8H8V8z"/>
-                  </svg>
-                  <span>Minecraft</span>
-                  <div className="w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </a>
-                <a href="/call-of-duty" className="group flex items-center space-x-2 text-gray-700 hover:text-calico-orange-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-calico-orange-50 hover:shadow-sm">
-                  <svg className="w-4 h-4 text-red-600 group-hover:text-red-700" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 9.74s9-4.19 9-9.74V7l-10-5z"/>
-                  </svg>
-                  <span>Call of Duty</span>
-                  <div className="w-1 h-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </a>
-                <a href="/among-us" className="group flex items-center space-x-2 text-gray-700 hover:text-calico-orange-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-calico-orange-50 hover:shadow-sm">
-                  <svg className="w-4 h-4 text-blue-600 group-hover:text-blue-700" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                  </svg>
-                  <span>Among Us</span>
-                  <div className="w-1 h-1 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </a>
-                <a href="/uno" className="group flex items-center space-x-2 text-gray-700 hover:text-calico-orange-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-calico-orange-50 hover:shadow-sm">
-                  <svg className="w-4 h-4 text-yellow-600 group-hover:text-yellow-700" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                  </svg>
-                  <span>UNO</span>
-                  <div className="w-1 h-1 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </a>
+          {/* Games Dropdown Menu */}
+          {isGamesDropdownOpen && (
+            <div
+              ref={gamesDropdownRef}
+              className="absolute right-0 mt-3 w-72 bg-calico-gray-900 rounded-2xl shadow-2xl border border-calico-orange-500/20 py-2 transform transition-all duration-300 origin-top-right scale-100 opacity-100 z-50"
+              style={{ backgroundColor: 'var(--bg-secondary)' }}
+            >
+              <div className="px-4 py-3 border-b border-calico-orange-500/10">
+                <p className="text-sm font-semibold text-calico-white">Juegos Disponibles</p>
+                <p className="text-xs text-calico-gray-400">Explora nuestras comunidades</p>
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {games.map((game) => (
+                  <GameItem 
+                    key={game.id} 
+                    game={game} 
+                    onClick={() => setIsGamesDropdownOpen(false)}
+                  />
+                ))}
+                {games.length === 0 && (
+                  <div className="px-4 py-6 text-center">
+                    <p className="text-sm text-calico-gray-400">No hay juegos disponibles</p>
+                  </div>
+                )}
               </div>
             </div>
+          )}
+        </div>
 
-            {/* User Menu */}
-            <div className="flex items-center space-x-4">
-              {/* Guest buttons */}
-              {!user && (
-                <div className="flex items-center space-x-3">
-                  <a href="/login" className="group flex items-center space-x-2 text-gray-700 hover:text-calico-orange-600 px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-calico-orange-50 rounded-lg">
-                    <svg className="w-4 h-4 text-calico-orange-500 group-hover:text-calico-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-                    </svg>
-                    <span>Iniciar Sesión</span>
-                  </a>
-                  <a href="/register" className="group relative bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 hover:from-calico-orange-600 hover:to-calico-orange-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-lg hover:shadow-calico-orange-300/50 overflow-hidden">
-                    {/* Paw print decoration */}
-                    <div className="absolute top-0 right-0 w-5 h-5 text-white/20 transform translate-x-1 -translate-y-1">
-                      <svg fill="currentColor" viewBox="0 0 24 24">
-                        {/* Real cat paw print */}
-                        <ellipse cx="12" cy="8" rx="2.5" ry="3" fill="currentColor"/>
-                        <ellipse cx="8" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-                        <ellipse cx="16" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-                        <ellipse cx="10" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-                        <ellipse cx="14" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-                      </svg>
-                    </div>
-                    <span className="relative z-10 flex items-center space-x-2 text-gray-800">
-                      <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                      </svg>
-                      <span className="font-semibold text-gray-800">Registrarse</span>
-                    </span>
-                  </a>
+        {/* Search Bar */}
+        <div className="relative">
+          <div className="relative">
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={handleSearchFocus}
+              placeholder="Buscar juegos..."
+              className="w-64 px-4 py-2.5 pl-10 pr-4 text-sm bg-gradient-to-r from-calico-dark/60 to-calico-dark/80 border border-calico-orange-500/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500/50 focus:border-calico-orange-500 transition-all duration-300 backdrop-blur-sm"
+            />
+            <svg
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-calico-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          
+          {/* Search Results */}
+          {showSearchResults && (
+            <div
+              ref={searchResultsRef}
+              className="absolute top-full right-0 mt-2 w-full bg-calico-gray-900 rounded-2xl shadow-2xl border border-calico-orange-500/20 py-2 z-50 max-h-80 overflow-y-auto"
+              style={{ backgroundColor: 'var(--bg-secondary)' }}
+            >
+              {filteredGames.length > 0 ? (
+                filteredGames.map((game) => (
+                  <GameItem 
+                    key={game.id} 
+                    game={game} 
+                    onClick={() => setShowSearchResults(false)}
+                  />
+                ))
+              ) : (
+                <div className="px-4 py-6 text-center">
+                  <p className="text-sm text-calico-gray-400">No se encontraron juegos</p>
                 </div>
               )}
+            </div>
+          )}
+          </div>
+        {/* Guest buttons */}
+        {!user && (
+          <div className="flex items-center space-x-4">
+            <a
+              href="/login"
+              className="group relative flex items-center space-x-2 px-4 py-2.5 text-sm font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 rounded-xl hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 hover:shadow-lg hover:shadow-calico-orange-500/20"
+              style={{ backgroundColor: 'var(--bg-accent)' }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 lucide lucide-log-in-icon lucide-log-in"><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg>
+              <span>Iniciar Sesion</span>
+            </a>
+          </div>
+        )}
 
-              {/* User menu */}
-              {user && (
-                <div className="relative z-[999999]">
-                  <button 
-                    ref={buttonRef}
-                    onClick={() => {
-                      console.log('=== USER BUTTON CLICKED ===');
-                      console.log('Current dropdown state:', isUserDropdownOpen);
-                      
-                      if (!isUserDropdownOpen && buttonRef.current) {
-                        const rect = buttonRef.current.getBoundingClientRect();
-                        const position = {
-                          top: rect.bottom + window.scrollY + 8,
-                          right: window.innerWidth - rect.right
-                        };
-                        console.log('Calculated position:', position);
-                        setDropdownPosition(position);
-                      }
-                      
-                      setIsUserDropdownOpen(!isUserDropdownOpen);
-                      console.log('Setting dropdown to:', !isUserDropdownOpen);
-                    }}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-calico-orange-600 transition-colors"
-                  >
-                    <img 
-                      src={user.avatar || '/default-avatar.png'} 
-                      alt="Avatar" 
-                      className="w-8 h-8 rounded-full border-2 border-purple-500"
-                    />
-                    <span className="text-sm font-medium">{user.name}</span>
+        {/* User menu */}
+        {user && (
+          <div className="relative">
+            <button
+              ref={userButtonRef}
+              onClick={handleUserMenuClick}
+              className="group flex items-center space-x-3 text-calico-gray-300 hover:text-calico-white transition-all duration-300 px-3 py-2 rounded-xl hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 hover:shadow-lg hover:shadow-calico-orange-500/20"
+            >
+              <div className="relative">
+                <img
+                  src={user.avatar || '/default-avatar.png'}
+                  alt="Avatar"
+                  className="w-10 h-10 rounded-xl border-2 border-calico-orange-500/50 group-hover:border-calico-orange-400 transition-all duration-300 shadow-lg group-hover:shadow-calico-orange-500/25"
+                />
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-calico-dark shadow-lg" />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-semibold">{user.name}</span>
+                <span className="text-xs text-calico-gray-400">En línea</span>
+              </div>
+              <svg
+                className={`w-4 h-4 transition-transform duration-300 ${isUserDropdownOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* User Dropdown Menu with Portal */}
+            {isUserDropdownOpen && createPortal(
+              <div
+                ref={userDropdownRef}
+                className="fixed w-56 bg-calico-gray-900 rounded-2xl shadow-2xl border border-calico-orange-500/20 py-2 transform transition-all duration-300 origin-top-right scale-100 opacity-100"
+                style={{
+                  top: `${dropdownPosition.top}px`,
+                  right: `${dropdownPosition.right}px`,
+                  zIndex: 2147483647,
+                  backgroundColor: 'var(--bg-secondary)'
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="px-4 py-3 border-b border-calico-orange-500/10">
+                  <p className="text-sm font-semibold text-calico-white">Mi Cuenta</p>
+                  <p className="text-xs text-calico-gray-400">Gestiona tu perfil</p>
+                </div>
+                <a
+                  href="/profile"
+                  onClick={() => setIsUserDropdownOpen(false)}
+                  className="group flex items-center px-4 py-3 text-sm text-calico-gray-300 hover:text-calico-white hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 transition-all duration-300 mx-2 rounded-xl"
+                >
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-calico-orange-500/20 group-hover:bg-calico-orange-500/30 transition-colors duration-300 mr-3">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                  </button>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-medium">Mi Perfil</span>
+                    <span className="text-xs text-calico-gray-400">Ver y editar perfil</span>
+                  </div>
+                </a>
+                <a
+                  href="/settings"
+                  onClick={() => setIsUserDropdownOpen(false)}
+                  className="group flex items-center px-4 py-3 text-sm text-calico-gray-300 hover:text-calico-white hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 transition-all duration-300 mx-2 rounded-xl"
+                >
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-calico-orange-500/20 group-hover:bg-calico-orange-500/30 transition-colors duration-300 mr-3">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-medium">Configuraciones</span>
+                    <span className="text-xs text-calico-gray-400">Preferencias y ajustes</span>
+                  </div>
+                </a>
+                <hr className="my-2 border-calico-orange-500/10 mx-2" />
+                <button
+                  onClick={handleLogout}
+                  className="group flex items-center w-full px-4 py-3 text-sm text-calico-orange-600 hover:text-calico-orange-500 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-calico-orange-500/10 transition-all duration-300 mx-2 rounded-xl"
+                >
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-500/20 group-hover:bg-red-500/30 transition-colors duration-300 mr-3">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">Cerrar Sesión</span>
+                    <span className="text-xs text-calico-gray-400">Salir de tu cuenta</span>
+                  </div>
+                </button>
+              </div>,
+              document.body
+            )}
+          </div>
+        )}
+        </div>
+      </div>
 
-                  {/* Dropdown menu with createPortal for maximum z-index */}
-                  {isUserDropdownOpen && createPortal(
-                    <div 
-                      ref={dropdownRef}
-                      className="fixed w-48 bg-white/95 backdrop-blur-md rounded-lg shadow-lg border border-calico-gray-200 py-1"
-                      style={{
-                        top: `${dropdownPosition.top}px`,
-                        right: `${dropdownPosition.right}px`,
-                        zIndex: 2147483647 // Maximum z-index value
-                      }}
-                      onClick={(e) => {
-                        console.log('Dropdown container clicked');
-                        e.stopPropagation();
-                      }}
-                      onMouseDown={(e) => {
-                        console.log('Dropdown mousedown - preventing close');
-                        e.stopPropagation();
-                      }}
-                    >
-                      <button 
-                        onClick={(e) => {
-                          console.log('=== PERFIL BUTTON CLICKED ===');
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setIsUserDropdownOpen(false);
-                          console.log('Navigating to /profile');
-                          window.location.href = '/profile';
+      {/* Mobile menu button */}
+      <button
+        onClick={handleMobileMenuClick}
+        className="md:hidden group p-2 mr-2 rounded-xl text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 hover:shadow-lg hover:shadow-calico-orange-500/20"
+      >
+        <svg
+          className="w-6 h-6 transition-transform duration-300 group-hover:scale-110"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden backdrop-blur-xl bg-gradient-to-b from-calico-dark/95 to-calico-dark/90 border-t border-calico-orange-500/20 shadow-2xl">
+          <div className="px-4 pt-4 pb-6 space-y-2">
+            {/* Mobile Search Bar */}
+            <div className="mb-4">
+              <div className="relative">
+                <input
+                  ref={mobileSearchInputRef}
+                  type="text"
+                  value={mobileSearchQuery}
+                  onChange={handleMobileSearchChange}
+                  onFocus={handleMobileSearchFocus}
+                  placeholder="Buscar juegos..."
+                  className="w-full px-4 py-2.5 pl-10 pr-4 text-sm bg-gradient-to-r from-calico-dark/60 to-calico-dark/80 border border-calico-orange-500/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500/50 focus:border-calico-orange-500 transition-all duration-300 backdrop-blur-sm"
+                />
+                <svg
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-calico-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              
+              {/* Mobile Search Results */}
+              {showMobileSearchResults && (
+                <div
+                  ref={mobileSearchResultsRef}
+                  className="mt-2 bg-calico-gray-900 rounded-2xl shadow-2xl border border-calico-orange-500/20 py-2 max-h-60 overflow-y-auto"
+                  style={{ backgroundColor: 'var(--bg-secondary)' }}
+                >
+                  {mobileFilteredGames.length > 0 ? (
+                    mobileFilteredGames.map((game) => (
+                      <GameItem 
+                        key={game.id} 
+                        game={game} 
+                        onClick={() => {
+                          setShowMobileSearchResults(false);
+                          setIsMobileMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:text-calico-orange-600 hover:bg-calico-orange-50 transition-colors"
-                        onMouseEnter={() => console.log('Perfil button hover')}
-                      >
-                        <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                        Perfil
-                      </button>
-                      <button 
-                        onClick={(e) => {
-                          console.log('=== CONFIGURACIONES BUTTON CLICKED ===');
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setIsUserDropdownOpen(false);
-                          console.log('Navigating to /settings');
-                          window.location.href = '/settings';
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:text-calico-orange-600 hover:bg-calico-orange-50 transition-colors"
-                        onMouseEnter={() => console.log('Configuraciones button hover')}
-                      >
-                        <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        Configuraciones
-                      </button>
-                      <hr className="my-1 border-calico-stripe-light/20" />
-                      <button 
-                        onClick={(e) => {
-                          console.log('=== CERRAR SESIÓN BUTTON CLICKED ===');
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setIsUserDropdownOpen(false);
-                          console.log('Calling handleLogout');
-                          handleLogout();
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
-                        onMouseEnter={() => console.log('Cerrar Sesión button hover')}
-                      >
-                        <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        Cerrar Sesión
-                      </button>
-                    </div>,
-                    document.body
+                      />
+                    ))
+                  ) : (
+                    <div className="px-4 py-6 text-center">
+                      <p className="text-sm text-calico-gray-400">No se encontraron juegos</p>
+                    </div>
                   )}
                 </div>
               )}
-
-              {/* Mobile menu button */}
-              <button 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden relative p-2 text-gray-700 hover:text-calico-orange-600 hover:bg-calico-orange-50 rounded-lg transition-all duration-300 group"
-              >
-                {/* Cat ears decoration */}
-                <div className="absolute -top-1 left-1 w-2 h-2 bg-calico-orange-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="absolute -top-1 right-1 w-2 h-2 bg-calico-orange-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}></path>
-                </svg>
-                
-                {/* Paw print */}
-                <div className="absolute -bottom-1 -right-1 w-2 h-2 text-calico-orange-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <svg fill="currentColor" viewBox="0 0 24 24">
-                    {/* Real cat paw print */}
-                    <ellipse cx="12" cy="8" rx="2.5" ry="3" fill="currentColor"/>
-                    <ellipse cx="8" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-                    <ellipse cx="16" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-                    <ellipse cx="10" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-                    <ellipse cx="14" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-                  </svg>
-                </div>
-              </button>
             </div>
+
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-calico-orange-400 uppercase tracking-wider mb-2">Navegación</h3>
+            </div>
+            <a
+              href="/"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
+            >
+              <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              Inicio
+            </a>
+
+            {/* Mobile Games Section */}
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-calico-orange-400 uppercase tracking-wider mb-2">Juegos</h3>
+            </div>
+            {games.map((game) => (
+              <a
+                key={game.id}
+                href={`/game/${game.id}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
+              >
+                <div className="w-5 h-5 mr-3 flex items-center justify-center rounded overflow-hidden">
+                  {game.cover_image_url ? (
+                    <img 
+                      src={game.cover_image_url} 
+                      alt={game.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  )}
+                </div>
+                {game.name}
+              </a>
+            ))}
+            {games.length === 0 && (
+              <div className="px-4 py-3 text-center">
+                <p className="text-sm text-calico-gray-400">No hay juegos disponibles</p>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Mobile menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden bg-gradient-to-b from-white/95 to-calico-orange-50/95 backdrop-blur-md border-t-2 border-calico-orange-200 relative overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-10 h-10 text-calico-orange-200/30 transform translate-x-2 -translate-y-2">
-              <svg fill="currentColor" viewBox="0 0 24 24">
-                {/* Real cat paw print */}
-                <ellipse cx="12" cy="8" rx="2.5" ry="3" fill="currentColor"/>
-                <ellipse cx="8" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-                <ellipse cx="16" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-                <ellipse cx="10" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-                <ellipse cx="14" cy="16" rx="1.2" ry="1.8" fill="currentColor"/>
-              </svg>
-            </div>
-            
-            <div className="px-4 py-3 space-y-1 relative z-10">
-              <a href="/" className="group flex items-center space-x-3 text-gray-700 hover:text-calico-orange-600 hover:bg-calico-orange-50 px-3 py-3 rounded-lg text-base font-medium transition-all duration-300">
-                <svg className="w-5 h-5 text-calico-orange-500 group-hover:text-calico-orange-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
-                <span>Inicio</span>
-                <div className="ml-auto w-2 h-2 bg-calico-orange-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </a>
-              
-              <a href="/minecraft" className="group flex items-center space-x-3 text-gray-700 hover:text-calico-orange-600 hover:bg-calico-orange-50 px-3 py-3 rounded-lg text-base font-medium transition-all duration-300">
-                <svg className="w-5 h-5 text-green-600 group-hover:text-green-700" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v8H8V8z"/>
-                </svg>
-                <span>Minecraft</span>
-                <div className="ml-auto w-2 h-2 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </a>
-              
-              <a href="/call-of-duty" className="group flex items-center space-x-3 text-gray-700 hover:text-calico-orange-600 hover:bg-calico-orange-50 px-3 py-3 rounded-lg text-base font-medium transition-all duration-300">
-                <svg className="w-5 h-5 text-red-600 group-hover:text-red-700" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 9.74s9-4.19 9-9.74V7l-10-5z"/>
-                </svg>
-                <span>Call of Duty</span>
-                <div className="ml-auto w-2 h-2 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </a>
-              
-              <a href="/among-us" className="group flex items-center space-x-3 text-gray-700 hover:text-calico-orange-600 hover:bg-calico-orange-50 px-3 py-3 rounded-lg text-base font-medium transition-all duration-300">
-                <svg className="w-5 h-5 text-blue-600 group-hover:text-blue-700" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                </svg>
-                <span>Among Us</span>
-                <div className="ml-auto w-2 h-2 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </a>
-              
-              <a href="/uno" className="group flex items-center space-x-3 text-gray-700 hover:text-calico-orange-600 hover:bg-calico-orange-50 px-3 py-3 rounded-lg text-base font-medium transition-all duration-300">
-                <svg className="w-5 h-5 text-yellow-600 group-hover:text-yellow-700" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                </svg>
-                <span>UNO</span>
-                <div className="ml-auto w-2 h-2 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </a>
-            </div>
-            
-            {/* Bottom decoration */}
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-calico-orange-300 via-calico-orange-400 to-calico-orange-300"></div>
-          </div>
-        )}
-      </nav>
+      )}
+    </>
   );
 };
 

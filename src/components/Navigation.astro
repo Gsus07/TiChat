@@ -1,513 +1,69 @@
 ---
 // src/components/Navigation.astro
+import { getAllGames } from '../utils/games';
+import NavigationReact from './react/Navigation';
+
+// Obtener todos los juegos activos desde la base de datos
+const { data: games, error } = await getAllGames();
+const gamesList = games || [];
 ---
 
 <!-- Navigation Bar -->
 <nav
   id="navbar"
-  class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-gradient-to-r from-calico-dark/80 via-calico-dark/85 to-calico-dark/80 border-b border-calico-orange-500/30 shadow-2xl transition-all duration-500 ease-out"
+  class="fixed top-0 left-0 right-0 z-50 bg-calico-gray-900 dark:bg-calico-gray-900 border-b border-calico-orange-500/30 shadow-2xl transition-all duration-500 ease-out"
+  style="background-color: var(--bg-secondary);"
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="w-full pl-4 pr-4 sm:pl-6 sm:pr-6 lg:pl-8 lg:pr-8">
     <div class="flex items-center justify-between h-18">
-      <!-- Logo -->
+      <!-- Logo + Title (Clickable Home Link) -->
       <div class="flex items-center">
         <a
           href="/"
-          class="group flex items-center space-x-3 text-calico-white hover:text-calico-orange-300 transition-all duration-300 hover:scale-105"
+          class="group relative flex items-center space-x-3 py-2 pr-3 rounded-xl text-calico-white hover:text-calico-orange-300 transition-all duration-300 hover:scale-105 hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 hover:shadow-lg hover:shadow-calico-orange-500/20 cursor-pointer"
         >
-          <div class="relative w-12 h-12 rounded-xl overflow-hidden shadow-2xl ring-2 ring-calico-orange-500/50 group-hover:ring-calico-orange-400 transition-all duration-300 group-hover:shadow-calico-orange-500/25">
+          <!-- Logo with enhanced hover effects -->
+          <div class="relative w-12 h-12 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl group-hover:shadow-calico-orange-500/30 transition-all duration-300">
             <img
               src="/tina-logo.png"
-              alt="Tina Gaming Hub Logo"
+              alt="TinaGaming Logo"
               class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
             />
-            <div class="absolute inset-0 bg-gradient-to-br from-calico-orange-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <!-- Subtle glow effect on hover -->
+            <div class="absolute inset-0 bg-gradient-to-br from-calico-orange-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
           </div>
+          
+          <!-- Title with enhanced interactivity -->
           <div class="flex flex-col">
-            <span class="font-bold text-xl bg-gradient-to-r from-calico-white to-calico-orange-200 bg-clip-text text-transparent">Gaming Hub</span>
-            <span class="text-xs text-calico-gray-400 font-medium tracking-wide">Tu comunidad gamer</span>
+            <span class="font-bold text-xl text-calico-white group-hover:text-calico-orange-300 transition-colors duration-300 relative">
+              TinaGaming
+              <!-- Subtle underline effect on hover -->
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-calico-orange-400 group-hover:w-full transition-all duration-300"></span>
+            </span>
+            <span class="text-xs text-calico-gray-400 group-hover:text-calico-gray-300 font-medium tracking-wide transition-colors duration-300">Tu comunidad gamer</span>
           </div>
+          
+          <!-- Background glow effect -->
+          <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none"></div>
         </a>
       </div>
 
-      <!-- Navigation Links -->
-      <div class="hidden md:block">
-        <div class="ml-10 flex items-center space-x-1">
-          <a
-            href="/"
-            class="group relative px-4 py-2.5 rounded-xl text-sm font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25 hover:scale-105"
-          >
-            <span class="relative z-10 flex items-center space-x-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-              </svg>
-              <span>Inicio</span>
-            </span>
-            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          </a>
-          <a
-            href="/game/4b985193-0cf0-4c12-b022-cc126942a041"
-            class="group relative px-4 py-2.5 rounded-xl text-sm font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25 hover:scale-105"
-          >
-            <span class="relative z-10 flex items-center space-x-2">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v8H8V8z"></path>
-              </svg>
-              <span>Minecraft</span>
-            </span>
-            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          </a>
-          <a
-            href="/game/d51a472f-6181-4a36-aaff-c74882f4b01d"
-            class="group relative px-4 py-2.5 rounded-xl text-sm font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25 hover:scale-105"
-          >
-            <span class="relative z-10 flex items-center space-x-2">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"></path>
-              </svg>
-              <span>Call of Duty</span>
-            </span>
-            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          </a>
-          <a
-            href="/game/5ea7266a-4bb9-4d15-b6cb-e39de6db028c"
-            class="group relative px-4 py-2.5 rounded-xl text-sm font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25 hover:scale-105"
-          >
-            <span class="relative z-10 flex items-center space-x-2">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-              </svg>
-              <span>Among Us</span>
-            </span>
-            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          </a>
-          <a
-            href="/game/84f8ed17-5d30-4666-aee8-dea30b7ac858"
-            class="group relative px-4 py-2.5 rounded-xl text-sm font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25 hover:scale-105"
-          >
-            <span class="relative z-10 flex items-center space-x-2">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"></path>
-              </svg>
-              <span>DOS</span>
-            </span>
-            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-          </a>
-        </div>
-      </div>
-
-      <!-- User Menu -->
-      <div class="flex items-center space-x-3">
-        <!-- Guest buttons -->
-        <div id="guestButtons" class="flex items-center space-x-3">
-          <a
-            href="/login"
-            class="group relative px-4 py-2.5 text-sm font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 rounded-xl hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 hover:shadow-lg hover:shadow-calico-orange-500/20"
-          >
-            <span class="relative z-10 flex items-center space-x-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-              </svg>
-              <span>Iniciar Sesión</span>
-            </span>
-          </a>
-          <a
-            href="/register"
-            class="group relative px-6 py-2.5 bg-gradient-to-r from-calico-orange-600 via-calico-orange-500 to-calico-orange-600 hover:from-calico-orange-700 hover:via-calico-orange-600 hover:to-calico-orange-700 text-calico-white rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-calico-orange-500/40 transform"
-          >
-            <span class="relative z-10 flex items-center space-x-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-              </svg>
-              <span>Registrarse</span>
-            </span>
-            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </a>
-        </div>
-
-        <!-- User menu (hidden by default) -->
-        <div id="userMenu" class="hidden relative">
-          <button
-            id="userMenuButton"
-            class="group flex items-center space-x-3 text-calico-gray-300 hover:text-calico-white transition-all duration-300 px-3 py-2 rounded-xl hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 hover:shadow-lg hover:shadow-calico-orange-500/20"
-          >
-            <div class="relative">
-              <img
-                id="userAvatar"
-                src="/default-avatar.png"
-                alt="Avatar"
-                class="w-10 h-10 rounded-xl border-2 border-calico-orange-500/50 group-hover:border-calico-orange-400 transition-all duration-300 shadow-lg group-hover:shadow-calico-orange-500/25"
-              />
-              <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-calico-dark shadow-lg"></div>
-            </div>
-            <div class="flex flex-col items-start">
-              <span id="userName" class="text-sm font-semibold">Usuario</span>
-              <span class="text-xs text-calico-gray-400">En línea</span>
-            </div>
-            <svg
-              class="w-4 h-4 transition-transform duration-300 group-hover:rotate-180"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-
-          <!-- Dropdown menu -->
-          <div
-            id="userDropdown"
-            class="hidden absolute right-0 mt-3 w-56 backdrop-blur-xl bg-gradient-to-br from-calico-dark/90 via-calico-dark/95 to-calico-dark/90 rounded-2xl shadow-2xl border border-calico-orange-500/20 py-2 transform transition-all duration-300 origin-top-right scale-95 opacity-0"
-          >
-            <div class="px-4 py-3 border-b border-calico-orange-500/10">
-              <p class="text-sm font-semibold text-calico-white">Mi Cuenta</p>
-              <p class="text-xs text-calico-gray-400">Gestiona tu perfil</p>
-            </div>
-            <a
-              href="/profile"
-              class="group flex items-center px-4 py-3 text-sm text-calico-gray-300 hover:text-calico-white hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 transition-all duration-300 mx-2 rounded-xl"
-            >
-              <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-calico-orange-500/20 group-hover:bg-calico-orange-500/30 transition-colors duration-300 mr-3">
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  ></path>
-                </svg>
-              </div>
-              <div class="flex flex-col">
-                <span class="font-medium">Mi Perfil</span>
-                <span class="text-xs text-calico-gray-400">Ver y editar perfil</span>
-              </div>
-            </a>
-            <a
-              href="/settings"
-              class="group flex items-center px-4 py-3 text-sm text-calico-gray-300 hover:text-calico-white hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 transition-all duration-300 mx-2 rounded-xl"
-            >
-              <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-calico-orange-500/20 group-hover:bg-calico-orange-500/30 transition-colors duration-300 mr-3">
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                  ></path>
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-              </div>
-              <div class="flex flex-col">
-                <span class="font-medium">Configuraciones</span>
-                <span class="text-xs text-calico-gray-400">Preferencias y ajustes</span>
-              </div>
-            </a>
-            <hr class="my-2 border-calico-orange-500/10 mx-2" />
-            <button
-              id="logoutButton"
-              class="group flex items-center w-full px-4 py-3 text-sm text-calico-orange-600 hover:text-calico-orange-500 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-calico-orange-500/10 transition-all duration-300 mx-2 rounded-xl"
-            >
-              <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-red-500/20 group-hover:bg-red-500/30 transition-colors duration-300 mr-3">
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  ></path>
-                </svg>
-              </div>
-              <div class="flex flex-col items-start">
-                <span class="font-medium">Cerrar Sesión</span>
-                <span class="text-xs text-calico-gray-400">Salir de tu cuenta</span>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Mobile menu button -->
-        <button
-          id="mobileMenuButton"
-          class="md:hidden group p-2 rounded-xl text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 hover:shadow-lg hover:shadow-calico-orange-500/20"
-        >
-          <svg
-            class="w-6 h-6 transition-transform duration-300 group-hover:scale-110"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Mobile menu -->
-  <div
-    id="mobileMenu"
-    class="hidden md:hidden backdrop-blur-xl bg-gradient-to-b from-calico-dark/95 to-calico-dark/90 border-t border-calico-orange-500/20 shadow-2xl"
-  >
-    <div class="px-4 pt-4 pb-6 space-y-2">
-      <div class="mb-4">
-        <h3 class="text-sm font-semibold text-calico-orange-400 uppercase tracking-wider mb-2">Navegación</h3>
-      </div>
-      <a
-        href="/"
-        class="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
-      >
-        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-        </svg>
-        Inicio
-      </a>
-      <a
-        href="/game/4b985193-0cf0-4c12-b022-cc126942a041"
-        class="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
-      >
-        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v8H8V8z"></path>
-        </svg>
-        Minecraft
-      </a>
-      <a
-        href="/game/d51a472f-6181-4a36-aaff-c74882f4b01d"
-        class="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
-      >
-        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"></path>
-        </svg>
-        Call of Duty
-      </a>
-      <a
-        href="/game/5ea7266a-4bb9-4d15-b6cb-e39de6db028c"
-        class="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
-      >
-        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-        </svg>
-        Among Us
-      </a>
-      <a
-        href="/game/84f8ed17-5d30-4666-aee8-dea30b7ac858"
-        class="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
-      >
-        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"></path>
-        </svg>
-        DOS
-      </a>
+      <!-- Dynamic React Component -->
+      <NavigationReact games={gamesList} client:load />
     </div>
   </div>
 </nav>
 
-<script>
-  // Global variables to track event listeners
-  let navigationInitialized = false;
-  let eventListenersAdded = false;
-  let cleanupFunctions: (() => void)[] = [];
-
-  // Check authentication status
-  function checkAuthStatus() {
-    const userSession =
-      localStorage.getItem("userSession") ||
-      sessionStorage.getItem("userSession");
-    const guestButtons = document.getElementById("guestButtons");
-    const userMenu = document.getElementById("userMenu");
-    const userAvatar = document.getElementById("userAvatar");
-    const userName = document.getElementById("userName");
-
-    if (userSession) {
-      try {
-        const session = JSON.parse(userSession);
-        const user = session.user;
-
-        // Show user menu, hide guest buttons
-        if (guestButtons) guestButtons.classList.add("hidden");
-        if (userMenu) userMenu.classList.remove("hidden");
-
-        // Update user info
-        if (userName) userName.textContent = user.name;
-        if (userAvatar && userAvatar instanceof HTMLImageElement)
-          userAvatar.src = user.avatar || "/default-avatar.png";
-      } catch (error) {
-        console.error("Error parsing user session:", error);
-        // Clear invalid session
-        localStorage.removeItem("userSession");
-        sessionStorage.removeItem("userSession");
-        // Recheck after clearing
-        if (guestButtons) guestButtons.classList.remove("hidden");
-        if (userMenu) userMenu.classList.add("hidden");
-      }
-    } else {
-      // Show guest buttons, hide user menu
-      if (guestButtons) guestButtons.classList.remove("hidden");
-      if (userMenu) userMenu.classList.add("hidden");
-    }
+<style>
+  #navbar {
+    z-index: 9999;
+    transition: all 0.3s ease;
+    background-color: var(--bg-secondary);
   }
 
-  // Clean up previous event listeners
-  function cleanup() {
-    cleanupFunctions.forEach((fn: () => void) => fn());
-    cleanupFunctions = [];
-    navigationInitialized = false;
+  /* Ensure solid background for all browsers */
+  #navbar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
-
-  // Initialize navigation functionality
-  function initNavigation() {
-    if (navigationInitialized) return;
-    navigationInitialized = true;
-
-    // User menu dropdown toggle with animations
-    const userMenuButton = document.getElementById("userMenuButton");
-    const userDropdown = document.getElementById("userDropdown");
-
-    if (userMenuButton && userDropdown) {
-      const handleUserMenuClick = (e: Event) => {
-        e.stopPropagation();
-        
-        if (userDropdown.classList.contains("hidden")) {
-          // Show dropdown with animation
-          userDropdown.classList.remove("hidden");
-          userDropdown.classList.remove("scale-95", "opacity-0");
-          userDropdown.classList.add("scale-100", "opacity-100");
-        } else {
-          // Hide dropdown with animation
-          userDropdown.classList.remove("scale-100", "opacity-100");
-          userDropdown.classList.add("scale-95", "opacity-0");
-          setTimeout(() => {
-            userDropdown.classList.add("hidden");
-          }, 300);
-        }
-      };
-      userMenuButton.addEventListener("click", handleUserMenuClick);
-      cleanupFunctions.push(() =>
-        userMenuButton.removeEventListener("click", handleUserMenuClick)
-      );
-    }
-
-    // Close dropdown when clicking outside with animation
-    const handleDocumentClick = () => {
-      if (userDropdown && !userDropdown.classList.contains("hidden")) {
-        userDropdown.classList.remove("scale-100", "opacity-100");
-        userDropdown.classList.add("scale-95", "opacity-0");
-        setTimeout(() => {
-          userDropdown.classList.add("hidden");
-        }, 300);
-      }
-    };
-    document.addEventListener("click", handleDocumentClick);
-    cleanupFunctions.push(() =>
-      document.removeEventListener("click", handleDocumentClick)
-    );
-
-    // Mobile menu toggle
-    const mobileMenuButton = document.getElementById("mobileMenuButton");
-    const mobileMenu = document.getElementById("mobileMenu");
-
-    if (mobileMenuButton && mobileMenu) {
-      const handleMobileMenuClick = () => {
-        mobileMenu.classList.toggle("hidden");
-      };
-      mobileMenuButton.addEventListener("click", handleMobileMenuClick);
-      cleanupFunctions.push(() =>
-        mobileMenuButton.removeEventListener("click", handleMobileMenuClick)
-      );
-    }
-
-    // Logout functionality
-    const logoutButton = document.getElementById("logoutButton");
-    if (logoutButton) {
-      const handleLogout = () => {
-        // Clear session data
-        localStorage.removeItem("userSession");
-        sessionStorage.removeItem("userSession");
-
-        // Show notification using custom event
-        window.dispatchEvent(
-          new CustomEvent("addNotification", {
-            detail: { message: "Sesión cerrada exitosamente", type: "success" },
-          })
-        );
-
-        // Redirect to home
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1000);
-      };
-      logoutButton.addEventListener("click", handleLogout);
-      cleanupFunctions.push(() =>
-        logoutButton.removeEventListener("click", handleLogout)
-      );
-    }
-  }
-
-  // Notification function is now handled by the global NotificationProvider
-
-  // Main initialization function
-  function initializeAuth() {
-    checkAuthStatus();
-    initNavigation();
-  }
-
-  // Initialize everything when DOM is ready
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initializeAuth);
-  } else {
-    initializeAuth();
-  }
-
-  // Listen for Astro page transitions
-  if (!eventListenersAdded) {
-    eventListenersAdded = true;
-
-    // Listen for astro:before-preparation (before navigation starts)
-    document.addEventListener("astro:before-preparation", () => {
-      cleanup();
-    });
-
-    // Listen for astro:page-load event (after navigation)
-    document.addEventListener("astro:page-load", () => {
-      // Reinitialize authentication with a small delay
-      setTimeout(initializeAuth, 50);
-    });
-
-    // Listen for storage changes (for cross-tab logout)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "userSession" && !e.newValue) {
-        checkAuthStatus();
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-    cleanupFunctions.push(() =>
-      window.removeEventListener("storage", handleStorageChange)
-    );
-  }
-</script>
+</style>
