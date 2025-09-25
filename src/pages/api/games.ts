@@ -169,8 +169,7 @@ export const POST: APIRoute = async ({ request }) => {
       platform: gameData.platform?.trim() || null,
       cover_image_url: gameData.cover_image_url?.trim() || null,
       has_servers: gameData.has_servers || false,
-      is_active: true,
-      theme_config: gameData.theme_config || {}
+      is_active: true
     };
 
     console.log('🎯 Creando juego con datos:', newGameData);

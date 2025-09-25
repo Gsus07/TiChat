@@ -38,7 +38,6 @@ export interface Game {
   is_active: boolean;
   created_at: string;
   has_servers: boolean;
-  theme_config?: ThemeConfig;
 }
 
 export interface GameServer {

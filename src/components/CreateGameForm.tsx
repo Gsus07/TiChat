@@ -3,6 +3,7 @@ import type { Game } from '../types/game';
 import { supabase } from '../utils/supabaseClient';
 import { useNotifications } from './react/NotificationProvider';
 import { uploadGameImage, validateImageFile } from '../utils/imageUpload';
+import { getUserSession } from '../utils/auth';
 
 interface CreateGameFormProps {
   onGameCreated: (game: Game) => void;
@@ -13,7 +14,7 @@ interface FormData {
   name: string;
   description: string;
   genre: string;
-  platform: string;
+  platform: string[];
   cover_image_url: string;
   has_servers: boolean;
 }
@@ -39,7 +40,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
     name: '',
     description: '',
     genre: '',
-    platform: '',
+    platform: [],
     cover_image_url: '',
     has_servers: false
   });
@@ -65,6 +66,10 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
 
     if (formData.description && formData.description.length > 500) {
       newErrors.description = 'La descripción no puede exceder 500 caracteres';
+    }
+
+    if (formData.platform.length === 0) {
+      newErrors.platform = 'Selecciona al menos una plataforma';
     }
 
     // Validar imagen si se seleccionó un archivo
@@ -99,6 +104,20 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
     // Limpiar error del campo cuando el usuario empiece a escribir
     if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handlePlatformChange = (platform: string) => {
+    setFormData(prev => ({
+      ...prev,
+      platform: prev.platform.includes(platform)
+        ? prev.platform.filter(p => p !== platform)
+        : [...prev.platform, platform]
+    }));
+
+    // Limpiar error de plataforma si existe
+    if (errors.platform) {
+      setErrors(prev => ({ ...prev, platform: undefined }));
     }
   };
 
@@ -152,12 +171,27 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
     setErrors({});
 
     try {
-      // Obtener el token de autenticación de Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      // Verificar autenticación usando la función de utilidad
+      const userSession = getUserSession();
       
-      if (sessionError || !session?.access_token) {
-        throw new Error('No estás autenticado. Por favor, inicia sesión.');
+      if (!userSession || !userSession.access_token) {
+        setErrors({ general: 'Debes iniciar sesión para crear juegos' });
+        return;
       }
+      
+      // Configurar la sesión en Supabase
+      const { data, error } = await supabase.auth.setSession({
+        access_token: userSession.access_token,
+        refresh_token: userSession.refresh_token || ''
+      });
+      
+      if (error) {
+        console.error('❌ Error configurando sesión Supabase:', error);
+        setErrors({ general: 'Error de autenticación. Inicia sesión nuevamente.' });
+        return;
+      }
+      
+      console.log('✅ Sesión configurada correctamente en Supabase');
 
       let imageUrl = formData.cover_image_url;
 
@@ -175,9 +209,10 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
         setImageUpload(prev => ({ ...prev, uploading: false }));
       }
 
-      // Preparar datos del juego con la URL de imagen
+      // Preparar datos del juego con la URL de imagen y plataformas como string
       const gameDataToSend = {
         ...formData,
+        platform: formData.platform.join(', '), // Convertir array a string separado por comas
         cover_image_url: imageUrl
       };
 
@@ -185,7 +220,7 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${userSession.access_token}`
         },
         body: JSON.stringify(gameDataToSend)
       });
@@ -309,28 +344,38 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
             </select>
           </div>
 
-          {/* Plataforma */}
+          {/* Plataformas */}
           <div>
-            <label htmlFor="platform" className="block text-sm font-medium text-calico-gray-300 mb-1.5 sm:mb-2">
-              Plataforma
+            <label className="block text-sm font-medium text-calico-gray-300 mb-1.5 sm:mb-2">
+              Plataformas *
             </label>
-            <select
-              id="platform"
-              name="platform"
-              value={formData.platform}
-              onChange={handleInputChange}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-calico-stripe-dark border border-calico-stripe-light/30 rounded-xl text-calico-white focus:outline-none focus:ring-2 focus:border-calico-orange-500 focus:ring-calico-orange-500/20 transition-all text-sm sm:text-base"
-              style={{ backgroundColor: '#1f2937', color: '#ffffff' }}
-              disabled={isSubmitting}
-            >
-              <option value="" style={{ backgroundColor: '#374151', color: '#9ca3af' }}>Seleccionar plataforma</option>
-              <option value="PC" style={{ backgroundColor: '#374151', color: '#ffffff' }}>PC</option>
-              <option value="PlayStation" style={{ backgroundColor: '#374151', color: '#ffffff' }}>PlayStation</option>
-              <option value="Xbox" style={{ backgroundColor: '#374151', color: '#ffffff' }}>Xbox</option>
-              <option value="Nintendo Switch" style={{ backgroundColor: '#374151', color: '#ffffff' }}>Nintendo Switch</option>
-              <option value="Mobile" style={{ backgroundColor: '#374151', color: '#ffffff' }}>Mobile</option>
-              <option value="Multiplataforma" style={{ backgroundColor: '#374151', color: '#ffffff' }}>Multiplataforma</option>
-            </select>
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+              {['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile', 'Multiplataforma'].map((platform) => (
+                <label
+                  key={platform}
+                  className={`flex items-center space-x-2 p-3 rounded-xl border cursor-pointer transition-all ${
+                    formData.platform.includes(platform)
+                      ? 'border-calico-orange-500 bg-calico-orange-500/10 text-calico-orange-400'
+                      : 'border-calico-stripe-light/30 bg-calico-stripe-dark/20 text-calico-gray-300 hover:border-calico-orange-500/50'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.platform.includes(platform)}
+                    onChange={() => handlePlatformChange(platform)}
+                    className="w-4 h-4 text-calico-orange-500 bg-calico-stripe-dark border-calico-stripe-light/30 rounded focus:ring-calico-orange-500 focus:ring-2"
+                    disabled={isSubmitting}
+                  />
+                  <span className="text-sm font-medium">{platform}</span>
+                </label>
+              ))}
+            </div>
+            {formData.platform.length === 0 && (
+              <p className="mt-1 text-sm text-calico-gray-400">Selecciona al menos una plataforma</p>
+            )}
+            {errors.platform && (
+              <p className="mt-1 text-sm text-red-400">{errors.platform}</p>
+            )}
           </div>
 
           {/* Subida de imagen */}
