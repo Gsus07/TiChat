@@ -288,7 +288,7 @@ const { count: postCount } = await supabase
             }
           }
         } catch (error) {
-          console.error('Error toggling favorite:', error);
+          // Error toggling favorite
         }
       });
     });
@@ -369,7 +369,6 @@ const { count: postCount } = await supabase
             alert(`Error al eliminar el juego: ${error.error}`);
           }
         } catch (error) {
-          console.error('Error deleting game:', error);
           alert('Error al eliminar el juego');
         }
       });

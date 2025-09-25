@@ -132,7 +132,6 @@ const RegisterForm: React.FC = () => {
       }, 1500);
 
     } catch (error: any) {
-      console.error('Registration error:', error);
       addNotification(error.message || 'Error al crear la cuenta', 'error');
     } finally {
       setIsLoading(false);

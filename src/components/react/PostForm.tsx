@@ -138,7 +138,6 @@ const PostForm: React.FC<PostFormProps> = ({
       window.dispatchEvent(event);
       
     } catch (error) {
-      console.error('Error creating post:', error);
       addNotification('Error al publicar el post', 'error');
     } finally {
       setIsSubmitting(false);

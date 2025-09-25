@@ -53,7 +53,6 @@ export async function addFavoriteGame(userId: string, gameId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error adding favorite game:', error);
     return { data: null, error };
   }
 }
@@ -71,7 +70,6 @@ export async function removeFavoriteGame(userId: string, gameId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error removing favorite game:', error);
     return { data: null, error };
   }
 }
@@ -91,7 +89,6 @@ export async function getUserFavoriteGames(userId: string) {
     if (error) throw error;
     return { data: favorites as FavoriteGameWithDetails[] || [], error: null };
   } catch (error) {
-    console.error('Error fetching favorite games:', error);
     return { data: null, error };
   }
 }
@@ -111,7 +108,6 @@ export async function isGameFavorite(userId: string, gameId: string) {
 
     return { data: !!data, error: null };
   } catch (error) {
-    console.error('Error checking favorite status:', error);
     return { data: false, error };
   }
 }
@@ -128,7 +124,6 @@ export async function toggleFavoriteGame(userId: string, gameId: string) {
       return { data: { is_favorite: true }, error: result.error };
     }
   } catch (error) {
-    console.error('Error toggling favorite game:', error);
     return { data: null, error };
   }
 }
@@ -149,7 +144,6 @@ export async function getFavoriteGamesByGenre(userId: string, genre: string) {
     if (error) throw error;
     return { data: favorites as FavoriteGameWithDetails[] || [], error: null };
   } catch (error) {
-    console.error('Error fetching favorite games by genre:', error);
     return { data: null, error };
   }
 }
@@ -169,7 +163,6 @@ export async function getMostFavoritedGames(limit = 10) {
     if (error) throw error;
     return { data: games || [], error: null };
   } catch (error) {
-    console.error('Error fetching most favorited games:', error);
     return { data: null, error };
   }
 }
@@ -234,7 +227,6 @@ export async function getServerStats(serverId: string) {
 
     return { data: stats, error: null };
   } catch (error) {
-    console.error('Error fetching server stats:', error);
     return { data: null, error };
   }
 }
@@ -251,7 +243,6 @@ export async function updateServerActivity(serverId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error updating server activity:', error);
     return { data: null, error };
   }
 }
@@ -289,7 +280,6 @@ export async function getTopServersByActivity(gameId?: string, limit = 10) {
     
     return { data: serversWithStats, error: null };
   } catch (error) {
-    console.error('Error fetching top servers:', error);
     return { data: null, error };
   }
 }
@@ -316,7 +306,6 @@ export async function getServersByPopularity(gameId?: string, limit = 10) {
     if (error) throw error;
     return { data: servers || [], error: null };
   } catch (error) {
-    console.error('Error fetching servers by popularity:', error);
     return { data: null, error };
   }
 }
@@ -364,7 +353,6 @@ export async function getFavoriteGamesByPosts(userId: string, limit = 5) {
 
     return { data: sortedGames, error: null };
   } catch (error) {
-    console.error('Error fetching favorite games by posts:', error);
     return { data: null, error };
   }
 }
@@ -425,7 +413,6 @@ export async function getUserRecentActivity(userId: string, limit = 10) {
 
     return { data: formattedActivity, error: null };
   } catch (error) {
-    console.error('Error fetching user recent activity:', error);
     return { data: null, error };
   }
 }

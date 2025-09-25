@@ -32,7 +32,6 @@ export const GET: APIRoute = async ({ params }) => {
       }
     });
   } catch (error) {
-    console.error('Error in recent-activity API:', error);
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: {

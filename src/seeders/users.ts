@@ -60,7 +60,6 @@ const usersData = [
 ];
 
 export async function seedUsers() {
-  console.log('👥 Seeding users...');
   
   try {
     // Verificar si ya existen usuarios (además del usuario autenticado)
@@ -74,7 +73,6 @@ export async function seedUsers() {
     }
     
     if (existingUsers && existingUsers.length >= 3) {
-      console.log('⚠️  Ya existen suficientes usuarios, saltando seeder de users');
       return;
     }
     
@@ -88,10 +86,7 @@ export async function seedUsers() {
       throw error;
     }
     
-    console.log(`✅ ${data?.length || 0} usuarios demo creados exitosamente`);
-    
   } catch (error) {
-    console.error('❌ Error seeding users:', error);
     throw error;
   }
 }

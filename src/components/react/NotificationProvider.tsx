@@ -83,23 +83,19 @@ export const useNotifications = (): NotificationContextType => {
     // Return a safe fallback instead of throwing an error
     // Solo mostrar warning una vez para evitar spam en consola
     if (typeof window !== 'undefined' && !(window as any).__notificationWarningShown) {
-      console.warn('useNotifications called outside of NotificationProvider, using fallback');
       (window as any).__notificationWarningShown = true;
     }
     return {
       notifications: [],
       addNotification: (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') => {
-        console.log(`Notification fallback: [${type}] ${message}`);
         // Intentar usar la función global como respaldo
         if (typeof window !== 'undefined' && (window as any).showGlobalNotification) {
           (window as any).showGlobalNotification(message, type);
         }
       },
       removeNotification: (id: string) => {
-        console.log(`Remove notification fallback: ${id}`);
       },
       clearAllNotifications: () => {
-        console.log('Clear all notifications fallback');
       }
     };
   }

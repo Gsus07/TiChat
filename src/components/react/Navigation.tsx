@@ -82,7 +82,6 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
         const session: UserSession = JSON.parse(userSession);
         setUser(session.user);
       } catch (error) {
-        console.error("Error parsing user session:", error);
         localStorage.removeItem("userSession");
         sessionStorage.removeItem("userSession");
         setUser(null);

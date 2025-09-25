@@ -60,7 +60,6 @@ const serversData = [
 ];
 
 export async function seedServers() {
-  console.log('🖥️  Seeding servers...');
   
   try {
     // Verificar si ya existen servidores
@@ -74,7 +73,6 @@ export async function seedServers() {
     }
     
     if (existingServers && existingServers.length > 0) {
-      console.log('⚠️  Los servidores ya existen, saltando seeder de servers');
       return;
     }
     
@@ -108,10 +106,7 @@ export async function seedServers() {
       throw error;
     }
     
-    console.log(`✅ ${data?.length || 0} servidores creados exitosamente`);
-    
   } catch (error) {
-    console.error('❌ Error seeding servers:', error);
     throw error;
   }
 }

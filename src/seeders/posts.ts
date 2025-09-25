@@ -115,7 +115,6 @@ const postsData = [
 ];
 
 export async function seedPosts() {
-  console.log('📝 Seeding posts...');
   
   try {
     // Verificar si ya existen posts
@@ -125,7 +124,6 @@ export async function seedPosts() {
       .limit(1);
     
     if (existingPosts && existingPosts.length > 0) {
-      console.log('⚠️  Ya existen posts, saltando seeder de posts');
       return;
     }
     
@@ -135,7 +133,6 @@ export async function seedPosts() {
       .select('id, username');
     
     if (usersError || !users || users.length === 0) {
-      console.error('Error obteniendo usuarios:', usersError);
       return;
     }
     
@@ -147,7 +144,6 @@ export async function seedPosts() {
       .single();
       
     if (!firstGame) {
-      console.error('No hay juegos disponibles para crear posts');
       return;
     }
     
@@ -170,10 +166,7 @@ export async function seedPosts() {
       throw error;
     }
     
-    console.log(`✅ ${data?.length || 0} posts creados exitosamente`);
-    
   } catch (error) {
-    console.error('❌ Error seeding posts:', error);
     throw error;
   }
 }

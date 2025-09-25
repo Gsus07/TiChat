@@ -27,7 +27,6 @@ export const GET: APIRoute = async ({ params }) => {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('Error al obtener post:', error);
     return new Response(JSON.stringify({ error: 'Error interno del servidor' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
@@ -94,7 +93,6 @@ export const DELETE: APIRoute = async ({ params, request }) => {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('Error al eliminar post:', error);
     return new Response(JSON.stringify({ error: 'Error interno del servidor' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

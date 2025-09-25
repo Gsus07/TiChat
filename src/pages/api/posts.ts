@@ -41,7 +41,6 @@ export const GET: APIRoute = async ({ request }) => {
       }
     });
   } catch (error) {
-    console.error('Error in posts API:', error);
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: {

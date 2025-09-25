@@ -36,7 +36,6 @@ const serverNameFormatted = serverNameString
 const { data: game, error: gameError } = await getGameWithTheme(gameNameFormatted);
 
 if (gameError || !game) {
-  console.error('Error fetching game:', gameError);
   return Astro.redirect('/404');
 }
 
@@ -44,7 +43,6 @@ if (gameError || !game) {
 const { data: server, error: serverError } = await getServerWithTheme(serverNameFormatted, game.id);
 
 if (serverError || !server) {
-  console.error('Error fetching server:', serverError);
   return Astro.redirect(`/${gameName}`);
 }
 

@@ -56,7 +56,6 @@ export async function uploadGameImage(file: File, gameId?: string): Promise<Imag
       });
 
     if (error) {
-      console.error('Error subiendo imagen:', error);
       return { 
         success: false, 
         error: `Error al subir la imagen: ${error.message}` 
@@ -82,7 +81,6 @@ export async function uploadGameImage(file: File, gameId?: string): Promise<Imag
     };
 
   } catch (error) {
-    console.error('Error en uploadGameImage:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Error desconocido al subir la imagen' 
@@ -112,7 +110,6 @@ export async function deleteGameImage(imagePath: string): Promise<{ success: boo
       .remove([cleanPath]);
 
     if (error) {
-      console.error('Error eliminando imagen:', error);
       return { 
         success: false, 
         error: `Error al eliminar la imagen: ${error.message}` 
@@ -122,7 +119,6 @@ export async function deleteGameImage(imagePath: string): Promise<{ success: boo
     return { success: true };
 
   } catch (error) {
-    console.error('Error en deleteGameImage:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Error desconocido al eliminar la imagen' 
@@ -154,7 +150,6 @@ export async function updateGameImage(
     if (oldImageUrl) {
       const deleteResult = await deleteGameImage(oldImageUrl);
       if (!deleteResult.success) {
-        console.warn('No se pudo eliminar la imagen anterior:', deleteResult.error);
         // No fallar la operación por esto, solo advertir
       }
     }
@@ -162,7 +157,6 @@ export async function updateGameImage(
     return uploadResult;
 
   } catch (error) {
-    console.error('Error en updateGameImage:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Error desconocido al actualizar la imagen' 
@@ -219,7 +213,6 @@ export function getGameImagePublicUrl(imagePath: string): string | null {
 
     return data?.publicUrl || null;
   } catch (error) {
-    console.error('Error obteniendo URL pública:', error);
     return null;
   }
 }

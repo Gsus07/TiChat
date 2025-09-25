@@ -194,12 +194,11 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
       });
       
       if (error) {
-        console.error('❌ Error configurando sesión Supabase:', error);
         setErrors({ general: 'Error de autenticación. Inicia sesión nuevamente.' });
         return;
       }
       
-      console.log('✅ Sesión configurada correctamente en Supabase');
+
 
       let imageUrl = game.cover_image_url; // Mantener imagen actual por defecto
 
@@ -222,11 +221,10 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
               const oldFileName = urlParts[urlParts.length - 1];
               await deleteGameImage(oldFileName);
             } catch (deleteError) {
-              console.warn('Error eliminando imagen anterior:', deleteError);
+              // Error eliminando imagen anterior - no crítico
             }
           }
         } catch (uploadError) {
-          console.error('Error subiendo imagen:', uploadError);
           setErrors({ image: 'Error al subir la imagen. Inténtalo de nuevo.' });
           setImageUpload(prev => ({ ...prev, uploading: false }));
           return;
@@ -245,7 +243,6 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
       };
 
       // Enviar datos al servidor
-      console.log('🚀 Enviando datos al servidor:', JSON.stringify(gameDataToSend, null, 2));
       
       const response = await fetch('/api/games', {
         method: 'PUT',
@@ -256,20 +253,15 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
         body: JSON.stringify(gameDataToSend)
       });
 
-      console.log('📡 Respuesta del servidor - Status:', response.status);
       const result = await response.json();
-      console.log('📋 Resultado del servidor:', JSON.stringify(result, null, 2));
 
       if (response.ok && result.success) {
-        console.log('✅ Juego actualizado exitosamente');
         onSuccess();
         onClose();
       } else {
-        console.error('❌ Error al actualizar juego:', result);
         setErrors({ general: result.error || 'Error al actualizar el juego' });
       }
     } catch (error) {
-      console.error('Error updating game:', error);
       setErrors({ general: 'Error al actualizar el juego. Inténtalo de nuevo.' });
     } finally {
       setIsSubmitting(false);

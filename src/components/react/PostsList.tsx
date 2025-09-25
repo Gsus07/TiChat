@@ -67,7 +67,7 @@ const PostsList: React.FC<PostsListProps> = ({
           setCurrentUserId(session.user.id);
         }
       } catch (e) {
-        console.error('Error parsing user session:', e);
+        // Silent error handling
       }
     }
   }, []);
@@ -98,10 +98,9 @@ const PostsList: React.FC<PostsListProps> = ({
         const data = await response.json();
         setPosts(data.posts || []);
       } else {
-        console.error('Error loading posts:', response.statusText);
+        // Silent error handling
       }
     } catch (error) {
-      console.error('Error loading posts:', error);
       addNotification('Error al cargar las publicaciones', 'error');
     } finally {
       setLoading(false);

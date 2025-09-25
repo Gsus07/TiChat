@@ -16,14 +16,8 @@ export interface UploadResult {
  */
 async function setSupabaseSession(): Promise<boolean> {
   const session = getUserSession();
-  console.log('Checking user session:', {
-    hasSession: !!session,
-    hasAccessToken: !!session?.access_token,
-    hasRefreshToken: !!session?.refresh_token
-  });
   
   if (!session || !session.access_token) {
-    console.error('No valid session or access token found');
     return false;
   }
 
@@ -35,18 +29,11 @@ async function setSupabaseSession(): Promise<boolean> {
     });
     
     if (error) {
-      console.error('Error setting Supabase session:', error);
       return false;
     }
     
-    console.log('Supabase session set successfully:', {
-      hasUser: !!data.user,
-      userId: data.user?.id
-    });
-    
     return !error && !!data.user;
   } catch (error) {
-    console.error('Unexpected error setting Supabase session:', error);
     return false;
   }
 }
@@ -124,7 +111,6 @@ export async function uploadFile(
       });
 
     if (uploadError) {
-      console.error('Error uploading file:', uploadError);
       return {
         data: null,
         error: `Error al subir el archivo: ${uploadError.message}`
@@ -146,7 +132,6 @@ export async function uploadFile(
     };
 
   } catch (error) {
-    console.error('Unexpected error uploading file:', error);
     return {
       data: null,
       error: 'Error inesperado al subir el archivo'
@@ -170,13 +155,11 @@ export async function deleteFile(
       .remove([filePath]);
 
     if (error) {
-      console.error('Error deleting file:', error);
       return { error: `Error al eliminar el archivo: ${error.message}` };
     }
 
     return { error: null };
   } catch (error) {
-    console.error('Unexpected error deleting file:', error);
     return { error: 'Error inesperado al eliminar el archivo' };
   }
 }
@@ -208,13 +191,11 @@ export async function updateUserAvatar(
       .eq('id', user.id);
 
     if (updateError) {
-      console.error('Error updating avatar:', updateError);
       return { error: `Error al actualizar el avatar: ${updateError.message}` };
     }
 
     return { error: null };
   } catch (error) {
-    console.error('Unexpected error updating avatar:', error);
     return { error: 'Error inesperado al actualizar el avatar' };
   }
 }
@@ -228,8 +209,6 @@ export async function changeUserAvatar(
   file: File
 ): Promise<{ data: { publicUrl: string } | null; error: string | null }> {
   try {
-    console.log('🔄 Iniciando cambio de avatar del usuario');
-    
     // Validar el archivo antes de procesar
     try {
       validateImageFile(file, 10); // Máximo 10MB antes de compresión
@@ -243,11 +222,8 @@ export async function changeUserAvatar(
     // Comprimir la imagen antes de subirla
     let processedFile: File;
     try {
-      console.log('🗜️ Comprimiendo imagen de avatar...');
       processedFile = await compressAvatarImage(file);
-      console.log('✅ Imagen comprimida exitosamente');
     } catch (compressionError) {
-      console.error('❌ Error al comprimir imagen:', compressionError);
       return {
         data: null,
         error: 'Error al procesar la imagen. Intenta con otro archivo.'
@@ -303,7 +279,6 @@ export async function changeUserAvatar(
     };
 
   } catch (error) {
-    console.error('Unexpected error changing avatar:', error);
     return {
       data: null,
       error: 'Error inesperado al cambiar el avatar'
@@ -320,8 +295,6 @@ export async function uploadPostImage(
   file: File
 ): Promise<{ data: { publicUrl: string; path: string } | null; error: string | null }> {
   try {
-    console.log('🔄 Iniciando subida de imagen de post');
-    
     // Validar el archivo antes de procesar
     try {
       validateImageFile(file, 15); // Máximo 15MB antes de compresión para posts
@@ -335,11 +308,8 @@ export async function uploadPostImage(
     // Comprimir la imagen antes de subirla
     let processedFile: File;
     try {
-      console.log('🗜️ Comprimiendo imagen de post...');
       processedFile = await compressPostImage(file);
-      console.log('✅ Imagen de post comprimida exitosamente');
     } catch (compressionError) {
-      console.error('❌ Error al comprimir imagen de post:', compressionError);
       return {
         data: null,
         error: 'Error al procesar la imagen. Intenta con otro archivo.'
@@ -384,7 +354,6 @@ export async function uploadPostImage(
     };
 
   } catch (error) {
-    console.error('Unexpected error uploading post image:', error);
     return {
       data: null,
       error: 'Error inesperado al subir la imagen del post'

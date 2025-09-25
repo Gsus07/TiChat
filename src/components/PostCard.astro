@@ -282,7 +282,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         }
       }
     } catch (error) {
-      console.error('Error al dar like:', error);
+      // Silent error handling
     }
   }
 
@@ -324,7 +324,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         }
       }
     } catch (error) {
-      console.error('Error al cargar comentarios:', error);
+      // Silent error handling
     }
   }
 
@@ -362,7 +362,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         }
       }
     } catch (error) {
-      console.error('Error al enviar comentario:', error);
+      // Silent error handling
     }
   }
 
@@ -403,7 +403,6 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
 
   // Función para editar post
   function editPost(postId: string) {
-    console.log('Editar post:', postId);
     // TODO: Implementar modal de edición
   }
 
@@ -427,7 +426,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
           }
         }
       } catch (error) {
-        console.error('Error al eliminar post:', error);
+        // Silent error handling
       }
     }
   }

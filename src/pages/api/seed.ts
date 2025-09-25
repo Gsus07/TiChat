@@ -40,8 +40,6 @@ export const POST: APIRoute = async ({ request }) => {
     );
     
   } catch (error) {
-    console.error('Error en API de seeders:', error);
-    
     return new Response(
       JSON.stringify({ 
         success: false, 

@@ -51,13 +51,6 @@ export async function compressImage(
   options: CompressionOptions = COMPRESSION_PRESETS.post
 ): Promise<File> {
   try {
-    console.log('🖼️ Iniciando compresión de imagen:', {
-      originalName: file.name,
-      originalSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      originalType: file.type,
-      options
-    });
-
     // Validar que el archivo sea una imagen
     if (!file.type.startsWith('image/')) {
       throw new Error('El archivo debe ser una imagen');
@@ -66,16 +59,8 @@ export async function compressImage(
     // Comprimir la imagen
     const compressedFile = await imageCompression(file, options);
 
-    console.log('✅ Compresión completada:', {
-      compressedName: compressedFile.name,
-      compressedSize: `${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`,
-      compressedType: compressedFile.type,
-      compressionRatio: `${((1 - compressedFile.size / file.size) * 100).toFixed(1)}%`
-    });
-
     return compressedFile;
   } catch (error) {
-    console.error('❌ Error al comprimir imagen:', error);
     throw new Error(`Error al comprimir imagen: ${error instanceof Error ? error.message : 'Error desconocido'}`);
   }
 }

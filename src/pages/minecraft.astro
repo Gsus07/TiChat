@@ -6,7 +6,6 @@ import GameWithServersTemplate from '../components/GameWithServersTemplate.astro
 const { data: game, error: gameError } = await getGameWithTheme('Minecraft');
 
 if (gameError || !game) {
-  console.error('Error fetching Minecraft game:', gameError);
   return Astro.redirect('/404');
 }
 
@@ -14,7 +13,7 @@ if (gameError || !game) {
 const { data: servers, error: serversError } = await getServersByGameId(game.id);
 
 if (serversError) {
-  console.error('Error fetching servers:', serversError);
+  // Handle error silently
 }
 
 const gameServers = servers || [];

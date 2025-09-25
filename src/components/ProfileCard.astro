@@ -228,7 +228,6 @@ const joinDate = new Date(profile.created_at).toLocaleDateString('es-ES', {
         showNotification(data.following ? 'Ahora sigues a este usuario' : 'Has dejado de seguir a este usuario');
       }
     } catch (error) {
-      console.error('Error al seguir/dejar de seguir usuario:', error);
       showNotification('Error al procesar la solicitud', 'error');
     }
   }

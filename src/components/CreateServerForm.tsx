@@ -226,7 +226,6 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
       });
 
     } catch (error) {
-      console.error('Error creating server:', error);
       setErrors({ 
         general: error instanceof Error ? error.message : 'Error inesperado al crear el servidor' 
       });

@@ -65,7 +65,7 @@ class ThemeManager {
         return saved as Theme;
       }
     } catch (error) {
-      console.warn('Error loading theme from storage:', error);
+      // Silently handle storage errors
     }
     return 'auto';
   }
@@ -74,7 +74,7 @@ class ThemeManager {
     try {
       localStorage.setItem(this.storageKey, theme);
     } catch (error) {
-      console.warn('Error saving theme to storage:', error);
+      // Silently handle storage errors
     }
   }
 
@@ -129,7 +129,7 @@ class ThemeManager {
       try {
         listener(state);
       } catch (error) {
-        console.error('Error in theme listener:', error);
+        // Silently handle listener errors
       }
     });
   }
@@ -239,7 +239,7 @@ export function getInitialTheme(): string {
         }
         metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#1e293b' : '#ffffff');
       } catch (e) {
-        console.warn('Error initializing theme:', e);
+        // Silently handle theme initialization errors
       }
     })();
   `;

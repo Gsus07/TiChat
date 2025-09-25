@@ -186,7 +186,6 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen: propIsOpen,
       }, 1000);
 
     } catch (error) {
-      console.error('Error updating profile:', error);
       addNotification('Error al actualizar el perfil', 'error');
     } finally {
       setIsLoading(false);

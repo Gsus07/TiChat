@@ -77,7 +77,6 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     if (updateResult.error) {
-      console.error('Error updating theme:', updateResult.error);
       return new Response(
         JSON.stringify({ error: 'Error al actualizar el tema' }),
         { 
@@ -88,7 +87,6 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Registrar la acción en logs (opcional)
-    console.log(`Theme updated for ${entityType} ${entityId} by user ${currentUser.id}`);
 
     return new Response(
       JSON.stringify({ 
@@ -103,7 +101,6 @@ export const POST: APIRoute = async ({ request }) => {
     );
 
   } catch (error) {
-    console.error('Error in theme update API:', error);
     return new Response(
       JSON.stringify({ error: 'Error interno del servidor' }),
       { 
@@ -273,7 +270,6 @@ export const GET: APIRoute = async ({ request, url }) => {
     );
 
   } catch (error) {
-    console.error('Error in theme get API:', error);
     return new Response(
       JSON.stringify({ error: 'Error interno del servidor' }),
       { 

@@ -46,7 +46,6 @@ const gamesData = [
 ];
 
 export async function seedGames() {
-  console.log('🎮 Seeding games...');
   
   try {
     // Verificar si ya existen juegos
@@ -60,7 +59,6 @@ export async function seedGames() {
     }
     
     if (existingGames && existingGames.length > 0) {
-      console.log('⚠️  Los juegos ya existen, saltando seeder de games');
       return;
     }
     
@@ -74,10 +72,7 @@ export async function seedGames() {
       throw error;
     }
     
-    console.log(`✅ ${data?.length || 0} juegos creados exitosamente`);
-    
   } catch (error) {
-    console.error('❌ Error seeding games:', error);
     throw error;
   }
 }

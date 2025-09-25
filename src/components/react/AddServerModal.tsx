@@ -259,7 +259,6 @@ const AddServerModal: React.FC<AddServerModalProps> = ({ isOpen = false, onClose
       window.location.reload();
       
     } catch (error) {
-      console.error('Error saving server:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error al guardar el servidor';
       addNotification(errorMessage, 'error');
     } finally {

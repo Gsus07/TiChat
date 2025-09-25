@@ -56,32 +56,20 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
   };
 
   const handleUpload = async (file: File) => {
-    console.log('Starting avatar upload process:', {
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: file.type
-    });
-    
     setIsUploading(true);
 
     try {
-      console.log('Calling changeUserAvatar function...');
       const result = await changeUserAvatar(file);
-      
-      console.log('changeUserAvatar result:', result);
 
       if (result.error) {
-        console.error('Avatar upload failed:', result.error);
         addNotification(result.error, 'error');
         setPreviewUrl(null);
       } else if (result.data) {
-        console.log('Avatar upload successful:', result.data.publicUrl);
         addNotification('Avatar actualizado correctamente', 'success');
         onAvatarChange?.(result.data.publicUrl);
         setPreviewUrl(null); // Limpiar preview ya que se actualizó el avatar principal
       }
     } catch (error) {
-      console.error('Unexpected error uploading avatar:', error);
       addNotification('Error inesperado al subir el avatar', 'error');
       setPreviewUrl(null);
     } finally {

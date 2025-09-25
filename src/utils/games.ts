@@ -32,6 +32,7 @@ export interface Game {
   name: string;
   description?: string;
   genre?: string;
+  theme_config?: ThemeConfig;
   platform?: string;
   release_date?: string;
   cover_image_url?: string;
@@ -93,8 +94,7 @@ export async function getAllGames() {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching games:', error);
-    return { data: null, error };
+     return { data: null, error };
   }
 }
 
@@ -110,7 +110,6 @@ export async function getGameById(id: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching game:', error);
     return { data: null, error };
   }
 }
@@ -124,23 +123,20 @@ export async function getGameByName(name: string) {
       .eq('is_active', true);
     
     if (error) {
-      console.error('Error fetching game by name:', error);
       return { data: null, error };
     }
     
     if (!data || data.length === 0) {
-      console.log(`Game '${name}' not found`);
       return { data: null, error: null };
     }
     
     return { data: data[0], error: null };
   } catch (error) {
-    console.error('Error fetching game by name:', error);
     return { data: null, error };
   }
 }
 
-export async function createGame(gameData: Omit<Game, 'id' | 'created_at'>) {
+export async function createGame(gameData: Omit<Game, 'id' | 'created_at' | 'updated_at'>) {
   try {
     const { data, error } = await supabase
       .from('games')
@@ -151,7 +147,6 @@ export async function createGame(gameData: Omit<Game, 'id' | 'created_at'>) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error creating game:', error);
     return { data: null, error };
   }
 }
@@ -168,7 +163,6 @@ export async function updateGame(id: string, gameData: Partial<Game>) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error updating game:', error);
     return { data: null, error };
   }
 }
@@ -185,7 +179,6 @@ export async function deleteGame(id: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error deleting game:', error);
     return { data: null, error };
   }
 }
@@ -208,7 +201,6 @@ export async function getServersByGameId(gameId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching servers:', error);
     return { data: null, error };
   }
 }
@@ -230,14 +222,12 @@ export async function getServerById(id: string): Promise<{ data: GameServerWithJ
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching server:', error);
     return { data: null, error };
   }
 }
 
 export async function createServer(serverData: Omit<GameServer, 'id' | 'created_at' | 'updated_at'>) {
   try {
-    console.log('🚀 Iniciando creación de servidor:', serverData);
     
     // Validar datos requeridos
     if (!serverData.name || !serverData.game_id || !serverData.owner_id) {
@@ -247,11 +237,8 @@ export async function createServer(serverData: Omit<GameServer, 'id' | 'created_
       if (!serverData.owner_id) missingFields.push('owner_id');
       
       const errorMsg = `Campos requeridos faltantes: ${missingFields.join(', ')}`;
-      console.error('❌ Error de validación:', errorMsg);
       throw new Error(errorMsg);
     }
-    
-    console.log('✅ Validación de datos completada');
     
     const { data, error } = await supabase
       .from('game_servers')
@@ -260,15 +247,11 @@ export async function createServer(serverData: Omit<GameServer, 'id' | 'created_
       .single();
     
     if (error) {
-      console.error('❌ Error insertando servidor en BD:', error);
       throw error;
     }
     
-    console.log('✅ Servidor creado exitosamente:', data.id);
-    
     // Crear estadísticas iniciales del servidor
     if (data) {
-      console.log('📊 Creando estadísticas iniciales del servidor...');
       
       const { error: statsError } = await supabase
         .from('server_stats')
@@ -280,17 +263,12 @@ export async function createServer(serverData: Omit<GameServer, 'id' | 'created_
         }]);
       
       if (statsError) {
-        console.error('⚠️ Error creando estadísticas del servidor:', statsError);
         // No fallar la creación del servidor por esto
-      } else {
-        console.log('✅ Estadísticas del servidor creadas');
       }
     }
     
-    console.log('🎉 Creación de servidor completada exitosamente');
     return { data, error: null };
   } catch (error) {
-    console.error('💥 Error crítico creando servidor:', error);
     return { data: null, error };
   }
 }
@@ -307,7 +285,6 @@ export async function updateServer(id: string, serverData: Partial<GameServer>) 
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error updating server:', error);
     return { data: null, error };
   }
 }
@@ -324,7 +301,6 @@ export async function deleteServer(id: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error deleting server:', error);
     return { data: null, error };
   }
 }
@@ -341,7 +317,6 @@ export async function getServerStats(serverId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching server stats:', error);
     return { data: null, error };
   }
 }
@@ -358,7 +333,6 @@ export async function updateServerStats(serverId: string, stats: Partial<ServerS
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error updating server stats:', error);
     return { data: null, error };
   }
 }
@@ -378,7 +352,6 @@ export async function getUserFavoriteGames(userId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching favorite games:', error);
     return { data: null, error };
   }
 }
@@ -394,7 +367,6 @@ export async function addFavoriteGame(userId: string, gameId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error adding favorite game:', error);
     return { data: null, error };
   }
 }
@@ -412,7 +384,6 @@ export async function removeFavoriteGame(userId: string, gameId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error removing favorite game:', error);
     return { data: null, error };
   }
 }
@@ -632,7 +603,6 @@ export async function getServerBySlug(serverSlug: string, gameId: string): Promi
 
     return { data: matchingServer, error: null };
   } catch (error) {
-    console.error('Error fetching server by slug:', error);
     return { data: null, error };
   }
 }
@@ -689,7 +659,6 @@ export async function isServerSlugUnique(serverSlug: string, gameId: string, exc
 
     return !conflictingServer;
   } catch (error) {
-    console.error('Error checking server slug uniqueness:', error);
     return false;
   }
 }

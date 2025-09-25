@@ -287,7 +287,6 @@ const currentUserId = user?.id || null;
       const result = await response.json();
       return result.data || [];
     } catch (error) {
-      console.error('Error fetching updated games:', error);
       return null;
     }
   }
@@ -330,8 +329,6 @@ const currentUserId = user?.id || null;
     const root = createRoot(modalContainer);
     
     const handleGameCreated = async (newGame: Game) => {
-      console.log('✅ Nuevo juego creado:', newGame);
-      
       // Close modal
       root.unmount();
       document.body.removeChild(modalContainer);
@@ -364,8 +361,6 @@ const currentUserId = user?.id || null;
     const root = createRoot(modalContainer);
     
     const handleGameUpdated = async () => {
-      console.log('✅ Juego actualizado');
-      
       // Close modal
       root.unmount();
       document.body.removeChild(modalContainer);
@@ -406,7 +401,7 @@ const currentUserId = user?.id || null;
         return session;
       }
     } catch (error) {
-      console.error('Error parsing user session:', error);
+      // Error parsing user session
     }
     
     return null;
@@ -588,7 +583,6 @@ const currentUserId = user?.id || null;
         try {
           playMeowSound();
         } catch (error) {
-          console.log('🔇 Audio no disponible');
         }
         
         // Easter egg especial cada 10 clics

@@ -33,7 +33,6 @@ function decodeJWT(token: string): { exp?: number; iat?: number } {
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error('Error decoding JWT:', error);
     return {};
   }
 }
@@ -73,8 +72,6 @@ async function refreshToken(): Promise<{ success: boolean; error?: string }> {
       return { success: false, error: 'No refresh token available' };
     }
 
-    console.log('🔄 Intentando refrescar token...');
-    
     // Importar dinámicamente supabase para evitar problemas de SSR
     const { supabase } = await import('./supabaseClient');
     
@@ -83,7 +80,6 @@ async function refreshToken(): Promise<{ success: boolean; error?: string }> {
     });
 
     if (error) {
-      console.error('❌ Error al refrescar token:', error);
       return { success: false, error: error.message };
     }
 
@@ -102,11 +98,9 @@ async function refreshToken(): Promise<{ success: boolean; error?: string }> {
     // Guardar usando la función mejorada
     saveUserSession(updatedSession, session.rememberMe);
 
-    console.log('✅ Token refrescado exitosamente');
     return { success: true };
 
   } catch (error) {
-    console.error('❌ Error inesperado al refrescar token:', error);
     return { success: false, error: 'Unexpected error during token refresh' };
   }
 }
@@ -118,14 +112,7 @@ async function refreshToken(): Promise<{ success: boolean; error?: string }> {
 export function getUserSession(): UserSession | null {
   const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
   
-  console.log('Getting user session:', {
-    hasLocalStorage: !!localStorage.getItem('userSession'),
-    hasSessionStorage: !!sessionStorage.getItem('userSession'),
-    rawSession: userSession ? 'exists' : 'null'
-  });
-  
   if (!userSession) {
-    console.log('No user session found in storage');
     return null;
   }
   
@@ -136,16 +123,13 @@ export function getUserSession(): UserSession | null {
     if (parsedSession.access_token && isTokenExpired(parsedSession.access_token)) {
       // Si el usuario marcó "Recordarme" y tenemos refresh token, intentar refrescar
       if (parsedSession.rememberMe && parsedSession.refresh_token) {
-        console.log('Token expired but user has "Remember Me" - attempting refresh...');
         
         // Intentar refresh de forma síncrona (esto puede causar un pequeño delay)
         refreshToken().then(result => {
           if (!result.success) {
-            console.log('Failed to refresh token, clearing session');
             logout();
           }
         }).catch(() => {
-          console.log('Error during token refresh, clearing session');
           logout();
         });
         
@@ -153,7 +137,6 @@ export function getUserSession(): UserSession | null {
         // El próximo getUserSession() tendrá el token actualizado
         return parsedSession;
       } else {
-        console.log('Token has expired, clearing session');
         logout();
         return null;
       }
@@ -164,11 +147,10 @@ export function getUserSession(): UserSession | null {
         parsedSession.rememberMe && 
         parsedSession.refresh_token && 
         isTokenExpiringSoon(parsedSession.access_token)) {
-      console.log('Token expiring soon and user has "Remember Me" - refreshing proactively...');
       
       // Refresh proactivo en background
       refreshToken().catch(error => {
-        console.warn('Proactive token refresh failed:', error);
+        // Proactive token refresh failed
       });
     }
     
@@ -179,26 +161,13 @@ export function getUserSession(): UserSession | null {
       const hoursSinceLogin = (now - loginTime) / (1000 * 60 * 60);
       
       if (hoursSinceLogin > 24) {
-        console.log('Session expired (24 hours limit for non-remember sessions)');
         logout();
         return null;
       }
     }
     
-    console.log('Parsed user session:', {
-      hasUser: !!parsedSession.user,
-      userId: parsedSession.user?.id,
-      hasAccessToken: !!parsedSession.access_token,
-      hasRefreshToken: !!parsedSession.refresh_token,
-      loginTime: parsedSession.loginTime,
-      rememberMe: parsedSession.rememberMe,
-      isExpired: parsedSession.access_token ? isTokenExpired(parsedSession.access_token) : 'no token',
-      isExpiringSoon: parsedSession.access_token ? isTokenExpiringSoon(parsedSession.access_token) : 'no token'
-    });
-    
     return parsedSession;
   } catch (error) {
-    console.error('Error parsing user session:', error);
     // Clear invalid session
     logout();
     return null;
@@ -246,12 +215,6 @@ export function saveUserSession(session: UserSession, remember: boolean = false)
     localStorage.removeItem('userSession');
     sessionStorage.setItem('userSession', JSON.stringify(session));
   }
-  
-  console.log('Session saved:', {
-    storage: remember ? 'localStorage' : 'sessionStorage',
-    rememberMe: session.rememberMe,
-    expiresAt: session.expiresAt ? new Date(session.expiresAt).toISOString() : 'no expiration'
-  });
 }
 
 /**
@@ -305,8 +268,6 @@ export function setupSessionVerification(): void {
   
   // También verificar cuando la ventana recupera el foco
   window.addEventListener('focus', checkSessionValidity);
-  
-  console.log('Session verification setup completed');
 }
 
 /**
@@ -320,19 +281,14 @@ async function checkSessionValidity(): Promise<void> {
     if (isTokenExpired(session.access_token)) {
       // Si el usuario marcó "Recordarme" y tenemos refresh token, intentar refrescar
       if (session.rememberMe && session.refresh_token) {
-        console.log('Token expired during check, attempting refresh for "Remember Me" session...');
         
         const refreshResult = await refreshToken();
         if (refreshResult.success) {
-          console.log('Token refreshed successfully during automatic check');
           return; // Sesión renovada exitosamente
-        } else {
-          console.log('Failed to refresh token during automatic check, logging out');
         }
       }
       
       // Si no se pudo refrescar o no es una sesión "Recordarme", cerrar sesión
-      console.log('Session expired during automatic check, logging out');
       logout();
       
       // Notificar al usuario si está en una página que requiere autenticación
@@ -355,10 +311,9 @@ async function checkSessionValidity(): Promise<void> {
     }
     // Si el token está próximo a expirar y es una sesión "Recordarme", refrescar proactivamente
     else if (session.rememberMe && session.refresh_token && isTokenExpiringSoon(session.access_token)) {
-      console.log('Token expiring soon during check, refreshing proactively...');
       
       refreshToken().catch(error => {
-        console.warn('Proactive token refresh failed during automatic check:', error);
+        // Proactive token refresh failed during automatic check
       });
     }
   }

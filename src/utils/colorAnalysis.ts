@@ -99,9 +99,6 @@ export function getDominantColorFromImage(imageUrl: string, gameName?: string): 
       'uno': { r: 227, g: 6, b: 19 } // Rojo UNO
     };
     
-    console.log('Analyzing image URL:', imageUrl);
-    console.log('Game name provided:', gameName);
-    
     let gameKey: string | undefined;
     
     // Primero intentar detectar por el nombre del juego si está disponible
@@ -139,10 +136,8 @@ export function getDominantColorFromImage(imageUrl: string, gameName?: string): 
     }
     
     if (gameKey) {
-      console.log('Game detected:', gameKey, 'Config:', gameColors[gameKey]);
       resolve(gameColors[gameKey]);
     } else {
-      console.log('No game detected, using default color');
       // Color por defecto si no se puede determinar
       resolve({ r: 100, g: 100, b: 100 });
     }
@@ -169,7 +164,6 @@ export async function getDynamicTextStyles(imageUrl: string, gameName?: string) 
       }
     };
   } catch (error) {
-    console.error('Error analyzing image color:', error);
     // Fallback a colores seguros
     return {
       dominantColor: { r: 100, g: 100, b: 100 },

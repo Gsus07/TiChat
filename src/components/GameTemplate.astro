@@ -24,7 +24,7 @@ const currentUser = await getCurrentUser(Astro.request);
 const { data: posts, error: postsError } = await getPostsByGameId(game.id);
 
 if (postsError) {
-  console.error('Error fetching posts:', postsError);
+  // Silent error handling
 }
 
 const gamePosts = posts || [];

@@ -138,7 +138,6 @@ export async function getPostsByGameId(gameId: string, userId?: string, limit = 
     
     return { data: postsWithDetails, error: null };
   } catch (error) {
-    console.error('Error fetching posts:', error);
     return { data: null, error };
   }
 }
@@ -196,7 +195,6 @@ export async function getPostsByServerId(serverId: string, userId?: string, limi
     
     return { data: postsWithDetails, error: null };
   } catch (error) {
-    console.error('Error fetching posts by server:', error);
     return { data: null, error };
   }
 }
@@ -247,7 +245,6 @@ export async function getPostById(id: string, userId?: string) {
     
     return { data: postWithDetails, error: null };
   } catch (error) {
-    console.error('Error fetching post:', error);
     return { data: null, error };
   }
 }
@@ -269,7 +266,6 @@ export async function createPost(postData: Omit<Post, 'id' | 'created_at' | 'upd
     
     return { data, error: null };
   } catch (error) {
-    console.error('Error creating post:', error);
     return { data: null, error };
   }
 }
@@ -286,7 +282,6 @@ export async function updatePost(id: string, postData: Partial<Post>) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error updating post:', error);
     return { data: null, error };
   }
 }
@@ -303,7 +298,6 @@ export async function deletePost(id: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error deleting post:', error);
     return { data: null, error };
   }
 }
@@ -386,7 +380,6 @@ export async function getCommentsByPostId(postId: string, userId?: string) {
     
     return { data: commentsWithDetails, error: null };
   } catch (error) {
-    console.error('Error fetching comments:', error);
     return { data: null, error };
   }
 }
@@ -402,7 +395,6 @@ export async function createComment(commentData: Omit<Comment, 'id' | 'created_a
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error creating comment:', error);
     return { data: null, error };
   }
 }
@@ -419,7 +411,6 @@ export async function updateComment(id: string, commentData: Partial<Comment>) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error updating comment:', error);
     return { data: null, error };
   }
 }
@@ -436,7 +427,6 @@ export async function deleteComment(id: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error deleting comment:', error);
     return { data: null, error };
   }
 }
@@ -478,7 +468,6 @@ export async function togglePostLike(postId: string, userId: string) {
       return { data: { liked: true }, error: null };
     }
   } catch (error) {
-    console.error('Error toggling post like:', error);
     return { data: null, error };
   }
 }
@@ -520,7 +509,6 @@ export async function toggleCommentLike(commentId: string, userId: string) {
       return { data: { liked: true }, error: null };
     }
   } catch (error) {
-    console.error('Error toggling comment like:', error);
     return { data: null, error };
   }
 }

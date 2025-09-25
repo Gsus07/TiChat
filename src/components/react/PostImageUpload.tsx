@@ -41,7 +41,6 @@ const PostImageUpload = forwardRef<PostImageUploadRef, PostImageUploadProps>(({
       
       // Mostrar información del archivo
       const fileInfo = getImageInfo(file);
-      console.log('📁 Archivo seleccionado:', fileInfo);
       
       setSelectedFile(file);
       
@@ -64,7 +63,6 @@ const PostImageUpload = forwardRef<PostImageUploadRef, PostImageUploadProps>(({
     setIsUploading(true);
     
     try {
-      console.log('🚀 Iniciando subida automática de imagen de post...');
       const result = await uploadPostImage(file);
       
       if (result.error) {
@@ -78,13 +76,8 @@ const PostImageUpload = forwardRef<PostImageUploadRef, PostImageUploadProps>(({
         // Notificar al componente padre
         onImageUploaded?.(result.data.publicUrl, result.data.path);
         
-        console.log('✅ Imagen subida automáticamente:', {
-          url: result.data.publicUrl,
-          path: result.data.path
-        });
       }
     } catch (error) {
-      console.error('❌ Error al subir imagen automáticamente:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error al subir imagen';
       addNotification(errorMessage, 'error');
       // En caso de error, limpiar la selección

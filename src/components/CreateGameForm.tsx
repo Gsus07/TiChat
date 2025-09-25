@@ -186,12 +186,11 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
       });
       
       if (error) {
-        console.error('❌ Error configurando sesión Supabase:', error);
         setErrors({ general: 'Error de autenticación. Inicia sesión nuevamente.' });
         return;
       }
       
-      console.log('✅ Sesión configurada correctamente en Supabase');
+
 
       let imageUrl = formData.cover_image_url;
 
@@ -231,12 +230,10 @@ export default function CreateGameForm({ onGameCreated, onCancel }: CreateGameFo
         throw new Error(result.error || 'Error al crear el juego');
       }
 
-      console.log('✅ Juego creado exitosamente:', result.data);
       addNotification('¡Juego creado exitosamente!', 'success');
       onGameCreated(result.data);
       
     } catch (error) {
-      console.error('❌ Error creando juego:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error al crear el juego';
       setErrors({ general: errorMessage });
       addNotification(errorMessage, 'error');

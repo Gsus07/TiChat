@@ -26,7 +26,7 @@ try {
   favoriteGames = favGamesResult.data || [];
   recentActivity = activityResult.data || [];
 } catch (error) {
-  console.error('Error loading profile data:', error);
+  // Silent error handling
 }
 ---
 
@@ -249,16 +249,13 @@ try {
     function checkAuth() {
       const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
       if (!userSession) {
-        console.log('No user session found in storage');
         return null;
       }
       
       try {
         const session = JSON.parse(userSession);
-        console.log('Found valid user session:', session.user?.username);
         return session;
       } catch (error) {
-        console.error('Error parsing user session:', error);
         localStorage.removeItem('userSession');
         sessionStorage.removeItem('userSession');
         return null;
@@ -282,7 +279,6 @@ try {
       };
       
       localStorage.setItem('userSession', JSON.stringify(testSession));
-      console.log('Created test user session:', testSession);
       return testSession;
     }
 
@@ -325,9 +321,8 @@ try {
           `;
         }
         
-        console.log('Loaded favorite games:', favoriteGames);
       } catch (error) {
-        console.error('Error loading favorite games:', error);
+        // Silent error handling
       }
     }
     
@@ -374,9 +369,8 @@ try {
           `;
         }
         
-        console.log('Loaded recent activity:', recentActivity);
       } catch (error) {
-        console.error('Error loading recent activity:', error);
+        // Silent error handling
       }
     }
 
@@ -386,12 +380,10 @@ try {
       
       // If no session exists, create a test session for development
       if (!session) {
-        console.log('No session found, creating test session...');
         session = createTestSession();
       }
       
       const user = session.user;
-      console.log('Loading profile for user:', user);
       
       // Update profile elements
       const profileName = document.getElementById('profileName');
@@ -400,15 +392,12 @@ try {
       
       if (profileName) {
         profileName.textContent = user.full_name || user.username || 'Usuario';
-        console.log('Updated profile name:', profileName.textContent);
       }
       if (profileEmail) {
         profileEmail.textContent = user.email;
-        console.log('Updated profile email:', profileEmail.textContent);
       }
       if (profileAvatar) {
         profileAvatar.src = user.avatar || '/default-avatar.png';
-        console.log('Updated profile avatar:', profileAvatar.src);
       }
       
       // Calculate member since
@@ -416,17 +405,15 @@ try {
       const memberSince = document.getElementById('memberSince');
       if (memberSince) {
         memberSince.textContent = createdDate.getFullYear().toString();
-        console.log('Updated member since:', memberSince.textContent);
       }
       
       // Load dynamic data if user is authenticated
       if (user.id) {
         try {
-          console.log('Loading dynamic profile data for user:', user.id);
           await loadFavoriteGames(user.id);
           await loadRecentActivity(user.id);
         } catch (error) {
-          console.error('Error loading dynamic profile data:', error);
+          // Silent error handling
         }
       }
     }

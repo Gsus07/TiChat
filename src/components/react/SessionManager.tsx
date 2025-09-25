@@ -29,7 +29,7 @@ const SessionManager: React.FC = () => {
           window.removeEventListener('sessionExpired', handleSessionExpired as EventListener);
         };
       } catch (error) {
-        console.error('Error initializing session management:', error);
+        // Silent error handling
       }
     };
 

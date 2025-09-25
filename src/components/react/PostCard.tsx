@@ -79,7 +79,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
         // Verificar autenticación basada en el token JWT
         setIsAuthenticated(!!session.access_token && !!session.user?.id);
       } catch (e) {
-        console.error('Error parsing user session:', e);
         setIsAuthenticated(!!currentUserId);
       }
     } else {
@@ -96,13 +95,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
 
   // Debug: verificar valores
   useEffect(() => {
-    console.log('=== PostCard Debug ===');
-    console.log('currentUserId:', currentUserId);
-    console.log('post.user_has_liked:', post.user_has_liked);
-    console.log('isLiked state:', isLiked);
-    console.log('likeCount state:', likeCount);
-    console.log('commentCount state:', commentCount);
-    console.log('======================');
   }, [currentUserId, post, isLiked, likeCount, commentCount]);
 
   // Función para manejar like/unlike
@@ -121,7 +113,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
             const session = JSON.parse(userSession);
             token = session.access_token; // Usar el token JWT real
           } catch (e) {
-            console.error('Error parsing user session:', e);
+            // Silent error handling
           }
         }
       }
@@ -155,7 +147,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
         addNotification('Error al procesar el like', 'error');
       }
     } catch (error) {
-      console.error('Error al dar like:', error);
       addNotification('Error al procesar el like', 'error');
     }
   };
@@ -179,7 +170,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
         addNotification('Error al cargar comentarios', 'error');
       }
     } catch (error) {
-      console.error('Error al cargar comentarios:', error);
       addNotification('Error al cargar comentarios', 'error');
     } finally {
       setLoadingComments(false);
@@ -216,7 +206,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
             const session = JSON.parse(userSession);
             token = session.access_token; // Usar el token JWT real
           } catch (e) {
-            console.error('Error parsing user session:', e);
+            // Silent error handling
           }
         }
       }
@@ -251,7 +241,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
         addNotification('Error al enviar comentario', 'error');
       }
     } catch (error) {
-      console.error('Error al enviar comentario:', error);
       addNotification('Error al enviar comentario', 'error');
     } finally {
       setSubmittingComment(false);
@@ -274,7 +263,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
             const session = JSON.parse(userSession);
             token = session.access_token; // Usar el token JWT real
           } catch (e) {
-            console.error('Error parsing user session:', e);
+            // Silent error handling
           }
         }
       }
@@ -306,7 +295,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
         addNotification('Error al procesar el like', 'error');
       }
     } catch (error) {
-      console.error('Error al dar like al comentario:', error);
       addNotification('Error al procesar el like', 'error');
     }
   };

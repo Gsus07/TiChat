@@ -34,16 +34,13 @@ import Layout from '../layouts/Layout.astro';
 					
 					// Line 42: Fixed null check
 					const testEl = document.querySelector('.test');
-					if (testEl) console.log(testEl.innerHTML);
 					// Line 43: Fixed null check
 					const test2El = document.querySelector('.test2');
-					if (test2El) console.log(test2El.innerHTML);
 					
 					// Test more elements
 					const testElement = document.querySelector('.another-test');
 					// Line 47: Fixed null check
 					if (testElement && testElement.classList.contains('active')) {
-						console.log('Element is active');
 					}
 					// Line 50: Fixed module path
 					const { supabase } = await import('../utils/supabaseClient.ts');
@@ -62,14 +59,12 @@ import Layout from '../layouts/Layout.astro';
 					
 					// Additional test logic
 					for (let i = 0; i < 10; i++) {
-						console.log(`Test iteration ${i}`);
 					}
 					
 					// More DOM manipulations
 					const items = document.querySelectorAll('.item');
 					items.forEach(item => {
 						item.addEventListener('click', () => {
-							console.log('Item clicked');
 						});
 					});
 					
@@ -101,11 +96,9 @@ import Layout from '../layouts/Layout.astro';
 					// Line 93: Fixed null check
 					const statusEl = document.querySelector('.status') as HTMLElement;
 					if (statusEl && statusEl.dataset.active === 'true') {
-						console.log('Status is active');
 					}
 					
 				} catch (error) {
-					console.error('Test failed:', error);
 					if (resultDiv) {
 						resultDiv.innerHTML = '<p>Test failed!</p>';
 					}

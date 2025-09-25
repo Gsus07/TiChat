@@ -24,7 +24,7 @@ const currentUser = await getCurrentUser(Astro.request);
 const { data: servers, error: serversError } = await getServersByGameId(game.id);
 
 if (serversError) {
-  console.error('Error fetching servers:', serversError);
+  // Error fetching servers
 }
 
 const gameServers = servers || [];
@@ -33,7 +33,7 @@ const gameServers = servers || [];
 const { data: posts, error: postsError } = await getPostsByGameId(game.id);
 
 if (postsError) {
-  console.error('Error fetching posts:', postsError);
+  // Error fetching posts
 }
 
 const gamePosts = posts || [];
@@ -387,7 +387,6 @@ const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);
       const { data: { user } } = await supabase.auth.getUser();
       return user ? { user } : null;
     } catch (error) {
-      console.error('Error checking auth:', error);
       return null;
     }
   }

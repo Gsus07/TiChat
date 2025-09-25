@@ -216,14 +216,12 @@ const ping = Math.floor(Math.random() * 50) + 10;
         }, 300);
       }, 2000);
     }).catch(err => {
-      console.error('Error al copiar IP:', err);
     });
   }
   
   // Función para editar servidor
   function editServer(serverId: string) {
     // Aquí se abriría un modal de edición
-    console.log('Editar servidor:', serverId);
     // TODO: Implementar modal de edición
   }
   
@@ -231,7 +229,6 @@ const ping = Math.floor(Math.random() * 50) + 10;
   function deleteServer(serverId: string) {
     if (confirm('¿Estás seguro de que quieres eliminar este servidor?')) {
       // Aquí se haría la llamada a la API para eliminar
-      console.log('Eliminar servidor:', serverId);
       // TODO: Implementar eliminación
     }
   }

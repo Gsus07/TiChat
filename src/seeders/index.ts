@@ -5,7 +5,6 @@ import { seedPosts } from './posts';
 import { supabase } from '../utils/supabaseClient';
 
 export async function runSeeders() {
-  console.log('🌱 Iniciando seeders...');
   
   try {
     // Verificar conexión a Supabase
@@ -14,17 +13,13 @@ export async function runSeeders() {
       throw new Error(`Error de conexión a Supabase: ${error.message}`);
     }
     
-    console.log('✅ Conexión a Supabase establecida');
-    
     // Ejecutar seeders en orden
     await seedGames();
     await seedServers();
     await seedUsers();
     await seedPosts();
     
-    console.log('🎉 Seeders completados exitosamente');
   } catch (error) {
-    console.error('❌ Error ejecutando seeders:', error);
     throw error;
   }
 }

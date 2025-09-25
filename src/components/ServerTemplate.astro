@@ -23,7 +23,7 @@ const currentUser = await getCurrentUser(Astro.request);
 const { data: posts, error: postsError } = await getPostsByServerId(server.id);
 
 if (postsError) {
-  console.error('Error fetching posts:', postsError);
+  // Silent error handling
 }
 
 const serverPosts = posts || [];
@@ -347,7 +347,7 @@ function getServerTypeIcon(type: string) {
             (ipElement as HTMLElement).style.color = '';
           }, 2000);
         } catch (err) {
-          console.error('Error al copiar:', err);
+          // Silent error handling
         }
       });
     }

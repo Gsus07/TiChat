@@ -53,7 +53,6 @@ export async function followUser(followerId: string, followingId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error following user:', error);
     return { data: null, error };
   }
 }
@@ -71,7 +70,6 @@ export async function unfollowUser(followerId: string, followingId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error unfollowing user:', error);
     return { data: null, error };
   }
 }
@@ -91,7 +89,6 @@ export async function isFollowing(followerId: string, followingId: string) {
 
     return { data: !!data, error: null };
   } catch (error) {
-    console.error('Error checking follow status:', error);
     return { data: false, error };
   }
 }
@@ -166,7 +163,6 @@ export async function getFollowers(userId: string, currentUserId?: string, limit
     
     return { data: followersWithInfo.filter(Boolean), error: null };
   } catch (error) {
-    console.error('Error fetching followers:', error);
     return { data: null, error };
   }
 }
@@ -241,7 +237,6 @@ export async function getFollowing(userId: string, currentUserId?: string, limit
     
     return { data: followingWithInfo.filter(Boolean), error: null };
   } catch (error) {
-    console.error('Error fetching following:', error);
     return { data: null, error };
   }
 }
@@ -267,7 +262,6 @@ export async function getUserFollowCounts(userId: string) {
       error: null
     };
   } catch (error) {
-    console.error('Error fetching follow counts:', error);
     return { data: null, error };
   }
 }
@@ -325,7 +319,6 @@ export async function getMutualFollows(userId1: string, userId2: string) {
       error: null
     };
   } catch (error) {
-    console.error('Error fetching mutual follows:', error);
     return { data: null, error };
   }
 }
@@ -392,7 +385,6 @@ export async function searchUsers(query: string, currentUserId?: string, limit =
     
     return { data: usersWithInfo, error: null };
   } catch (error) {
-    console.error('Error searching users:', error);
     return { data: null, error };
   }
 }

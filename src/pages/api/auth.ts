@@ -6,8 +6,6 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json();
     const { email, password, username, full_name } = body;
     
-    console.log('Intentando registrar:', { email, username }); // Solo para debug
-    
     // Registro con metadata para el trigger
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -22,7 +20,6 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (error) {
-      console.error('Error completo:', error);
       return new Response(
         JSON.stringify({ 
           error: error.message,
@@ -39,7 +36,6 @@ export const POST: APIRoute = async ({ request }) => {
     );
 
   } catch (error) {
-    console.error('Error del servidor:', error);
     return new Response(
       JSON.stringify({ error: 'Error del servidor', details: error }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }

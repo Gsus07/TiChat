@@ -44,7 +44,6 @@ if (gameNameFormatted === 'Call Of Duty') {
 const { data: game, error: gameError } = await getGameWithTheme(gameNameFormatted);
 
 if (gameError || !game) {
-  console.error('Error fetching game:', gameError);
   return Astro.redirect('/404');
 }
 
@@ -52,7 +51,7 @@ if (gameError || !game) {
 const { data: servers, error: serversError } = await getServersByGameId(game.id);
 
 if (serversError) {
-  console.error('Error fetching servers:', serversError);
+  // Silent error handling
 }
 
 const gameServers = servers || [];
@@ -66,7 +65,7 @@ if (!hasServers) {
   const { data: posts, error: postsError } = await getPostsByGameId(game.id);
   
   if (postsError) {
-    console.error('Error fetching posts:', postsError);
+    // Silent error handling
   }
   
   gamePosts = posts || [];

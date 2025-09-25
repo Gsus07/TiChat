@@ -29,7 +29,6 @@ export function decodeJWT(token: string): { exp?: number; iat?: number } {
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error('Error decoding JWT:', error);
     return {};
   }
 }
@@ -69,14 +68,11 @@ async function refreshToken(): Promise<RefreshResult> {
       return { success: false, error: 'No refresh token available' };
     }
 
-    console.log('🔄 Intentando refrescar token...');
-    
     const { data, error } = await supabase.auth.refreshSession({
       refresh_token: session.refresh_token
     });
 
     if (error) {
-      console.error('❌ Error al refrescar token:', error);
       return { success: false, error: error.message };
     }
 
@@ -96,11 +92,9 @@ async function refreshToken(): Promise<RefreshResult> {
     const storage = session.rememberMe ? localStorage : sessionStorage;
     storage.setItem('userSession', JSON.stringify(updatedSession));
 
-    console.log('✅ Token refrescado exitosamente');
     return { success: true, session: data.session };
 
   } catch (error) {
-    console.error('❌ Error inesperado al refrescar token:', error);
     return { success: false, error: 'Unexpected error during token refresh' };
   }
 }
@@ -116,11 +110,9 @@ export async function ensureValidToken(): Promise<boolean> {
 
   // Si el token ya expiró, intentar refrescar
   if (isTokenExpired(session.access_token)) {
-    console.log('🔄 Token expirado, intentando refrescar...');
     const refreshResult = await refreshToken();
     
     if (!refreshResult.success) {
-      console.log('❌ No se pudo refrescar el token, cerrando sesión...');
       logout();
       
       // Emitir evento de cambio de estado de autenticación
@@ -146,11 +138,9 @@ export async function ensureValidToken(): Promise<boolean> {
 
   // Si el token está próximo a expirar, refrescar proactivamente
   if (isTokenExpiringSoon(session.access_token)) {
-    console.log('⚠️ Token próximo a expirar, refrescando proactivamente...');
     const refreshResult = await refreshToken();
     
     if (!refreshResult.success) {
-      console.warn('⚠️ No se pudo refrescar el token proactivamente');
       // No cerrar sesión aún, el token todavía es válido
     }
   }
@@ -214,8 +204,6 @@ export async function createAuthenticatedRequest(
 
   // Si recibimos un 401, intentar refrescar el token y reintentar
   if (response.status === 401) {
-    console.log('🔄 Recibido 401, intentando refrescar token y reintentar...');
-    
     const refreshResult = await refreshToken();
     if (refreshResult.success) {
       const newSession = getUserSession();

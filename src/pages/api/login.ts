@@ -6,8 +6,6 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json();
     const { email, password } = body;
     
-    console.log('Intentando login:', { email }); // Solo para debug
-    
     // Autenticación con Supabase
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -15,7 +13,6 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (error) {
-      console.error('Error de login:', error);
       return new Response(
         JSON.stringify({ 
           error: error.message,
@@ -34,7 +31,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Si el perfil no existe, crearlo automáticamente
     if (profileError && profileError.code === 'PGRST116') {
-      console.log('Perfil no encontrado, creando automáticamente...');
       
       // Verificar que el email existe antes de usarlo
       if (!data.user.email) {
@@ -80,14 +76,11 @@ export const POST: APIRoute = async ({ request }) => {
         .single();
       
       if (createError) {
-        console.error('Error creando perfil:', createError);
       } else {
-        console.log('Perfil creado exitosamente:', newProfile);
         profile = newProfile;
         profileError = null;
       }
     } else if (profileError) {
-      console.error('Error obteniendo perfil:', profileError);
     }
 
     return new Response(
@@ -101,7 +94,6 @@ export const POST: APIRoute = async ({ request }) => {
     );
 
   } catch (error) {
-    console.error('Error del servidor:', error);
     return new Response(
       JSON.stringify({ error: 'Error del servidor', details: error }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
