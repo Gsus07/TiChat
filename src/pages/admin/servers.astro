@@ -1,0 +1,458 @@
+---
+// src/pages/admin/servers.astro
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '../../utils/supabaseClient';
+import { getAllGames, getServersByGameId } from '../../utils/games';
+
+// Verificar autenticación
+const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+if (authError || !user) {
+  return Astro.redirect('/login');
+}
+
+// Obtener todos los juegos para el selector
+const { data: games } = await getAllGames();
+
+// Obtener servidores del usuario
+const { data: userServers, error: serversError } = await supabase
+  .from('game_servers')
+  .select(`
+    *,
+    games:game_id(name, cover_image_url),
+    server_stats(*)
+  `)
+  .eq('owner_id', user.id)
+  .eq('is_active', true)
+  .order('created_at', { ascending: false });
+
+const servers = userServers || [];
+---
+
+<Layout title="Gestión de Servidores">
+  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <!-- Header -->
+    <div class="bg-calico-stripe-dark/50 backdrop-blur-sm border-b border-calico-stripe-light/20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-calico-white">Gestión de Servidores</h1>
+            <p class="text-calico-gray-400 mt-2">Administra tus servidores de juegos</p>
+          </div>
+          <button
+            id="createServerBtn"
+            class="bg-calico-orange-600 hover:bg-calico-orange-700 text-calico-white font-medium py-3 px-6 rounded-xl transition-colors hover-glow-orange focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:ring-offset-2 focus:ring-offset-calico-stripe-dark"
+          >
+            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Crear Servidor
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="glass-calico backdrop-blur-sm border border-calico-stripe-light/20 rounded-2xl p-6">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-calico-gray-400">Servidores Activos</p>
+              <p class="text-2xl font-bold text-calico-white" id="activeServersCount">{servers.filter(s => s.is_active).length}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-calico backdrop-blur-sm border border-calico-stripe-light/20 rounded-2xl p-6">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-calico-orange-500/20 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-calico-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-calico-gray-400">Servidores Destacados</p>
+              <p class="text-2xl font-bold text-calico-white" id="featuredServersCount">{servers.filter(s => s.is_featured).length}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-calico backdrop-blur-sm border border-calico-stripe-light/20 rounded-2xl p-6">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-calico-gray-400">Total de Posts</p>
+              <p class="text-2xl font-bold text-calico-white" id="totalPostsCount">
+                {servers.reduce((total, server) => total + (server.server_stats?.[0]?.total_posts || 0), 0)}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Servers List -->
+      <div class="glass-calico backdrop-blur-sm border border-calico-stripe-light/20 rounded-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-calico-stripe-light/20">
+          <h2 class="text-xl font-bold text-calico-white">Mis Servidores</h2>
+        </div>
+
+        {servers.length === 0 ? (
+          <div class="p-12 text-center">
+            <div class="w-16 h-16 bg-calico-gray-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-calico-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-calico-white mb-2">No tienes servidores</h3>
+            <p class="text-calico-gray-400 mb-6">Crea tu primer servidor para comenzar a gestionar tu comunidad</p>
+            <button
+              onclick="document.getElementById('createServerBtn').click()"
+              class="bg-calico-orange-600 hover:bg-calico-orange-700 text-calico-white font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+              Crear Primer Servidor
+            </button>
+          </div>
+        ) : (
+          <div class="divide-y divide-calico-stripe-light/20">
+            {servers.map((server) => (
+              <div class="p-6 hover:bg-calico-stripe-light/5 transition-colors">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 rounded-xl overflow-hidden bg-calico-stripe-dark">
+                      <img 
+                        src={server.games?.cover_image_url || '/default-game.png'} 
+                        alt={server.games?.name}
+                        class="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <div class="flex items-center space-x-2">
+                        <h3 class="text-lg font-semibold text-calico-white">{server.name}</h3>
+                        {server.is_featured && (
+                          <span class="bg-calico-orange-500/20 text-calico-orange-300 text-xs px-2 py-1 rounded-full border border-calico-orange-500/30">
+                            Destacado
+                          </span>
+                        )}
+                        <span class={`text-xs px-2 py-1 rounded-full border ${
+                          server.is_active 
+                            ? 'bg-green-500/20 text-green-300 border-green-500/30' 
+                            : 'bg-red-500/20 text-red-300 border-red-500/30'
+                        }`}>
+                          {server.is_active ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </div>
+                      <p class="text-calico-gray-400 text-sm mt-1">{server.description}</p>
+                      <div class="flex items-center space-x-4 mt-2 text-xs text-calico-gray-500">
+                        <span>Juego: {server.games?.name}</span>
+                        <span>•</span>
+                        <span>Tipo: {server.server_type}</span>
+                        <span>•</span>
+                        <span>Versión: {server.server_version}</span>
+                        <span>•</span>
+                        <span>Max: {server.max_players} jugadores</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center space-x-2">
+                    <button
+                      onclick={`editServer('${server.id}')`}
+                      class="bg-calico-orange-600 hover:bg-calico-orange-700 text-calico-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                    >
+                      <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                      Editar
+                    </button>
+                    <button
+                      onclick={`deleteServer('${server.id}', '${server.name}')`}
+                      class="bg-red-600 hover:bg-red-700 text-calico-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                    >
+                      <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      </svg>
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- Game Selection Modal -->
+    <div id="gameSelectionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center p-4 z-50 hidden">
+      <div class="glass-calico backdrop-blur-sm border border-calico-stripe-light/20 rounded-2xl p-6 w-full max-w-md">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-calico-white">Seleccionar Juego</h2>
+          <button
+            onclick="closeGameSelectionModal()"
+            class="text-calico-gray-400 hover:text-calico-white transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          {games?.map((game) => (
+            <button
+              onclick={`selectGame('${game.id}')`}
+              class="w-full flex items-center p-4 bg-calico-stripe-dark/50 hover:bg-calico-stripe-light/20 border border-calico-stripe-light/30 rounded-xl transition-colors text-left"
+            >
+              <img 
+                src={game.cover_image_url || '/default-game.png'} 
+                alt={game.name}
+                class="w-12 h-12 rounded-lg object-cover mr-4"
+              />
+              <div>
+                <h3 class="text-calico-white font-medium">{game.name}</h3>
+                <p class="text-calico-gray-400 text-sm">{game.description}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modalsContainer"></div>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../../utils/supabaseClient';
+  
+  // Declaraciones de tipos para window
+  declare global {
+    interface Window {
+      openGameSelectionModal: () => void;
+      closeGameSelectionModal: () => void;
+      selectGame: (gameId: string) => Promise<void>;
+      editServer: (serverId: string) => void;
+      deleteServer: (serverId: string) => void;
+      openEditServerForm: (server: any) => Promise<void>;
+      closeEditServerForm: () => void;
+    }
+  }
+
+  // Variables globales
+  let currentEditingServer: any = null;
+
+  // Función para abrir modal de selección de juego
+  function openGameSelectionModal(): void {
+    const modal = document.getElementById('gameSelectionModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+  }
+
+  // Función para cerrar modal de selección de juego
+  function closeGameSelectionModal(): void {
+    const modal = document.getElementById('gameSelectionModal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  }
+
+  // Función para seleccionar juego y abrir formulario de creación
+  async function selectGame(gameId: string): Promise<void> {
+    closeGameSelectionModal();
+    await openCreateServerForm(gameId);
+  }
+
+  // Función para abrir formulario de creación de servidor
+  async function openCreateServerForm(gameId: string): Promise<void> {
+    const modalsContainer = document.getElementById('modalsContainer');
+    if (!modalsContainer) return;
+    
+    // Crear elemento React
+    const createServerElement = document.createElement('div');
+    createServerElement.id = 'createServerForm';
+    modalsContainer.appendChild(createServerElement);
+
+    // Importar y renderizar componente React dinámicamente
+    try {
+      const { createRoot } = await import('react-dom/client');
+      const React = await import('react');
+      const { default: CreateServerForm } = await import('../../components/CreateServerForm.tsx');
+
+      const root = createRoot(createServerElement);
+      root.render(React.createElement(CreateServerForm, {
+        gameId: gameId,
+        onServerCreated: (server: any) => {
+          // Recargar página para mostrar el nuevo servidor
+          window.location.reload();
+        },
+        onCancel: () => {
+          closeCreateServerForm();
+        }
+      }));
+    } catch (error) {
+      console.error('Error loading CreateServerForm:', error);
+    }
+  }
+
+  // Función para cerrar formulario de creación
+  function closeCreateServerForm(): void {
+    const createServerElement = document.getElementById('createServerForm');
+    if (createServerElement) {
+      createServerElement.remove();
+    }
+  }
+
+  // Función para editar servidor
+  async function editServer(serverId: string): Promise<void> {
+    try {
+      // Obtener datos del servidor
+      const response = await fetch(`/api/servers/${serverId}`);
+      const result = await response.json();
+      
+      if (!response.ok) {
+        alert('Error al cargar datos del servidor');
+        return;
+      }
+
+      currentEditingServer = result.data;
+      openEditServerForm(currentEditingServer);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al cargar datos del servidor');
+    }
+  }
+
+  // Función para abrir formulario de edición
+  async function openEditServerForm(server: any): Promise<void> {
+    const modalsContainer = document.getElementById('modalsContainer');
+    if (!modalsContainer) return;
+    
+    // Crear elemento React
+    const editServerElement = document.createElement('div');
+    editServerElement.id = 'editServerForm';
+    modalsContainer.appendChild(editServerElement);
+
+    // Importar y renderizar componente React dinámicamente
+    try {
+      const { createRoot } = await import('react-dom/client');
+      const React = await import('react');
+      const { default: EditServerForm } = await import('../../components/EditServerForm.tsx');
+
+      const root = createRoot(editServerElement);
+      root.render(React.createElement(EditServerForm, {
+        server: server,
+        onServerUpdated: (updatedServer: any) => {
+          // Recargar página para mostrar los cambios
+          window.location.reload();
+        },
+        onCancel: () => {
+          closeEditServerForm();
+        }
+      }));
+    } catch (error) {
+      console.error('Error loading EditServerForm:', error);
+    }
+  }
+
+  // Función para cerrar formulario de edición
+  function closeEditServerForm(): void {
+    const editServerElement = document.getElementById('editServerForm');
+    if (editServerElement) {
+      editServerElement.remove();
+    }
+  }
+
+  // Función para eliminar servidor
+  async function deleteServer(serverId: string, serverName: string): Promise<void> {
+    if (!confirm(`¿Estás seguro de que quieres eliminar el servidor "${serverName}"?`)) {
+      return;
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        alert('Sesión expirada. Por favor, inicia sesión nuevamente.');
+        return;
+      }
+
+      const response = await fetch(`/api/servers/${serverId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Recargar página para reflejar los cambios
+        window.location.reload();
+      } else {
+        alert(result.error || 'Error al eliminar el servidor');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al eliminar el servidor');
+    }
+  }
+
+  // Event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    // Botón crear servidor
+    const createBtn = document.getElementById('createServerBtn') as HTMLButtonElement | null;
+    if (createBtn) {
+      createBtn.addEventListener('click', openGameSelectionModal);
+    }
+
+    // Escuchar mensajes de los componentes React
+    window.addEventListener('message', (event) => {
+      if (event.data.type === 'CLOSE_CREATE_SERVER_FORM') {
+        closeCreateServerForm();
+      } else if (event.data.type === 'CLOSE_EDIT_SERVER_FORM') {
+        closeEditServerForm();
+      } else if (event.data.type === 'SERVER_CREATED') {
+        closeCreateServerForm();
+        window.location.reload();
+      } else if (event.data.type === 'SERVER_UPDATED') {
+        closeEditServerForm();
+        window.location.reload();
+      }
+    });
+  });
+
+  // Hacer funciones globales
+  window.openGameSelectionModal = openGameSelectionModal;
+  window.closeGameSelectionModal = closeGameSelectionModal;
+  window.selectGame = selectGame;
+  window.editServer = editServer;
+  (window as any).deleteServer = deleteServer;
+  window.openEditServerForm = openEditServerForm;
+  window.closeEditServerForm = closeEditServerForm;
+</script>
+
+<style>
+  .hover-glow-orange:hover {
+    box-shadow: 0 0 20px rgba(251, 146, 60, 0.3);
+  }
+  
+  .glass-calico {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+</style>

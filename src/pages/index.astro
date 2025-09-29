@@ -2,6 +2,7 @@
 // src/pages/index.astro
 import Layout from '../layouts/Layout.astro';
 import GameCard from '../components/GameCard.astro';
+import TinaEasterEgg from '../components/react/TinaEasterEgg';
 import { getAllGames } from '../utils/games';
 import { supabase } from '../utils/supabaseClient';
 import type { Game } from '../types/game';
@@ -141,57 +142,11 @@ const currentUserId = user?.id || null;
           
           <!-- Right Column: TTina Image with Speech Bubble -->
           <div class="flex justify-center order-1 lg:order-2 lg:justify-end relative">
-            <div class="relative">
-              <!-- TTina mascot image with Easter Egg -->
-              <img 
-                id="ttina-easter-egg"
-                src="/TTina.png" 
-                alt="TTina - Mascota de TiChat" 
-                class="w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full shadow-2xl hover:scale-105 transition-transform duration-300 animate-none cursor-pointer select-none"
-                title="¡Haz clic en TTina! 🐱"
-              />
-              
-              <!-- Speech Bubble - Responsive positioning -->
-              <div class="absolute -left-20 sm:-left-24 md:-left-28 lg:-left-40 -top-4 sm:-top-6 md:-top-8 lg:-top-12 z-10">
-                <div class="relative bg-gradient-to-br from-white to-calico-cream rounded-2xl md:rounded-3xl shadow-xl md:shadow-2xl border border-calico-orange-300 p-3 sm:p-4 md:p-5 lg:p-6 max-w-xs sm:max-w-sm animate-pulse-slow backdrop-blur-sm">
-                  <!-- Subtle glow effect -->
-                  <div class="absolute inset-0 bg-gradient-to-r from-calico-orange-100 to-calico-gray-100 rounded-2xl md:rounded-3xl opacity-20 blur-sm"></div>
-                  
-                  <!-- TTina Message -->
-                  <div class="relative z-10">
-                    <p id="ttina-message" class="text-slate-800 text-sm sm:text-base md:text-base lg:text-lg font-semibold transition-all duration-500 leading-relaxed text-center">
-                      ¡TTina te da la bienvenida! 🐾
-                    </p>
-                  </div>
-                  
-                  <!-- Decorative elements -->
-                  <div class="absolute top-2 right-2 md:right-3 w-3 h-3 md:w-4 md:h-4 text-calico-orange-400 opacity-50">
-                    <svg fill="currentColor" viewBox="0 0 24 24">
-                      <ellipse cx="8" cy="6" rx="2" ry="3" fill="currentColor"/>
-                      <ellipse cx="16" cy="6" rx="2" ry="3" fill="currentColor"/>
-                      <ellipse cx="6" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-                      <ellipse cx="18" cy="12" rx="1.5" ry="2" fill="currentColor"/>
-                      <ellipse cx="12" cy="16" rx="4" ry="5" fill="currentColor"/>
-                    </svg>
-                  </div>
-                  
-                  <!-- Small decorative dots -->
-                  <div class="absolute bottom-2 left-2 md:left-3 flex space-x-1">
-                    <div class="w-1 h-1 md:w-1.5 md:h-1.5 bg-calico-orange-400 rounded-full opacity-60 animate-pulse"></div>
-                    <div class="w-1 h-1 md:w-1.5 md:h-1.5 bg-calico-gray-400 rounded-full opacity-60 animate-pulse" style="animation-delay: 0.5s;"></div>
-                    <div class="w-1 h-1 md:w-1.5 md:h-1.5 bg-calico-orange-400 rounded-full opacity-60 animate-pulse" style="animation-delay: 1s;"></div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Contador secreto de clics -->
-              <div id="ttina-counter" class="absolute -top-2 -right-2 bg-calico-orange-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center opacity-0 transition-opacity duration-300">
-                0
-              </div>
-              
-              <!-- Contenedor para efectos visuales -->
-              <div id="ttina-effects" class="absolute inset-0 pointer-events-none"></div>
-            </div>
+            <TinaEasterEgg 
+              client:load
+              variant="home"
+              showSpeechBubble={true}
+            />
           </div>
         </div>
       </div>
@@ -402,6 +357,8 @@ const currentUserId = user?.id || null;
       }
     } catch (error) {
       // Error parsing user session
+      localStorage.removeItem('userSession');
+      sessionStorage.removeItem('userSession');
     }
     
     return null;
@@ -417,6 +374,8 @@ const currentUserId = user?.id || null;
       // User is authenticated - show add game button
       if (addGameBtn) {
         addGameBtn.style.display = 'flex';
+        addGameBtn.style.visibility = 'visible';
+        addGameBtn.style.opacity = '1';
       }
       
       // Show edit and delete buttons on game cards
@@ -424,13 +383,21 @@ const currentUserId = user?.id || null;
         const editBtn = card.querySelector('.edit-game-btn');
         const deleteBtn = card.querySelector('.delete-game-btn');
         
-        if (editBtn && editBtn instanceof HTMLElement) editBtn.style.display = 'block';
-        if (deleteBtn && deleteBtn instanceof HTMLElement) deleteBtn.style.display = 'block';
+        if (editBtn && editBtn instanceof HTMLElement) {
+          editBtn.style.display = 'block';
+          editBtn.style.visibility = 'visible';
+        }
+        if (deleteBtn && deleteBtn instanceof HTMLElement) {
+          deleteBtn.style.display = 'block';
+          deleteBtn.style.visibility = 'visible';
+        }
       });
     } else {
       // User is not authenticated - hide add game button
       if (addGameBtn) {
         addGameBtn.style.display = 'none';
+        addGameBtn.style.visibility = 'hidden';
+        addGameBtn.style.opacity = '0';
       }
       
       // Hide edit and delete buttons on game cards
@@ -438,32 +405,46 @@ const currentUserId = user?.id || null;
         const editBtn = card.querySelector('.edit-game-btn');
         const deleteBtn = card.querySelector('.delete-game-btn');
         
-        if (editBtn && editBtn instanceof HTMLElement) editBtn.style.display = 'none';
-        if (deleteBtn && deleteBtn instanceof HTMLElement) deleteBtn.style.display = 'none';
+        if (editBtn && editBtn instanceof HTMLElement) {
+          editBtn.style.display = 'none';
+          editBtn.style.visibility = 'hidden';
+        }
+        if (deleteBtn && deleteBtn instanceof HTMLElement) {
+          deleteBtn.style.display = 'none';
+          deleteBtn.style.visibility = 'hidden';
+        }
       });
     }
   }
 
+  // Function to force UI update - more aggressive approach
+  function forceUIUpdate() {
+    // Small delay to ensure DOM is ready
+    setTimeout(() => {
+      updateUIForAuthentication();
+    }, 50);
+  }
+
   // Add event listener to the add game button
   document.addEventListener('DOMContentLoaded', () => {
-    // Check authentication status and update UI
-    updateUIForAuthentication();
+    // Initial authentication check
+    forceUIUpdate();
     
     const addGameBtn = document.getElementById('add-game-btn');
     if (addGameBtn) {
       addGameBtn.addEventListener('click', showCreateGameModal);
     }
     
-    // Listen for authentication changes
+    // Listen for authentication changes (cross-tab)
     window.addEventListener('storage', (e) => {
       if (e.key === 'userSession' || e.key === 'sessionStorage') {
-        updateUIForAuthentication();
+        forceUIUpdate();
       }
     });
     
     // Listen for custom authentication events
     window.addEventListener('authStateChanged', () => {
-      updateUIForAuthentication();
+      forceUIUpdate();
     });
 
     // Add event listener for edit game events
@@ -474,228 +455,35 @@ const currentUserId = user?.id || null;
       }
     });
 
-    // 🐱 TTina Easter Egg Implementation
-    let ttinaClickCount = 0;
-    const ttinaMessages = [
-      "¡Miau! 🐱",
-      "¡TTina está feliz! 😸",
-      "¡Ronroneo activado! 😻",
-      "¡Más caricias por favor! 🐾",
-      "¡Soy la mejor mascota! 💖",
-      "¡Miau miau! 🎵",
-      "¡Hora de jugar! 🎮",
-      "¡TTina te ama! ❤️",
-      "¡Purr purr! 😽",
-      "¡Psst... TTina conoce todos los secretos! 🔮✨"
-    ];
+    // Listen for page visibility changes (when user returns to tab)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        forceUIUpdate();
+      }
+    });
 
-    function createHeartEffect(x: number, y: number) {
-      const heart = document.createElement('div');
-      heart.innerHTML = '💖';
-      heart.style.cssText = `
-        position: fixed;
-        left: ${x}px;
-        top: ${y}px;
-        font-size: 20px;
-        pointer-events: none;
-        z-index: 1000;
-        animation: heartFloat 2s ease-out forwards;
-      `;
-      
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 2000);
-    }
+    // Listen for focus events (when user returns to window)
+    window.addEventListener('focus', () => {
+      forceUIUpdate();
+    });
 
-    function createPawEffect(container: HTMLElement) {
-      const paw = document.createElement('div');
-      paw.innerHTML = '🐾';
-      paw.style.cssText = `
-        position: absolute;
-        font-size: 24px;
-        animation: pawSpin 1s ease-out forwards;
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-      `;
-      
-      container.appendChild(paw);
-      setTimeout(() => paw.remove(), 1000);
-    }
+    // Listen for popstate events (browser back/forward navigation)
+    window.addEventListener('popstate', () => {
+      forceUIUpdate();
+    });
 
-    function playMeowSound() {
-      // Crear sonido de maullido usando Web Audio API
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.3);
-    }
-
-    const ttinaImg = document.getElementById('ttina-easter-egg');
-    const ttinaMessage = document.getElementById('ttina-message');
-    const ttinaCounter = document.getElementById('ttina-counter');
-    const ttinaEffects = document.getElementById('ttina-effects');
-
-    if (ttinaImg && ttinaMessage && ttinaCounter && ttinaEffects) {
-      ttinaImg.addEventListener('click', (e) => {
-        ttinaClickCount++;
-        
-        // Actualizar contador
-        ttinaCounter.textContent = ttinaClickCount.toString();
-        if (ttinaClickCount >= 3) {
-          ttinaCounter.style.opacity = '1';
-        } 
-        
-        // Cambiar mensaje
-        const randomMessage = ttinaMessages[Math.floor(Math.random() * ttinaMessages.length)];
-        ttinaMessage.textContent = randomMessage;
-        
-        // Efectos visuales
-        const rect = ttinaImg.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        
-        createHeartEffect(centerX + (Math.random() - 0.5) * 100, centerY + (Math.random() - 0.5) * 100);
-        createPawEffect(ttinaEffects);
-        
-        // Animaciones especiales
-        ttinaImg.style.animation = 'none';
-        setTimeout(() => {
-          if (ttinaClickCount % 5 === 0) {
-            ttinaImg.style.animation = 'spin 1s ease-in-out, bounce 0.5s ease-in-out';
-          } else if (ttinaClickCount % 3 === 0) {
-            ttinaImg.style.animation = 'wiggle 0.5s ease-in-out';
-          } else {
-            ttinaImg.style.animation = 'bounce 0.5s ease-in-out';
-          }
-        }, 10);
-        
-        // Sonido de maullido
-        try {
-          playMeowSound();
-        } catch (error) {
-        }
-        
-        // Easter egg especial cada 10 clics
-        if (ttinaClickCount % 10 === 0) {
-          ttinaMessage.textContent = `¡Miau mágico! 🪄 Has descubierto mi poder felino ${ttinaClickCount} veces! ✨🐾`;
-          ttinaMessage.style.color = '#f97316';
-          ttinaImg.style.filter = 'hue-rotate(180deg)';
-          
-          // Lluvia de corazones
-          for (let i = 0; i < 5; i++) {
-            setTimeout(() => {
-              createHeartEffect(
-                centerX + (Math.random() - 0.5) * 200,
-                centerY + (Math.random() - 0.5) * 200
-              );
-            }, i * 200);
-          }
-          
-          setTimeout(() => {
-            ttinaImg.style.filter = 'none';
-            ttinaMessage.style.color = '';
-          }, 3000);
-        }
-        
-        // Resetear animación después de un tiempo
-        setTimeout(() => {
-          ttinaImg.style.animation = 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite';
-        }, 1000);
-      });
-    }
+    // Additional check after a short delay to catch any missed updates
+    setTimeout(() => {
+      forceUIUpdate();
+    }, 100);
   });
-</script>
 
-<!-- Estilos CSS para las animaciones del Easter Egg -->
-<style>
-  @keyframes heartFloat {
-    0% {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-100px) scale(0.5);
-      opacity: 0;
-    }
+  // Also run the check when the script loads (immediate execution)
+  if (document.readyState === 'loading') {
+    // DOM is still loading
+    document.addEventListener('DOMContentLoaded', forceUIUpdate);
+  } else {
+    // DOM is already loaded
+    forceUIUpdate();
   }
-  
-  @keyframes pawSpin {
-    0% {
-      transform: rotate(0deg) scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: rotate(360deg) scale(0);
-      opacity: 0;
-    }
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  @keyframes bounce {
-    0%, 20%, 53%, 80%, 100% {
-      transform: translate3d(0,0,0);
-    }
-    40%, 43% {
-      transform: translate3d(0,-30px,0);
-    }
-    70% {
-      transform: translate3d(0,-15px,0);
-    }
-    90% {
-      transform: translate3d(0,-4px,0);
-    }
-  }
-  
-  @keyframes wiggle {
-    0%, 7% {
-      transform: rotateZ(0);
-    }
-    15% {
-      transform: rotateZ(-15deg);
-    }
-    20% {
-      transform: rotateZ(10deg);
-    }
-    25% {
-      transform: rotateZ(-10deg);
-    }
-    30% {
-      transform: rotateZ(6deg);
-    }
-    35% {
-      transform: rotateZ(-4deg);
-    }
-    40%, 100% {
-      transform: rotateZ(0);
-    }
-  }
-  
-  @keyframes pulse-slow {
-    0%, 100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.8;
-      transform: scale(1.02);
-    }
-  }
-  
-  .animate-pulse-slow {
-    animation: pulse-slow 3s ease-in-out infinite;
-  }
-</style>
+</script>

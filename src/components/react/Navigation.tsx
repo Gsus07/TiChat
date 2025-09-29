@@ -81,13 +81,25 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
       try {
         const session: UserSession = JSON.parse(userSession);
         setUser(session.user);
+        // Emit auth state change event
+        window.dispatchEvent(new CustomEvent('authStateChanged', { 
+          detail: { authenticated: true, user: session.user } 
+        }));
       } catch (error) {
         localStorage.removeItem("userSession");
         sessionStorage.removeItem("userSession");
         setUser(null);
+        // Emit auth state change event
+        window.dispatchEvent(new CustomEvent('authStateChanged', { 
+          detail: { authenticated: false, user: null } 
+        }));
       }
     } else {
       setUser(null);
+      // Emit auth state change event
+      window.dispatchEvent(new CustomEvent('authStateChanged', { 
+        detail: { authenticated: false, user: null } 
+      }));
     }
   }, []);
 
@@ -100,6 +112,11 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
     setUser(null);
     setIsUserDropdownOpen(false);
 
+    // Emit auth state change event
+    window.dispatchEvent(new CustomEvent('authStateChanged', { 
+      detail: { authenticated: false, user: null } 
+    }));
+
     setTimeout(() => {
       window.location.href = "/";
     }, 1000);
@@ -110,7 +127,7 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
     (buttonElement: HTMLElement) => {
       const rect = buttonElement.getBoundingClientRect();
       return {
-        top: rect.bottom + window.scrollY + 8,
+        top: rect.bottom + 8,
         right: window.innerWidth - rect.right,
       };
     },
@@ -237,14 +254,49 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
   // Listen for storage changes (cross-tab logout)
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "userSession" && !e.newValue) {
-        setUser(null);
+      if (e.key === "userSession") {
+        if (!e.newValue) {
+          // Session was removed
+          setUser(null);
+          window.dispatchEvent(new CustomEvent('authStateChanged', { 
+            detail: { authenticated: false, user: null } 
+          }));
+        } else {
+          // Session was added or updated
+          try {
+            const session: UserSession = JSON.parse(e.newValue);
+            setUser(session.user);
+            window.dispatchEvent(new CustomEvent('authStateChanged', { 
+              detail: { authenticated: true, user: session.user } 
+            }));
+          } catch (error) {
+            setUser(null);
+            window.dispatchEvent(new CustomEvent('authStateChanged', { 
+              detail: { authenticated: false, user: null } 
+            }));
+          }
+        }
       }
     };
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
+
+  // Update dropdown position on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isUserDropdownOpen && userButtonRef.current) {
+        const position = calculateDropdownPosition(userButtonRef.current);
+        setDropdownPosition(position);
+      }
+    };
+
+    if (isUserDropdownOpen) {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [isUserDropdownOpen, calculateDropdownPosition]);
 
   // Initialize authentication
   useEffect(() => {
@@ -575,6 +627,33 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
                         <span className="font-medium">Configuraciones</span>
                         <span className="text-xs text-calico-gray-400">
                           Preferencias y ajustes
+                        </span>
+                      </div>
+                    </a>
+                    <a
+                      href="/admin/servers"
+                      onClick={() => setIsUserDropdownOpen(false)}
+                      className="group flex items-center px-4 py-3 text-sm text-calico-gray-300 hover:text-calico-white hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 transition-all duration-300 mx-2 rounded-xl"
+                    >
+                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-calico-orange-500/20 group-hover:bg-calico-orange-500/30 transition-colors duration-300 mr-3">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
+                          />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-medium">Mis Servidores</span>
+                        <span className="text-xs text-calico-gray-400">
+                          Gestionar servidores
                         </span>
                       </div>
                     </a>

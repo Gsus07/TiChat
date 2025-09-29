@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import LoginForm from '../components/react/LoginForm.tsx';
+import TinaEasterEgg from '../components/react/TinaEasterEgg';
 ---
 
 <Layout title="Iniciar Sesión - Gaming Hub">
@@ -67,22 +68,10 @@ import LoginForm from '../components/react/LoginForm.tsx';
       <div class="w-full max-w-md">
         <!-- TTina mascot image with Easter Egg -->
         <div class="text-center mb-8 relative">
-          <img 
-            id="ttina-login-easter-egg"
-            src="/TTina.png" 
-            alt="TTina - Mascota de TiChat" 
-            class="w-32 h-32 mx-auto rounded-full shadow-2xl border-4 border-calico-orange-300 hover:scale-105 transition-transform duration-300 cursor-pointer select-none"
-            title="¡Haz clic en TTina! 🐱"
+          <TinaEasterEgg 
+            client:load
+            variant="login"
           />
-          <p id="ttina-login-message" class="text-calico-gray-700 text-sm mt-2 font-medium transition-all duration-500">¡Hola! Soy TTina 🐱</p>
-          
-          <!-- Contador secreto de clics -->
-          <div id="ttina-login-counter" class="absolute -top-1 -right-1 bg-calico-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center opacity-0 transition-opacity duration-300">
-            0
-          </div>
-          
-          <!-- Contenedor para efectos visuales -->
-          <div id="ttina-login-effects" class="absolute inset-0 pointer-events-none"></div>
         </div>
         
         <!-- Login form container -->
@@ -93,218 +82,9 @@ import LoginForm from '../components/react/LoginForm.tsx';
     </div>
   </div>
 
-<script>
-  // 🐱 TTina Login Easter Egg Implementation
-  document.addEventListener('DOMContentLoaded', () => {
-    let ttinaLoginClickCount = 0;
-    const ttinaLoginMessages = [
-      "¡Miau! Bienvenido 🐱",
-      "¡TTina te ayuda a entrar! 😸",
-      "¡Ronroneo de bienvenida! 😻",
-      "¡Más caricias! 🐾",
-      "¡Soy tu guardiana! 💖",
-      "¡Miau miau! 🎵",
-      "¡Protegiendo tu login! 🛡️",
-      "¡TTina te cuida! ❤️",
-      "¡Purr purr! 😽",
-      "¡Acceso autorizado! ✨"
-    ];
 
-    function createHeartEffect(x: number, y: number) {
-      const heart = document.createElement('div');
-      heart.innerHTML = '💖';
-      heart.style.cssText = `
-        position: fixed;
-        left: ${x}px;
-        top: ${y}px;
-        font-size: 16px;
-        pointer-events: none;
-        z-index: 1000;
-        animation: heartFloat 2s ease-out forwards;
-      `;
-      
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 2000);
-    }
 
-    function createPawEffect(container: HTMLElement) {
-      const paw = document.createElement('div');
-      paw.innerHTML = '🐾';
-      paw.style.cssText = `
-        position: absolute;
-        font-size: 20px;
-        animation: pawSpin 1s ease-out forwards;
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-      `;
-      
-      container.appendChild(paw);
-      setTimeout(() => paw.remove(), 1000);
-    }
 
-    function playMeowSound() {
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(350, audioContext.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(180, audioContext.currentTime + 0.25);
-        
-        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.25);
-      } catch (error) {
-        // Audio no disponible
-      }
-    }
-
-    const ttinaImg = document.getElementById('ttina-login-easter-egg');
-    const ttinaMessage = document.getElementById('ttina-login-message');
-    const ttinaCounter = document.getElementById('ttina-login-counter');
-    const ttinaEffects = document.getElementById('ttina-login-effects');
-
-    if (ttinaImg && ttinaMessage && ttinaCounter && ttinaEffects) {
-      ttinaImg.addEventListener('click', (e) => {
-        ttinaLoginClickCount++;
-        
-        // Actualizar contador
-        ttinaCounter.textContent = ttinaLoginClickCount.toString();
-        if (ttinaLoginClickCount >= 3) {
-          ttinaCounter.style.opacity = '1';
-        }
-        
-        // Cambiar mensaje
-        const randomMessage = ttinaLoginMessages[Math.floor(Math.random() * ttinaLoginMessages.length)];
-        ttinaMessage.textContent = randomMessage;
-        
-        // Efectos visuales
-        const rect = ttinaImg.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        
-        createHeartEffect(centerX + (Math.random() - 0.5) * 80, centerY + (Math.random() - 0.5) * 80);
-        createPawEffect(ttinaEffects);
-        
-        // Animaciones especiales
-        ttinaImg.style.animation = 'none';
-        setTimeout(() => {
-          if (ttinaLoginClickCount % 7 === 0) {
-            ttinaImg.style.animation = 'spin 1s ease-in-out, bounce 0.5s ease-in-out';
-          } else if (ttinaLoginClickCount % 4 === 0) {
-            ttinaImg.style.animation = 'wiggle 0.5s ease-in-out';
-          } else {
-            ttinaImg.style.animation = 'bounce 0.5s ease-in-out';
-          }
-        }, 10);
-        
-        // Sonido de maullido
-        playMeowSound();
-        
-        // Easter egg especial cada 15 clics
-        if (ttinaLoginClickCount % 15 === 0) {
-          ttinaMessage.textContent = `¡GUARDIANA SUPREMA! ${ttinaLoginClickCount} clics de protección! 🌟`;
-          ttinaMessage.style.color = '#f97316';
-          ttinaImg.style.filter = 'hue-rotate(120deg) brightness(1.2)';
-          
-          // Lluvia de corazones
-          for (let i = 0; i < 3; i++) {
-            setTimeout(() => {
-              createHeartEffect(
-                centerX + (Math.random() - 0.5) * 150,
-                centerY + (Math.random() - 0.5) * 150
-              );
-            }, i * 300);
-          }
-          
-          setTimeout(() => {
-            ttinaImg.style.filter = 'none';
-            ttinaMessage.style.color = '';
-          }, 3000);
-        }
-        
-        // Resetear animación
-        setTimeout(() => {
-          ttinaImg.style.animation = '';
-        }, 1000);
-      });
-    }
-  });
-</script>
-
-<!-- Estilos CSS para las animaciones del Easter Egg -->
-<style>
-  @keyframes heartFloat {
-    0% {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-80px) scale(0.5);
-      opacity: 0;
-    }
-  }
-  
-  @keyframes pawSpin {
-    0% {
-      transform: rotate(0deg) scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: rotate(360deg) scale(0);
-      opacity: 0;
-    }
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  @keyframes bounce {
-    0%, 20%, 53%, 80%, 100% {
-      transform: translate3d(0,0,0);
-    }
-    40%, 43% {
-      transform: translate3d(0,-20px,0);
-    }
-    70% {
-      transform: translate3d(0,-10px,0);
-    }
-    90% {
-      transform: translate3d(0,-3px,0);
-    }
-  }
-  
-  @keyframes wiggle {
-    0%, 7% {
-      transform: rotateZ(0);
-    }
-    15% {
-      transform: rotateZ(-10deg);
-    }
-    20% {
-      transform: rotateZ(8deg);
-    }
-    25% {
-      transform: rotateZ(-6deg);
-    }
-    30% {
-      transform: rotateZ(4deg);
-    }
-    35% {
-      transform: rotateZ(-2deg);
-    }
-    40%, 100% {
-      transform: rotateZ(0);
-    }
-  }
-</style>
 
 
 </Layout>
