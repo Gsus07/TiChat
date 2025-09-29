@@ -116,15 +116,32 @@
 .bg-tertiary { background-color: var(--bg-tertiary); }
 .bg-accent { background-color: var(--bg-accent); }
 
+/* Fondos específicos para estados de error */
+.bg-error-light { 
+  background-color: var(--bg-secondary); 
+  border-color: var(--color-error);
+}
+
+.bg-error-subtle {
+  background-color: var(--bg-tertiary);
+}
+
 .text-primary { color: var(--text-primary); }
 .text-secondary { color: var(--text-secondary); }
 .text-tertiary { color: var(--text-tertiary); }
 .text-muted { color: var(--text-muted); }
 .text-inverse { color: var(--text-inverse); }
+.text-error { color: var(--color-error); }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-info { color: var(--color-info); }
 
 .border-primary { border-color: var(--border-primary); }
 .border-secondary { border-color: var(--border-secondary); }
 .border-accent { border-color: var(--border-accent); }
+.border-error { border-color: var(--color-error); }
+
+.placeholder-muted::placeholder { color: var(--text-muted); }
 
 .shadow-theme-sm { box-shadow: var(--shadow-sm); }
 .shadow-theme-md { box-shadow: var(--shadow-md); }

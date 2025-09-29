@@ -8,18 +8,18 @@ import TinaEasterEgg from '../components/react/TinaEasterEgg';
 
   
   <!-- Background with animated elements -->
-  <div class="min-h-screen bg-gradient-to-br from-calico-stripe-dark via-calico-orange-900 to-calico-stripe-dark relative overflow-hidden pt-16">
+  <div class="min-h-screen bg-gradient-to-br from-calico-gray-100 via-calico-orange-50 to-calico-gray-200 dark:from-calico-gray-900 dark:via-calico-gray-800 dark:to-calico-gray-900 relative overflow-hidden pt-16 transition-all duration-300">
     <!-- Animated background elements -->
     <div class="absolute inset-0">
-      <div class="absolute top-20 left-10 w-72 h-72 bg-calico-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-      <div class="absolute bottom-20 right-10 w-96 h-96 bg-calico-orange-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-calico-stripe-light/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      <div class="absolute top-20 left-10 w-72 h-72 bg-calico-orange-500/20 dark:bg-calico-orange-400/30 rounded-full blur-3xl animate-pulse"></div>
+      <div class="absolute bottom-20 right-10 w-96 h-96 bg-calico-orange-400/20 dark:bg-calico-orange-500/25 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-calico-gray-300/10 dark:bg-calico-gray-600/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
     </div>
 
     <!-- Floating particles and cat elements -->
     <div class="absolute inset-0 overflow-hidden">
       <!-- Cat paw prints -->
-      <div class="absolute top-1/4 left-1/4 w-8 h-8 text-calico-orange-400/30 animate-pulse delay-300">
+      <div class="absolute top-1/4 left-1/4 w-8 h-8 text-calico-orange-400/30 dark:text-calico-orange-300/50 animate-pulse delay-300">
         <svg fill="currentColor" viewBox="0 0 24 24">
           <!-- Cat paw print SVG -->
           <ellipse cx="8" cy="6" rx="2" ry="3" fill="currentColor"/>
@@ -29,7 +29,7 @@ import TinaEasterEgg from '../components/react/TinaEasterEgg';
           <ellipse cx="12" cy="16" rx="4" ry="5" fill="currentColor"/>
         </svg>
       </div>
-      <div class="absolute top-3/4 left-3/4 w-7 h-7 text-calico-orange-400/30 animate-bounce delay-700">
+      <div class="absolute top-3/4 left-3/4 w-7 h-7 text-calico-orange-400/30 dark:text-calico-orange-300/50 animate-bounce delay-700">
         <svg fill="currentColor" viewBox="0 0 24 24">
           <!-- Cat paw print SVG -->
           <ellipse cx="8" cy="6" rx="2" ry="3" fill="currentColor"/>
@@ -39,19 +39,19 @@ import TinaEasterEgg from '../components/react/TinaEasterEgg';
           <ellipse cx="12" cy="16" rx="4" ry="5" fill="currentColor"/>
         </svg>
       </div>
-      <div class="absolute top-1/2 right-1/4 w-6 h-6 text-calico-orange-300/25 animate-pulse delay-1000">
+      <div class="absolute top-1/2 right-1/4 w-6 h-6 text-calico-orange-300/25 dark:text-calico-orange-200/40 animate-pulse delay-1000">
         <svg fill="currentColor" viewBox="0 0 24 24">
           <path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 10H4l1.5 9h13L20 10z"/>
         </svg>
       </div>
       
       <!-- Additional decorative elements -->
-      <div class="absolute top-16 right-16 w-8 h-8 text-calico-white/15 animate-bounce delay-500">
+      <div class="absolute top-16 right-16 w-8 h-8 text-calico-gray-400/20 dark:text-calico-gray-300/30 animate-bounce delay-500">
         <svg fill="currentColor" viewBox="0 0 24 24">
           <path d="M21,6H18V4A2,2 0 0,0 16,2H8A2,2 0 0,0 6,4V6H3A1,1 0 0,0 2,7V8A3,3 0 0,0 5,11H6.83L7.83,15.72C7.96,16.32 8.5,16.76 9.11,16.76H14.89C15.5,16.76 16.04,16.32 16.17,15.72L17.17,11H19A3,3 0 0,0 22,8V7A1,1 0 0,0 21,6M8,4H16V6H8V4M6.2,8H17.8L17,11H7L6.2,8Z"/>
         </svg>
       </div>
-      <div class="absolute bottom-16 left-16 w-9 h-9 text-calico-orange-200/20 animate-pulse delay-1200">
+      <div class="absolute bottom-16 left-16 w-9 h-9 text-calico-orange-200/20 dark:text-calico-orange-300/40 animate-pulse delay-1200">
         <svg fill="currentColor" viewBox="0 0 24 24">
           <!-- Cat paw print SVG -->
           <ellipse cx="8" cy="6" rx="2" ry="3" fill="currentColor"/>
@@ -75,9 +75,7 @@ import TinaEasterEgg from '../components/react/TinaEasterEgg';
         </div>
         
         <!-- Login form container -->
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-calico-gray-200">
-          <LoginForm client:load />
-        </div>
+        <LoginForm client:load />
       </div>
     </div>
   </div>

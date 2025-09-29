@@ -159,11 +159,21 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="w-full max-w-md mx-auto bg-primary rounded-2xl shadow-theme-lg p-8 border border-primary">
+      {/* Título Principal */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold hero-title mb-3 tracking-tight">
+          Iniciar Sesión
+        </h1>
+        <p className="text-base hero-subtitle font-medium">
+          Accede a tu cuenta para continuar
+        </p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-8">
         {/* Email Field */}
-        <div className="space-y-2">
-          <label htmlFor="email" className="block text-sm font-medium text-calico-gray-300">
+        <div className="space-y-3">
+          <label htmlFor="email" className="block text-base font-semibold text-primary tracking-wide">
             Correo Electrónico
           </label>
           <input
@@ -171,17 +181,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
             id="email"
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            className={`w-full px-4 py-3 bg-calico-stripe-dark/50 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
+            className={`w-full px-5 py-4 bg-primary border-2 rounded-xl text-base font-medium text-primary placeholder-muted focus:outline-none focus:ring-3 transition-all duration-300 shadow-theme-sm ${
               errors.email 
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
-                : 'border-calico-stripe-light/30 focus:border-calico-orange-500 focus:ring-calico-orange-500/20'
+                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30' 
+                : 'border-primary focus:border-orange-500 focus:ring-orange-500/30 hover:border-secondary'
             }`}
             placeholder="tu@email.com"
             disabled={isLoading}
           />
           {errors.email && (
-            <p className="text-red-400 text-sm flex items-center">
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <p className="text-error text-sm font-medium flex items-center mt-2 px-1">
+              <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               {errors.email}
@@ -190,8 +200,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         </div>
 
         {/* Password Field */}
-        <div className="space-y-2">
-          <label htmlFor="password" className="block text-sm font-medium text-calico-gray-300">
+        <div className="space-y-3">
+          <label htmlFor="password" className="block text-base font-semibold text-primary tracking-wide">
             Contraseña
           </label>
           <div className="relative">
@@ -200,10 +210,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
               id="password"
               value={formData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              className={`w-full px-4 py-3 pr-12 bg-calico-stripe-dark/50 border rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
+              className={`w-full px-5 py-4 pr-14 bg-primary border-2 rounded-xl text-base font-medium text-primary placeholder-muted focus:outline-none focus:ring-3 transition-all duration-300 shadow-theme-sm ${
                 errors.password 
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
-                  : 'border-calico-stripe-light/30 focus:border-calico-orange-500 focus:ring-calico-orange-500/20'
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30' 
+                  : 'border-primary focus:border-orange-500 focus:ring-orange-500/30 hover:border-secondary'
               }`}
               placeholder="Tu contraseña"
               disabled={isLoading}
@@ -211,7 +221,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-tertiary hover:text-primary transition-colors p-1 rounded-md hover:bg-secondary"
               disabled={isLoading}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,8 +234,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
             </button>
           </div>
           {errors.password && (
-            <p className="text-red-400 text-sm flex items-center">
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <p className="text-error text-sm font-medium flex items-center mt-2 px-1">
+              <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               {errors.password}
@@ -234,25 +244,25 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         </div>
 
         {/* Remember Me */}
-        <div className="flex items-center">
+        <div className="flex items-center py-3 border-t border-primary pt-6">
           <input
             type="checkbox"
             id="rememberMe"
             checked={formData.rememberMe}
             onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
-            className="w-4 h-4 text-purple-600 bg-white/5 border-white/20 rounded focus:ring-purple-500 focus:ring-2"
+            className="w-5 h-5 text-orange-500 bg-primary border-2 border-primary rounded-md focus:ring-orange-500 focus:ring-3 focus:ring-offset-0 transition-all duration-200"
             disabled={isLoading}
           />
-          <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-300">
+          <label htmlFor="rememberMe" className="ml-3 text-base font-medium text-primary cursor-pointer select-none">
             Recordarme
           </label>
         </div>
 
         {/* General Error */}
         {errors.general && (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
-            <p className="text-red-400 text-sm flex items-center">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-4 bg-error-subtle border-2 border-error rounded-xl shadow-theme-sm">
+            <p className="text-error text-sm font-medium flex items-center">
+              <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               {errors.general}
@@ -261,10 +271,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         )}
 
         {/* Submit Button */}
+        <div className="pt-4 border-t border-primary">
         <button
           type="submit"
           disabled={isLoading || !!errors.email || !!errors.password}
-          className="w-full bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 hover:from-calico-orange-700 hover:to-calico-orange-600 disabled:from-calico-gray-600 disabled:to-calico-gray-700 disabled:cursor-not-allowed text-calico-white py-3 px-4 rounded-xl transition-all duration-300 font-medium flex items-center justify-center hover-glow-orange"
+          className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl transition-all duration-300 font-semibold text-lg shadow-theme-md hover:shadow-theme-lg focus:outline-none focus:ring-3 focus:ring-orange-500/30"
         >
           {isLoading ? (
             <>
@@ -278,12 +289,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
             'Iniciar Sesión'
           )}
         </button>
+        </div>
 
         {/* Register Link */}
-        <div className="text-center">
-          <p className="text-gray-400">
+        <div className="text-center pt-6 border-t border-primary">
+          <p className="text-base text-secondary font-medium">
             ¿No tienes cuenta?{' '}
-            <a href="/register" className="text-calico-orange-400 hover:text-calico-orange-300 transition-colors font-medium">
+            <a href="/register" className="text-orange-500 hover:text-orange-600 transition-colors font-semibold underline decoration-2 underline-offset-2 hover:decoration-orange-600">
               Regístrate aquí
             </a>
           </p>
