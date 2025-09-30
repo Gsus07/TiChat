@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import { useNotifications } from "./NotificationProvider";
+import NotificationCenter from "./NotificationCenter";
 import type { Game } from "../../types/game";
 
 interface User {
@@ -482,6 +483,12 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
               </div>
             )}
           </div>
+
+          {/* Notification Center - Only show when user is logged in */}
+          {user && (
+            <NotificationCenter className="flex-shrink-0" />
+          )}
+
           {/* Guest buttons */}
           {!user && (
             <div className="flex items-center space-x-4">
@@ -771,6 +778,125 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
                 </div>
               )}
             </div>
+
+            {/* User Section for Mobile */}
+            {user && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-calico-orange-400 uppercase tracking-wider mb-2">
+                  Mi Cuenta
+                </h3>
+                <div className="flex items-center px-4 py-3 rounded-xl bg-gradient-to-r from-calico-orange-500/10 to-calico-orange-600/10 mb-2">
+                  <img
+                    src={user.avatar || "/default-avatar.png"}
+                    alt="Avatar"
+                    className="w-10 h-10 rounded-xl border-2 border-calico-orange-500/50 mr-3"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-calico-white">{user.name}</span>
+                    <span className="text-xs text-calico-gray-400">En línea</span>
+                  </div>
+                </div>
+                
+                {/* Mobile Notification Center */}
+                <div className="mb-2">
+                  <NotificationCenter className="w-full" />
+                </div>
+                
+                <a
+                  href="/profile"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
+                >
+                  <svg
+                    className="w-5 h-5 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                  Mi Perfil
+                </a>
+                
+                <a
+                  href="/settings/notifications"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
+                >
+                  <svg
+                    className="w-5 h-5 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                  Notificaciones
+                </a>
+                
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500/20 hover:to-red-600/20 hover:shadow-lg hover:shadow-red-500/25 w-full text-left"
+                >
+                  <svg
+                    className="w-5 h-5 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Cerrar Sesión
+                </button>
+              </div>
+            )}
+
+            {/* Guest Section for Mobile */}
+            {!user && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-calico-orange-400 uppercase tracking-wider mb-2">
+                  Cuenta
+                </h3>
+                <a
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
+                >
+                  <svg
+                    className="w-5 h-5 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Iniciar Sesión
+                </a>
+              </div>
+            )}
 
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-calico-orange-400 uppercase tracking-wider mb-2">

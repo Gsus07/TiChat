@@ -74,29 +74,46 @@ const PostForm: React.FC<PostFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    console.log('🚀 Iniciando envío del formulario...');
+    console.log('📝 Datos del formulario:', formData);
+    console.log('🎮 Game ID:', gameId);
+    console.log('🖥️ Server ID:', serverId);
     
+    if (!validateForm()) {
+      console.log('❌ Validación del formulario falló');
+      return;
+    }
+    
+    console.log('✅ Validación del formulario exitosa');
     setIsSubmitting(true);
     
     try {
+      console.log('🔐 Obteniendo sesión de usuario...');
       // Get user session from Supabase
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError || !session?.user) {
+        console.log('❌ Error de sesión:', sessionError);
         addNotification('Debes iniciar sesión para publicar', 'error');
         return;
       }
 
       const user = session.user;
+      console.log('✅ Usuario autenticado:', user.id);
       
       // Validate required data
+      console.log('🔍 Validando datos requeridos...');
       if (!serverId && !gameId) {
+        console.log('❌ Error: No hay serverId ni gameId');
         addNotification('Error: No se puede determinar el destino del post', 'error');
         return;
       }
       
+      console.log('✅ Datos requeridos válidos');
+      
       // Use uploaded image URL if available
       const imageUrl = formData.imageUrl;
+      console.log('🖼️ URL de imagen:', imageUrl);
 
       // Create post data for Supabase
       const postData = {
@@ -110,18 +127,27 @@ const PostForm: React.FC<PostFormProps> = ({
         is_active: true
       };
 
+      console.log('📦 Datos del post a insertar:', postData);
+
       // Insert post into Supabase
+      console.log('💾 Insertando post en Supabase...');
       const { data: newPost, error: insertError } = await supabase
         .from('posts')
         .insert([postData])
         .select()
         .single();
       
+      console.log('📊 Resultado de inserción:', { newPost, insertError });
+      
       if (insertError) {
+        console.log('❌ Error al insertar:', insertError);
         throw insertError;
       }
       
+      console.log('✅ Post creado exitosamente:', newPost);
+      
       // Reset form
+      console.log('🔄 Reseteando formulario...');
       setFormData({ content: '', imageUrl: null, imagePath: null });
       setAuthorName('');
       
@@ -129,17 +155,22 @@ const PostForm: React.FC<PostFormProps> = ({
       imageUploadRef.current?.resetUpload();
       
       // Show success notification
+      console.log('🎉 Mostrando notificación de éxito...');
       addNotification('Post publicado exitosamente', 'success');
       
       // Dispatch custom event to reload posts
+      console.log('📡 Disparando evento postAdded...');
       const event = new CustomEvent('postAdded', {
         detail: { serverId, gameId, post: newPost }
       });
       window.dispatchEvent(event);
+      console.log('✅ Proceso completado exitosamente');
       
     } catch (error) {
+      console.log('💥 Error en el proceso:', error);
       addNotification('Error al publicar el post', 'error');
     } finally {
+      console.log('🏁 Finalizando proceso...');
       setIsSubmitting(false);
     }
   };
