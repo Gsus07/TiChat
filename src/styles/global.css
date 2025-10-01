@@ -46,6 +46,16 @@
   --color-error: #EF4444;
   --color-info: #3B82F6;
   
+  /* Variables específicas para notificaciones */
+  --notification-bg: #FFFFFF;
+  --notification-header-bg: #F8FAFC;
+  --notification-border: #E2E8F0;
+  --notification-hover: #F1F5F9;
+  --notification-button-bg: #FF9F43;
+  --notification-button-hover: #FF8C1A;
+  --notification-avatar-border: #CBD5E1;
+  --notification-content-bg: #F8FAFC;
+  
   /* Glassmorphism */
   --glass-bg: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(255, 255, 255, 0.2);
@@ -93,6 +103,16 @@
   --color-warning: #FBBF24;
   --color-error: #F87171;
   --color-info: #60A5FA;
+  
+  /* Variables específicas para notificaciones en tema oscuro */
+  --notification-bg: #1E293B;
+  --notification-header-bg: #334155;
+  --notification-border: #475569;
+  --notification-hover: #2A3441;
+  --notification-button-bg: #FB923C;
+  --notification-button-hover: #F97316;
+  --notification-avatar-border: #64748B;
+  --notification-content-bg: #0F172A;
   
   /* Glassmorphism para tema oscuro */
   --glass-bg: rgba(15, 23, 42, 0.8);
@@ -147,6 +167,16 @@
 .shadow-theme-md { box-shadow: var(--shadow-md); }
 .shadow-theme-lg { box-shadow: var(--shadow-lg); }
 .shadow-theme-xl { box-shadow: var(--shadow-xl); }
+
+/* Clases específicas para notificaciones */
+.notification-bg { background-color: var(--notification-bg); }
+.notification-header-bg { background-color: var(--notification-header-bg); }
+.notification-border { border-color: var(--notification-border); }
+.notification-hover { background-color: var(--notification-hover); }
+.notification-button-bg { background-color: var(--notification-button-bg); }
+.notification-button-hover { background-color: var(--notification-button-hover); }
+.notification-avatar-border { border-color: var(--notification-avatar-border); }
+.notification-content-bg { background-color: var(--notification-content-bg); }
 
 /* Glassmorphism con soporte para temas */
 .glass {

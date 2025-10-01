@@ -253,9 +253,9 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
         }}
         className={`relative group flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ${
           isOpen 
-            ? 'bg-gradient-to-r from-calico-orange-500 to-calico-orange-600 text-white shadow-lg shadow-calico-orange-500/25' 
-            : 'bg-white dark:bg-gray-800 hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 text-gray-600 dark:text-gray-300 hover:text-calico-orange-600 dark:hover:text-calico-orange-400 border border-gray-200 dark:border-gray-700'
-        } focus:outline-none focus:ring-2 focus:ring-calico-orange-500/50 focus:ring-offset-2 dark:focus:ring-offset-gray-800`}
+            ? 'notification-button-bg text-white shadow-theme-lg' 
+            : 'bg-primary border border-primary text-secondary hover:notification-button-hover hover:text-white'
+        } focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-primary`}
         aria-label="Centro de Notificaciones"
       >
         {/* Icono de campana mejorado */}
@@ -276,9 +276,9 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
 
       {/* Dropdown de notificaciones mejorado */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-96 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-[32rem] overflow-hidden backdrop-blur-sm">
+        <div className="absolute right-0 mt-3 w-96 notification-bg rounded-2xl shadow-theme-xl notification-border z-50 max-h-[32rem] overflow-hidden glass">
           {/* Header elegante */}
-          <div className="p-6 bg-gradient-to-r from-calico-orange-50 to-calico-orange-100 dark:from-gray-700 dark:to-gray-600 border-b border-calico-orange-200 dark:border-gray-600">
+          <div className="p-6 notification-header-bg border-b notification-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-calico-orange-500 dark:bg-calico-orange-600 rounded-xl">
@@ -287,8 +287,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Feed de Publicaciones</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <h3 className="text-lg font-bold text-primary">Feed de Publicaciones</h3>
+                  <p className="text-sm text-secondary">
                     {posts.length > 0 ? `${posts.length} publicaciones recientes` : 'No hay publicaciones'}
                   </p>
                 </div>
@@ -296,7 +296,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => loadPosts(1, true)}
-                  className="p-2 text-calico-orange-600 dark:text-calico-orange-400 hover:text-calico-orange-700 dark:hover:text-calico-orange-300 hover:bg-calico-orange-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200"
+                  className="p-2 text-white hover:notification-button-hover rounded-lg transition-all duration-200"
+                  style={{ backgroundColor: 'var(--notification-button-bg)' }}
                   title="Actualizar feed"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -308,12 +309,13 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
           </div>
 
           {/* Lista de publicaciones */}
-          <div className="max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+          <div className="max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-border-accent scrollbar-track-transparent">
             {posts.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-calico-orange-100 to-calico-orange-200 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 mx-auto mb-6 notification-header-bg rounded-full flex items-center justify-center">
                   <svg
-                    className="w-10 h-10 text-calico-orange-500 dark:text-calico-orange-400"
+                    className="w-10 h-10"
+                    style={{ color: 'var(--notification-button-bg)' }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -326,8 +328,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
                     />
                   </svg>
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">¡Todo al día!</h4>
-                <p className="text-gray-600 dark:text-gray-300">No hay publicaciones recientes</p>
+                <h4 className="text-lg font-semibold text-primary mb-2">¡Todo al día!</h4>
+                <p className="text-secondary">No hay publicaciones recientes</p>
               </div>
             ) : (
               <>
@@ -340,7 +342,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
                     <div
                       key={post.id}
                       onClick={() => navigateToPost(post)}
-                      className="group relative p-5 border-b border-gray-100 dark:border-gray-700 hover:bg-gradient-to-r hover:from-calico-orange-50/50 hover:to-calico-orange-100/30 dark:hover:from-gray-700/50 dark:hover:to-gray-600/30 transition-all duration-200 hover:border-l-4 hover:border-l-calico-orange-300 dark:hover:border-l-calico-orange-400 cursor-pointer"
+                      className="group relative p-5 border-b border-secondary notification-bg hover:notification-hover transition-all duration-200 hover:border-l-4 hover:border-l-orange-500 cursor-pointer"
                     >
                       <div className="flex items-start space-x-4">
                         {/* Avatar del usuario */}
@@ -349,7 +351,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
                               <img 
                                 src={profile.avatar_url} 
                                 alt={profile?.full_name || profile?.username || 'Usuario'}
-                                className="w-10 h-10 rounded-full object-cover border-2 border-calico-orange-200 dark:border-calico-orange-400"
+                                className="w-10 h-10 rounded-full object-cover border-2 notification-avatar-border"
                               />
                             ) : (
                               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-calico-orange-400 to-calico-orange-600 dark:from-calico-orange-500 dark:to-calico-orange-700 flex items-center justify-center text-white font-semibold text-sm">
@@ -363,26 +365,26 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
                             <div className="flex-1 pr-2">
                               {/* Información del autor */}
                               <div className="flex items-center space-x-2 mb-2">
-                                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                <p className="text-sm font-semibold text-primary">
                                   {profile?.full_name || profile?.username || 'Usuario desconocido'}
                                 </p>
-                                <span className="text-xs text-gray-500 dark:text-gray-400">•</span>
-                                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                <span className="text-xs text-muted">•</span>
+                                <span className="text-xs text-muted font-medium">
                                   {formatTime(post.created_at)}
                                 </span>
                               </div>
                               
                               {/* Título de la publicación */}
                               {post.title && (
-                                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                <h4 className="text-sm font-semibold text-primary mb-2">
                                   {post.title}
                                 </h4>
                               )}
                               
                               {/* Contenido de la publicación */}
                               {post.content && (
-                                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 mb-3">
-                                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-3">
+                                <div className="notification-content-bg rounded-lg p-3 border notification-border mb-3">
+                                  <p className="text-sm text-secondary leading-relaxed line-clamp-3">
                                     {post.content}
                                   </p>
                                 </div>
@@ -391,7 +393,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
                               {/* Miniatura de imagen si existe */}
                               {post.image_url && (
                                 <div className="mt-3 mb-3">
-                                  <div className="relative w-full h-32 bg-gray-100 dark:bg-gray-600 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-500">
+                                  <div className="relative w-full h-32 notification-content-bg rounded-lg overflow-hidden notification-border">
                                     <img 
                                       src={post.image_url} 
                                       alt="Vista previa de la imagen"
@@ -410,18 +412,18 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
                               {/* Información del juego y servidor */}
                               {(game?.name || gameServer?.name) && (
                                 <div className="flex items-center mt-2">
-                                  <svg className="w-4 h-4 text-calico-orange-500 dark:text-calico-orange-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <svg className="w-4 h-4 text-calico-orange mr-1" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                   </svg>
                                   {game?.name && (
-                                    <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+                                    <span className="text-xs text-secondary font-medium">
                                       {game.name}
                                     </span>
                                   )}
                                   {gameServer?.name && (
                                     <>
-                                      <span className="text-xs text-gray-400 dark:text-gray-500 mx-1">•</span>
-                                      <span className="text-xs text-gray-600 dark:text-gray-300">
+                                      <span className="text-xs text-muted mx-1">•</span>
+                                      <span className="text-xs text-secondary">
                                         {gameServer.name}
                                       </span>
                                     </>
@@ -438,15 +440,16 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
                 
                 {/* Botón Ver más */}
                 {hasMore && (
-                  <div className="p-4 text-center border-t border-gray-100 dark:border-gray-700">
+                  <div className="p-4 text-center border-t notification-border">
                     <button
                       onClick={loadMore}
                       disabled={loading}
-                      className="w-full py-2 px-4 text-sm font-medium text-calico-orange-600 dark:text-calico-orange-400 hover:text-calico-orange-700 dark:hover:text-calico-orange-300 hover:bg-calico-orange-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full py-2 px-4 text-sm font-medium text-white hover:notification-button-hover rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ backgroundColor: 'var(--notification-button-bg)' }}
                     >
                       {loading ? (
                         <div className="flex items-center justify-center space-x-2">
-                          <div className="w-4 h-4 border-2 border-calico-orange-600 dark:border-calico-orange-400 border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                           <span>Cargando...</span>
                         </div>
                       ) : (
