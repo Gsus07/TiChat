@@ -148,6 +148,45 @@ const PostsList: React.FC<PostsListProps> = ({
     );
   }, []);
 
+  // Scroll automático al post específico si está en la URL
+  useEffect(() => {
+    const scrollToPost = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#post-') && posts.length > 0) {
+        const postId = hash.replace('#post-', '');
+        const postElement = document.getElementById(`post-${postId}`);
+        
+        if (postElement) {
+          // Esperar un poco para que el DOM se renderice completamente
+          setTimeout(() => {
+            postElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+            
+            // Agregar un efecto visual temporal para destacar el post
+            postElement.style.boxShadow = '0 0 20px rgba(255, 165, 0, 0.5)';
+            setTimeout(() => {
+              postElement.style.boxShadow = '';
+            }, 3000);
+          }, 500);
+        }
+      }
+    };
+
+    // Ejecutar cuando los posts se cargan
+    if (posts.length > 0) {
+      scrollToPost();
+    }
+
+    // También escuchar cambios en el hash
+    window.addEventListener('hashchange', scrollToPost);
+    
+    return () => {
+      window.removeEventListener('hashchange', scrollToPost);
+    };
+  }, [posts]);
+
   // Función para eliminar un post
   const removePost = useCallback((postId: string) => {
     setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));

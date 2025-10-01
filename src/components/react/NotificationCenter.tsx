@@ -8,6 +8,7 @@ interface Post {
   user_id: string;
   game_id: string;
   server_id?: string;
+  image_url?: string;
   created_at: string;
   profiles?: {
     username: string;
@@ -96,6 +97,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
           user_id,
           game_id,
           server_id,
+          image_url,
           created_at,
           profiles:user_id (
             username,
@@ -217,13 +219,13 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
     
     const gameSlug = createSlug(game.name);
     
-    // Si hay servidor, navegar a la página del servidor
+    // Si hay servidor, navegar a la página del servidor con el ID del post
     if (gameServer?.name) {
       const serverSlug = createSlug(gameServer.name);
-      window.location.href = `/${gameSlug}/${serverSlug}`;
+      window.location.href = `/${gameSlug}/${serverSlug}#post-${post.id}`;
     } else {
-      // Si no hay servidor, navegar a la página del juego
-      window.location.href = `/${gameSlug}`;
+      // Si no hay servidor, navegar a la página del juego con el ID del post
+      window.location.href = `/${gameSlug}#post-${post.id}`;
     }
     
     // Cerrar el dropdown después de navegar
@@ -383,6 +385,25 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ className = '' 
                                   <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-3">
                                     {post.content}
                                   </p>
+                                </div>
+                              )}
+                              
+                              {/* Miniatura de imagen si existe */}
+                              {post.image_url && (
+                                <div className="mt-3 mb-3">
+                                  <div className="relative w-full h-32 bg-gray-100 dark:bg-gray-600 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-500">
+                                    <img 
+                                      src={post.image_url} 
+                                      alt="Vista previa de la imagen"
+                                      className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-black/10 dark:bg-black/20 group-hover:bg-black/5 dark:group-hover:bg-black/10 transition-colors duration-200"></div>
+                                    <div className="absolute top-2 right-2 bg-black/50 rounded-full p-1">
+                                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z" />
+                                      </svg>
+                                    </div>
+                                  </div>
                                 </div>
                               )}
                               

@@ -57,18 +57,18 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
 
   // Get notification styles
   const getNotificationStyles = (type: Notification['type']): string => {
-    const baseStyles = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 border backdrop-blur-sm';
+    const baseStyles = 'relative p-4 rounded-lg shadow-xl border backdrop-blur-sm transition-all duration-300 transform';
     
     switch (type) {
       case 'success':
-        return `${baseStyles} bg-green-500/90 text-white border-green-400/50`;
+        return `${baseStyles} bg-green-500 text-white border-green-400 shadow-green-500/25`;
       case 'error':
-        return `${baseStyles} bg-red-500/90 text-white border-red-400/50`;
+        return `${baseStyles} bg-red-500 text-white border-red-400 shadow-red-500/25`;
       case 'warning':
-        return `${baseStyles} bg-yellow-500/90 text-white border-yellow-400/50`;
+        return `${baseStyles} bg-yellow-500 text-white border-yellow-400 shadow-yellow-500/25`;
       case 'info':
       default:
-        return `${baseStyles} bg-blue-500/90 text-white border-blue-400/50`;
+        return `${baseStyles} bg-blue-500 text-white border-blue-400 shadow-blue-500/25`;
     }
   };
 
@@ -109,7 +109,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
   }
 
   return (
-    <div className="fixed top-20 right-4 z-[60] space-y-2 pointer-events-none">
+    <div className="fixed top-4 right-4 z-[9999] space-y-2 pointer-events-none">
       {allNotifications.map((notification) => (
         <div
           key={notification.id}

@@ -335,7 +335,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
   };
 
   return (
-    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-calico-stripe-light/20">
+    <div id={`post-${post.id}`} className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-calico-stripe-light/20">
       {/* Header del post */}
       <div className="flex items-start space-x-4">
         <div className="flex-shrink-0">

@@ -38,17 +38,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
     }
   }, []);
 
-  // Validación en tiempo real
+  // Validación de email
   const validateEmail = (email: string): string | undefined => {
-    if (!email) return 'El email es requerido';
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return 'Formato de email inválido';
+    if (!email.trim()) {
+      return 'Por favor, completa todos los campos requeridos.';
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return 'Por favor, ingresa un email válido.';
+    }
     return undefined;
   };
 
+  // Validación de contraseña
   const validatePassword = (password: string): string | undefined => {
-    if (!password) return 'La contraseña es requerida';
-    if (password.length < 6) return 'La contraseña debe tener al menos 6 caracteres';
+    if (!password.trim()) {
+      return 'Por favor, completa todos los campos requeridos.';
+    }
     return undefined;
   };
 
@@ -60,24 +65,44 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
     if (errors[field as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
-    
-    // Validación en tiempo real
-    if (field === 'email' && typeof value === 'string') {
-      const emailError = validateEmail(value);
-      if (emailError) {
-        setErrors(prev => ({ ...prev, email: emailError }));
-      }
-    }
-    
-    if (field === 'password' && typeof value === 'string') {
-      const passwordError = validatePassword(value);
-      if (passwordError) {
-        setErrors(prev => ({ ...prev, password: passwordError }));
-      }
-    }
   };
 
-
+  // Función para mapear errores de la API a mensajes amigables
+  const getErrorMessage = (error: any): string => {
+    const errorMessage = error.message || error.error || error;
+    
+    // Mapear errores específicos de Supabase a mensajes amigables
+    if (errorMessage.includes('Invalid login credentials') || 
+        errorMessage.includes('invalid_credentials') ||
+        errorMessage.includes('Invalid email or password')) {
+      return 'La contraseña ingresada no es válida. ¿Olvidaste tu contraseña?';
+    }
+    
+    if (errorMessage.includes('Email not confirmed') || 
+        errorMessage.includes('email_not_confirmed')) {
+      return 'Por favor, confirma tu email antes de iniciar sesión.';
+    }
+    
+    if (errorMessage.includes('User not found') || 
+        errorMessage.includes('user_not_found') ||
+        errorMessage.includes('No user found')) {
+      return 'El usuario no existe. ¿Deseas registrarte?';
+    }
+    
+    if (errorMessage.includes('Too many requests') || 
+        errorMessage.includes('rate_limit')) {
+      return 'Demasiados intentos. Por favor, espera unos minutos antes de intentar nuevamente.';
+    }
+    
+    if (errorMessage.includes('Network') || 
+        errorMessage.includes('network') ||
+        errorMessage.includes('Failed to fetch')) {
+      return 'Problema de conexión. Por favor, verifica tu internet e inténtalo nuevamente.';
+    }
+    
+    // Mensaje genérico para otros errores
+    return 'Algo salió mal. Por favor, verifica tus datos e inténtalo nuevamente.';
+  };
 
   // Manejar envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,6 +117,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         email: emailError,
         password: passwordError
       });
+      
+      // Mostrar notificación para campos vacíos
+      if (!formData.email.trim() || !formData.password.trim()) {
+        addNotification('Por favor, completa todos los campos requeridos.', 'warning');
+      }
       return;
     }
 
@@ -127,32 +157,43 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         },
         access_token: result.session?.access_token,
         refresh_token: result.session?.refresh_token,
-        loginTime: new Date().toISOString(),
-        rememberMe: formData.rememberMe
+        expires_at: result.session?.expires_at
       };
 
-      // Guardar sesión usando la función mejorada
-      const { saveUserSession } = await import('../../utils/auth');
-      saveUserSession(sessionData, formData.rememberMe);
+      // Guardar sesión según la preferencia del usuario
+      if (formData.rememberMe) {
+        localStorage.setItem('userSession', JSON.stringify(sessionData));
+      } else {
+        sessionStorage.setItem('userSession', JSON.stringify(sessionData));
+      }
 
-      addNotification('¡Bienvenido de vuelta!', 'success');
-      
+      // Mostrar mensaje de éxito
+      addNotification('¡Bienvenido! Has iniciado sesión correctamente.', 'success');
+
+      // Callback de éxito
       if (onSuccess) {
         onSuccess();
-      } else {
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 1500);
       }
 
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      setErrors({ general: errorMessage });
-      addNotification(errorMessage, 'error');
+      // Redirigir después de un delay más largo para que se vea la notificación
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2500);
+
+    } catch (error: any) {
+      console.error('Error en login:', error);
+      const friendlyMessage = getErrorMessage(error);
       
+      // Mostrar notificación de error
+      addNotification(friendlyMessage, 'error');
+      
+      // Callback de error
       if (onError) {
-        onError(errorMessage);
+        onError(friendlyMessage);
       }
+      
+      // Establecer error general para mostrar en el formulario
+      setErrors({ general: friendlyMessage });
     } finally {
       setIsLoading(false);
     }
@@ -172,79 +213,92 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
       
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Email Field */}
-        <div className="space-y-3">
-          <label htmlFor="email" className="block text-base font-semibold text-primary tracking-wide">
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-base font-semibold text-primary">
             Correo Electrónico
           </label>
-          <input
-            type="email"
-            id="email"
-            value={formData.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
-            className={`w-full px-5 py-4 bg-primary border-2 rounded-xl text-base font-medium text-primary placeholder-muted focus:outline-none focus:ring-3 transition-all duration-300 shadow-theme-sm ${
-              errors.email 
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30' 
-                : 'border-primary focus:border-orange-500 focus:ring-orange-500/30 hover:border-secondary'
-            }`}
-            placeholder="tu@email.com"
-            disabled={isLoading}
-          />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg className="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+              </svg>
+            </div>
+            <input
+              type="email"
+              id="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              placeholder="tu@email.com"
+              className={`w-full pl-12 pr-4 py-4 bg-surface border-2 rounded-xl text-primary placeholder-secondary focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-base ${
+                errors.email ? 'border-error ring-2 ring-error/20' : 'border-primary hover:border-orange-400'
+              }`}
+              disabled={isLoading}
+              required
+            />
+          </div>
           {errors.email && (
-            <p className="text-error text-sm font-medium flex items-center mt-2 px-1">
-              <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center mt-2 p-3 bg-error-subtle border border-error/30 rounded-lg">
+              <svg className="w-4 h-4 text-error mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {errors.email}
-            </p>
+              <p className="text-error text-sm font-medium">{errors.email}</p>
+            </div>
           )}
         </div>
 
         {/* Password Field */}
-        <div className="space-y-3">
-          <label htmlFor="password" className="block text-base font-semibold text-primary tracking-wide">
+        <div className="space-y-2">
+          <label htmlFor="password" className="block text-base font-semibold text-primary">
             Contraseña
           </label>
           <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg className="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+            </div>
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
               value={formData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              className={`w-full px-5 py-4 pr-14 bg-primary border-2 rounded-xl text-base font-medium text-primary placeholder-muted focus:outline-none focus:ring-3 transition-all duration-300 shadow-theme-sm ${
-                errors.password 
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30' 
-                  : 'border-primary focus:border-orange-500 focus:ring-orange-500/30 hover:border-secondary'
+              placeholder="••••••••"
+              className={`w-full pl-12 pr-12 py-4 bg-surface border-2 rounded-xl text-primary placeholder-secondary focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-base ${
+                errors.password ? 'border-error ring-2 ring-error/20' : 'border-primary hover:border-orange-400'
               }`}
-              placeholder="Tu contraseña"
               disabled={isLoading}
+              required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-tertiary hover:text-primary transition-colors p-1 rounded-md hover:bg-secondary"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary hover:text-primary transition-colors"
               disabled={isLoading}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {showPassword ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                )}
-              </svg>
+              {showPassword ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+              )}
             </button>
           </div>
           {errors.password && (
-            <p className="text-error text-sm font-medium flex items-center mt-2 px-1">
-              <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center mt-2 p-3 bg-error-subtle border border-error/30 rounded-lg">
+              <svg className="w-4 h-4 text-error mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {errors.password}
-            </p>
+              <p className="text-error text-sm font-medium">{errors.password}</p>
+            </div>
           )}
         </div>
 
         {/* Remember Me */}
-        <div className="flex items-center py-3 border-t border-primary pt-6">
+        <div className="flex items-center">
           <input
             type="checkbox"
             id="rememberMe"
@@ -275,7 +329,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         <button
           type="submit"
           disabled={isLoading || !!errors.email || !!errors.password}
-          className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl transition-all duration-300 font-semibold text-lg shadow-theme-md hover:shadow-theme-lg focus:outline-none focus:ring-3 focus:ring-orange-500/30"
+          className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl transition-all duration-300 font-semibold text-lg shadow-theme-md hover:shadow-theme-lg transform hover:scale-[1.02] disabled:transform-none disabled:hover:scale-100"
         >
           {isLoading ? (
             <>
