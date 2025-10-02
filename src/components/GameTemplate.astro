@@ -419,5 +419,19 @@ const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.s
       (el as HTMLElement).style.transition = 'opacity 0.6s ease, transform 0.6s ease';
       observer.observe(el);
     });
+
+    // Scroll a la publicación si existe ?post=<id> en la URL
+    const params = new URLSearchParams(window.location.search);
+    const targetId = params.get('post');
+    if (targetId) {
+      const target = document.querySelector(`[data-post-id="${targetId}"]`);
+      if (target) {
+        (target as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        (target as HTMLElement).classList.add('ring-2','ring-calico-orange-500');
+        setTimeout(() => {
+          (target as HTMLElement).classList.remove('ring-2','ring-calico-orange-500');
+        }, 2000);
+      }
+    }
   });
 </script>

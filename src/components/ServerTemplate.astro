@@ -359,5 +359,19 @@ function getServerTypeIcon(type: string) {
         (statusIndicator as HTMLElement).style.opacity = (statusIndicator as HTMLElement).style.opacity === '0.5' ? '1' : '0.5';
       }, 1000);
     }
+
+    // Scroll a la publicación si existe ?post=<id> en la URL
+    const params = new URLSearchParams(window.location.search);
+    const targetId = params.get('post');
+    if (targetId) {
+      const target = document.querySelector(`[data-post-id="${targetId}"]`);
+      if (target) {
+        (target as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        (target as HTMLElement).classList.add('ring-2','ring-calico-orange-500');
+        setTimeout(() => {
+          (target as HTMLElement).classList.remove('ring-2','ring-calico-orange-500');
+        }, 2000);
+      }
+    }
   });
 </script>

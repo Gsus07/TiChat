@@ -199,6 +199,61 @@ export async function getPostsByServerId(serverId: string, userId?: string, limi
   }
 }
 
+export async function getPostsByUserId(userId: string, currentUserId?: string, limit = 20, offset = 0) {
+  try {
+    let query = supabase
+      .from('posts')
+      .select(`
+        *,
+        profiles:user_id(username, full_name, avatar_url),
+        games:game_id(name, cover_image_url),
+        game_servers:server_id(name)
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    const { data: posts, error } = await query;
+    if (error) throw error;
+    if (!posts) return { data: [], error: null };
+
+    const postsWithDetails = await Promise.all(
+      posts.map(async (post) => {
+        const [likesResult, commentsResult, userLikeResult] = await Promise.all([
+          supabase
+            .from('post_likes')
+            .select('id', { count: 'exact', head: true })
+            .eq('post_id', post.id),
+          supabase
+            .from('comments')
+            .select('id', { count: 'exact', head: true })
+            .eq('post_id', post.id)
+            .eq('is_active', true),
+          currentUserId
+            ? supabase
+                .from('post_likes')
+                .select('id')
+                .eq('post_id', post.id)
+                .eq('user_id', currentUserId)
+                .single()
+            : Promise.resolve({ data: null, error: null })
+        ]);
+
+        return {
+          ...post,
+          like_count: likesResult.count || 0,
+          comment_count: commentsResult.count || 0,
+          user_has_liked: !!userLikeResult.data
+        } as PostWithDetails;
+      })
+    );
+
+    return { data: postsWithDetails, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
+}
+
 export async function getPostById(id: string, userId?: string) {
   try {
     const { data: post, error } = await supabase
