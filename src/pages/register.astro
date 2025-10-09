@@ -1,6 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import DisabledNotice from '../components/DisabledNotice.astro';
 import RegisterForm from '../components/react/RegisterForm.tsx';
+
+// Flag de entorno para habilitar/deshabilitar el registro (por defecto: deshabilitado)
+const isDisabled = (import.meta.env.PUBLIC_DISABLE_REGISTER ?? 'true') === 'true';
 ---
 
 <Layout title="Registro - Gaming Hub">
@@ -60,64 +64,23 @@ import RegisterForm from '../components/react/RegisterForm.tsx';
       </div>
     </div>
 
-    <!-- Main content -->
-    <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
-      <div class="glass-calico backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-calico-stripe-light/20 w-full max-w-md calico-pattern">
-        <h1 class="text-3xl font-bold text-center text-calico-white mb-8">Crear Cuenta</h1>
-        
-        <form class="space-y-6">
-          <div>
-            <label for="username" class="block text-sm font-medium text-calico-gray-300 mb-2">Nombre de usuario</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              required
-              class="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-lg text-calico-white placeholder-calico-gray-400 focus:outline-none focus:border-calico-orange-500 focus:ring-2 focus:ring-calico-orange-500/20 transition-all duration-300"
-              placeholder="tu_usuario"
-            />
-          </div>
-
-          <div>
-            <label for="email" class="block text-sm font-medium text-calico-gray-300 mb-2">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              class="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-lg text-calico-white placeholder-calico-gray-400 focus:outline-none focus:border-calico-orange-500 focus:ring-2 focus:ring-calico-orange-500/20 transition-all duration-300"
-              placeholder="tu@email.com"
-            />
-          </div>
-
-          <div>
-            <label for="password" class="block text-sm font-medium text-calico-gray-300 mb-2">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              required
-              class="w-full px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-lg text-calico-white placeholder-calico-gray-400 focus:outline-none focus:border-calico-orange-500 focus:ring-2 focus:ring-calico-orange-500/20 transition-all duration-300"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button
-            type="submit"
-            class="w-full bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 hover:from-calico-orange-700 hover:to-calico-orange-600 text-calico-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 hover-glow-orange transform hover:scale-[1.02]"
-          >
-            Crear Cuenta
-          </button>
-
-          <p class="text-center text-calico-gray-400 mt-6">
-            ¿Ya tienes cuenta?
-            <a href="/login" class="text-calico-orange-400 hover:text-calico-orange-300 font-medium transition-colors ml-1">
-              Inicia sesión aquí
-            </a>
-          </p>
-        </form>
+    <!-- Main content: condicional según flag -->
+    {isDisabled ? (
+      <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <DisabledNotice 
+          title="Registro temporalmente deshabilitado"
+          message="Que haces aqui?, no deberias tener permisos o esta pagina se encuentra temporalmente deshabilitada"
+          actionHref="/"
+          actionText="Volver al inicio"
+        />
       </div>
-    </div>
+    ) : (
+      <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+          <RegisterForm client:load />
+        </div>
+      </div>
+    )}
   </div>
 
 

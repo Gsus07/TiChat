@@ -1,0 +1,45 @@
+---
+// Componente genérico de aviso para páginas deshabilitadas o sin permisos
+interface Props {
+  title?: string;
+  message?: string;
+  actionHref?: string;
+  actionText?: string;
+}
+
+const {
+  title = 'Acceso restringido',
+  message = 'Que haces aqui?, no deberias tener permisos o esta pagina se encuentra temporalmente deshabilitada',
+  actionHref = '/',
+  actionText = 'Volver al inicio'
+} = Astro.props as Props;
+---
+
+<section class="min-h-[60vh] w-full flex items-center justify-center p-6">
+  <div class="glass-calico backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-calico-stripe-light/20 w-full max-w-xl text-center">
+    <img src="/Tinablock.png" alt="Acceso bloqueado" class="mx-auto mb-6 w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-lg" />
+    <h1 class="text-2xl font-bold text-calico-white mb-3">{title}</h1>
+    <p class="text-calico-gray-200 mb-6">{message}</p>
+    <div class="flex items-center justify-center gap-3">
+      <a href={actionHref} class="inline-flex items-center gap-2 bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 hover:from-calico-orange-700 hover:to-calico-orange-600 text-calico-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 hover-glow-orange">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        {actionText}
+      </a>
+      <a href="/login" class="inline-flex items-center gap-2 bg-calico-gray-800/70 hover:bg-calico-gray-700 text-calico-white font-semibold py-2 px-4 rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.577 0 4.98.67 7.121 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        Iniciar sesión
+      </a>
+    </div>
+  </div>
+  
+  <style>
+    .glass-calico {
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+  </style>
+</section>
