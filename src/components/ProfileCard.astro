@@ -48,16 +48,22 @@ if (currentUserId && currentUserId !== userId) {
   isFollowing = !!followData;
 }
 
-// Formatear fecha de registro
-const joinDate = new Date(profile.created_at).toLocaleDateString('es-ES', {
-  year: 'numeric',
-  month: 'long'
-});
+// Formatear fecha de registro con fallback
+let joinDate: string;
+const joinedAt = profile?.created_at ? new Date(profile.created_at) : null;
+if (joinedAt && !isNaN(joinedAt.getTime())) {
+  joinDate = joinedAt.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long'
+  });
+} else {
+  joinDate = '—';
+}
 ---
 
 <div class="profile-card glass-calico backdrop-blur-xl rounded-2xl border border-calico-stripe-light/20 shadow-2xl overflow-hidden calico-fur-pattern">
-  <!-- Header del perfil -->
-  <div class="bg-gradient-to-r from-calico-orange-600/20 to-calico-orange-500/20 p-6 border-b border-calico-stripe-light/20">
+  <!-- Header del perfil (alineado con muros: glass + suave gradiente blanco) -->
+  <div class="bg-gradient-to-r from-white/8 to-white/4 p-6 border-b border-calico-stripe-light/20">
     <div class="flex items-center space-x-4">
       <!-- Avatar -->
       <div class="relative">
@@ -65,7 +71,7 @@ const joinDate = new Date(profile.created_at).toLocaleDateString('es-ES', {
           <img 
             src={profile.avatar_url} 
             alt={profile.username}
-            class="w-20 h-20 rounded-full object-cover border-4 border-white/20"
+            class="w-20 h-20 rounded-full object-cover border-4 border-calico-stripe-light/20"
           />
         ) : (
           <div class="w-20 h-20 bg-gradient-to-br from-calico-orange-400 to-calico-orange-500 rounded-full flex items-center justify-center text-calico-white font-bold text-2xl border-4 border-calico-stripe-light/20">
@@ -95,10 +101,10 @@ const joinDate = new Date(profile.created_at).toLocaleDateString('es-ES', {
           onclick={`toggleFollow('${userId}')`}
           data-user-id={userId}
           data-following={isFollowing}
-          class={`px-6 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg ${
+          class={`px-6 py-2 rounded-full font-medium transition-all duration-300 hover:shadow-lg border ${
             isFollowing 
-              ? 'bg-calico-gray-600 hover:bg-red-600 text-calico-white' 
-              : 'bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 hover:from-calico-orange-700 hover:to-calico-orange-600 text-calico-white'
+              ? 'bg-calico-gray-600 hover:bg-red-600 text-calico-white border-calico-stripe-light/20' 
+              : 'bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 hover:from-calico-orange-700 hover:to-calico-orange-600 text-calico-white border-calico-stripe-light/20'
           }`}
         >
           {isFollowing ? 'Siguiendo' : 'Seguir'}
@@ -237,7 +243,7 @@ const joinDate = new Date(profile.created_at).toLocaleDateString('es-ES', {
     const notification = document.createElement('div');
     notification.textContent = message;
     notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300 ${
-      type === 'error' ? 'bg-red-600' : 'bg-green-600'
+      type === 'error' ? 'bg-red-600' : 'bg-calico-orange-600'
     } text-calico-white`;
     document.body.appendChild(notification);
     

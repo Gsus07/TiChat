@@ -58,7 +58,7 @@ try {
       <div class="max-w-4xl mx-auto">
         <!-- Header del perfil -->
         <div class="glass-calico rounded-xl p-6 mb-8">
-        <div class="bg-gradient-to-r from-calico-orange/20 to-calico-brown/20 p-8 border-b border-calico-stripe-light/20">
+        <div class="bg-gradient-to-r from-calico-orange/20 to-calico-brown/20 dark:from-calico-gray-900/30 dark:to-calico-gray-800/30 p-8 border-b border-calico-stripe-light/20">
           <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
             <!-- Avatar -->
             <div class="relative">
@@ -118,15 +118,15 @@ try {
                   </div>
                 ))
               ) : (
-                <div class="flex items-center space-x-4 p-4 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
-                  <div class="w-10 h-10 bg-calico-orange/20 rounded-lg flex items-center justify-center">
+                <div class="flex items-center space-x-4 p-4 bg-calico-orange/5 dark:bg-calico-gray-900/25 rounded-xl border border-calico-orange/20 dark:border-calico-stripe-medium/30">
+                  <div class="w-10 h-10 bg-calico-orange/20 dark:bg-calico-gray-800/40 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
                     </svg>
                   </div>
                   <div class="flex-1">
-                    <p class="text-calico-gray-900 font-medium">No hay actividad reciente</p>
-                    <p class="text-calico-gray-600 text-sm">Comienza a publicar en tus juegos favoritos</p>
+                    <p class="text-calico-gray-900 dark:text-calico-white font-medium">No hay actividad reciente</p>
+                    <p class="text-calico-gray-600 dark:text-calico-gray-300 text-sm">Comienza a publicar en tus juegos favoritos</p>
                   </div>
                 </div>
               )}
@@ -140,21 +140,21 @@ try {
           <div class="glass-calico backdrop-blur-xl rounded-2xl border border-calico-stripe-light/20 p-6">
             <h3 class="text-xl font-bold text-calico-white mb-4">Acciones Rápidas</h3>
             <div class="space-y-3">
-              <button class="w-full bg-gradient-to-r from-calico-orange/20 to-calico-brown/20 hover:from-calico-orange/30 hover:to-calico-brown/30 text-calico-orange border border-calico-orange/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
+              <button class="w-full bg-gradient-to-r from-calico-orange/20 to-calico-brown/20 dark:from-calico-gray-900/30 dark:to-calico-gray-800/30 hover:from-calico-orange/30 hover:to-calico-brown/30 dark:hover:from-calico-gray-800/40 dark:hover:to-calico-gray-700/40 text-calico-orange dark:text-calico-white border border-calico-orange/30 dark:border-calico-stripe-medium/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
                 </svg>
                 Conectar a Minecraft
               </button>
               
-              <button class="w-full bg-gradient-to-r from-calico-gray/20 to-calico-orange/20 hover:from-calico-gray/30 hover:to-calico-orange/30 text-calico-gray-200 border border-calico-gray/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
+              <button class="w-full bg-gradient-to-r from-calico-gray/20 to-calico-orange/20 dark:from-calico-gray-900/30 dark:to-calico-gray-800/30 hover:from-calico-gray/30 hover:to-calico-orange/30 dark:hover:from-calico-gray-800/40 dark:hover:to-calico-gray-700/40 text-calico-gray-200 dark:text-calico-white border border-calico-gray/30 dark:border-calico-stripe-medium/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
                 Buscar Partida
               </button>
               
-              <button class="w-full bg-gradient-to-r from-calico-brown/20 to-calico-orange/20 hover:from-calico-brown/30 hover:to-calico-orange/30 text-calico-brown border border-calico-brown/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
+              <button class="w-full bg-gradient-to-r from-calico-brown/20 to-calico-orange/20 dark:from-calico-gray-900/30 dark:to-calico-gray-800/30 hover:from-calico-brown/30 hover:to-calico-orange/30 dark:hover:from-calico-gray-800/40 dark:hover:to-calico-gray-700/40 text-calico-brown dark:text-calico-white border border-calico-brown/30 dark:border-calico-stripe-medium/30 px-4 py-3 rounded-xl transition-all duration-300 text-left flex items-center">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -170,24 +170,24 @@ try {
             <div id="favoriteGamesContainer" class="space-y-3">
               {favoriteGames.length > 0 ? (
                 favoriteGames.map((game) => (
-                  <div class="flex items-center space-x-3 p-3 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
+                  <div class="flex items-center space-x-3 p-3 bg-calico-orange/5 dark:bg-calico-gray-900/25 rounded-xl border border-calico-orange/20 dark:border-calico-stripe-medium/30">
                     <img src={game.cover_image_url || '/default-game-icon.png'} alt={game.name} class="w-10 h-10 rounded-lg object-cover">
                     <div>
-                      <p class="text-calico-gray-900 font-medium">{game.name}</p>
-                      <p class="text-calico-gray-600 text-sm">{game.post_count} post{game.post_count !== 1 ? 's' : ''}</p>
+                      <p class="text-calico-gray-900 dark:text-calico-white font-medium">{game.name}</p>
+                      <p class="text-calico-gray-600 dark:text-calico-gray-300 text-sm">{game.post_count} post{game.post_count !== 1 ? 's' : ''}</p>
                     </div>
                   </div>
                 ))
               ) : (
-                <div class="flex items-center space-x-3 p-3 bg-calico-orange/5 rounded-xl border border-calico-orange/20">
-                  <div class="w-10 h-10 bg-calico-orange/20 rounded-lg flex items-center justify-center">
+                <div class="flex items-center space-x-3 p-3 bg-calico-orange/5 dark:bg-calico-gray-900/25 rounded-xl border border-calico-orange/20 dark:border-calico-stripe-medium/30">
+                  <div class="w-10 h-10 bg-calico-orange/20 dark:bg-calico-gray-800/40 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-calico-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                   </div>
                   <div>
-                    <p class="text-calico-gray-900 font-medium">No hay juegos favoritos</p>
-                    <p class="text-calico-gray-600 text-sm">Haz posts en tus juegos favoritos</p>
+                    <p class="text-calico-gray-900 dark:text-calico-white font-medium">No hay juegos favoritos</p>
+                    <p class="text-calico-gray-600 dark:text-calico-gray-300 text-sm">Haz posts en tus juegos favoritos</p>
                   </div>
                 </div>
               )}

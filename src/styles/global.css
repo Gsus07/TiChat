@@ -345,15 +345,15 @@ body::before {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Glassmorphism effects con tema calico claro */
-.glass {
+/* Glassmorphism effects calico: aplicar solo en modo claro para evitar fugas en dark */
+:root:not(.dark) .glass {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(224, 224, 224, 0.3);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.glass-calico {
+:root:not(.dark) .glass-calico {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.9) 0%, 
     rgba(250, 247, 244, 0.85) 60%, 
@@ -363,6 +363,15 @@ body::before {
   border: 1px solid rgba(224, 224, 224, 0.4);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
   z-index: 1;
+}
+
+/* Reafirmar estilos en modo oscuro usando variables del sistema de temas */
+.dark .glass,
+.dark .glass-calico {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 /* Efectos de brillo suaves con colores calico */
