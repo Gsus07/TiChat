@@ -151,19 +151,23 @@ const PostsList: React.FC<PostsListProps> = ({
   // Scroll automático al post específico si está en la URL
   useEffect(() => {
     const scrollToPost = () => {
-      const hash = window.location.hash;
-      if (hash.startsWith('#post-') && posts.length > 0) {
-        const postId = hash.replace('#post-', '');
+      const getTargetPostId = (): string | null => {
+        const hash = window.location.hash;
+        if (hash.startsWith('#post-')) {
+          return hash.replace('#post-', '');
+        }
+        const params = new URLSearchParams(window.location.search);
+        const queryId = params.get('post');
+        return queryId || null;
+      };
+
+      const postId = getTargetPostId();
+      if (postId && posts.length > 0) {
         const postElement = document.getElementById(`post-${postId}`);
-        
         if (postElement) {
           // Esperar un poco para que el DOM se renderice completamente
           setTimeout(() => {
-            postElement.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center'
-            });
-            
+            postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
             // Agregar un efecto visual temporal para destacar el post
             postElement.style.boxShadow = '0 0 20px rgba(255, 165, 0, 0.5)';
             setTimeout(() => {
@@ -179,11 +183,13 @@ const PostsList: React.FC<PostsListProps> = ({
       scrollToPost();
     }
 
-    // También escuchar cambios en el hash
+    // También escuchar cambios en el hash y navegación del historial
     window.addEventListener('hashchange', scrollToPost);
+    window.addEventListener('popstate', scrollToPost);
     
     return () => {
       window.removeEventListener('hashchange', scrollToPost);
+      window.removeEventListener('popstate', scrollToPost);
     };
   }, [posts]);
 

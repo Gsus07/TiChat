@@ -140,6 +140,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
       <!-- Action buttons -->
       <div class="flex items-center justify-between pt-4 border-t border-gray-200">
         <button 
+          type="button"
           data-action="copy-ip"
           data-ip={`${server.ip_address}:${server.port}`}
           class="group/copy flex items-center text-calico-orange-600 hover:text-calico-orange-700 transition-all duration-300 hover:bg-calico-orange-50 px-3 py-2 rounded-lg z-10 relative border border-calico-orange-200 hover:border-calico-orange-300"
@@ -162,6 +163,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
         {isOwner && (
           <div class="flex space-x-2">
             <button 
+              type="button"
               data-action="edit-server"
               data-server-id={server.id}
               class="text-blue-600 hover:text-blue-700 transition-colors duration-300 hover:bg-blue-50 p-2 rounded-lg z-10 relative border border-blue-200 hover:border-blue-300"
@@ -172,6 +174,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
               </svg>
             </button>
             <button 
+              type="button"
               data-action="delete-server"
               data-server-id={server.id}
               class="text-red-600 hover:text-red-700 transition-colors duration-300 hover:bg-red-50 p-2 rounded-lg z-10 relative border border-red-200 hover:border-red-300"
@@ -233,16 +236,72 @@ const ping = Math.floor(Math.random() * 50) + 10;
   async function deleteServer(serverId: string) {
     if (confirm('¿Estás seguro de que quieres eliminar este servidor? Esta acción no se puede deshacer.')) {
       try {
-        // Obtener token de autenticación
-        const { createClient } = await import('@supabase/supabase-js');
-        const supabase = createClient(
-          import.meta.env.PUBLIC_SUPABASE_URL,
-          import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-        );
-        
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
+        // Obtener token de autenticación de manera robusta
+        let accessToken: string | null = null;
+        let refreshToken: string | null = null;
+        let rememberMe = false;
+        let storedSession: any = null;
+
+        // 1) Intentar obtener sesión del almacenamiento local (sistema de auth del proyecto)
+        try {
+          const rawSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+          if (rawSession) {
+            storedSession = JSON.parse(rawSession);
+            accessToken = storedSession?.access_token || null;
+            refreshToken = storedSession?.refresh_token || null;
+            rememberMe = !!storedSession?.rememberMe;
+          }
+        } catch (_) {}
+
+        // 2) Si no tenemos accessToken pero sí refreshToken, refrescar sesión
+        if (!accessToken && refreshToken) {
+          try {
+            // Importar supabase dinámicamente dentro de la función para evitar el error de scope
+            const { supabase } = await import('../utils/supabaseClient');
+            const { data, error } = await (supabase as any).auth.refreshSession({
+              refresh_token: refreshToken
+            });
+            if (!error && data?.session?.access_token) {
+              accessToken = data.session.access_token;
+              // Guardar nueva sesión usando util del proyecto
+              try {
+                const { saveUserSession } = await import('../utils/auth');
+                const updated = {
+                  ...storedSession,
+                  access_token: data.session.access_token,
+                  refresh_token: data.session.refresh_token,
+                  loginTime: new Date().toISOString(),
+                  rememberMe
+                };
+                saveUserSession(updated, rememberMe);
+              } catch (_) {}
+            }
+          } catch (_) {}
+        }
+
+        // 3) Configurar sesión en supabase si tenemos tokens almacenados pero no sesión activa
+        if (!accessToken && storedSession?.access_token && storedSession?.refresh_token) {
+          try {
+            const { supabase } = await import('../utils/supabaseClient');
+            await (supabase as any).auth.setSession({
+              access_token: storedSession.access_token,
+              refresh_token: storedSession.refresh_token
+            });
+            const { data: { session } } = await (await import('../utils/supabaseClient')).supabase.auth.getSession();
+            accessToken = session?.access_token || storedSession.access_token || null;
+          } catch (_) {}
+        }
+
+        // 4) Último intento: obtener sesión actual de Supabase
+        if (!accessToken) {
+          try {
+            const { supabase } = await import('../utils/supabaseClient');
+            const { data: { session } } = await (supabase as any).auth.getSession();
+            accessToken = session?.access_token || null;
+          } catch (_) {}
+        }
+
+        if (!accessToken) {
           alert('Debes iniciar sesión para eliminar servidores');
           return;
         }
@@ -251,7 +310,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
         const response = await fetch(`/api/servers/${serverId}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${session.access_token}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           }
         });
@@ -326,6 +385,8 @@ const ping = Math.floor(Math.random() * 50) + 10;
       
       // Manejar navegación de la tarjeta solo si no se hace clic en un botón
       card.addEventListener('click', (e) => {
+        // Prevenir la navegación por defecto del enlace
+        e.preventDefault();
         const target = e.target as HTMLElement;
         const isButton = target.closest('button[data-action]');
         

@@ -28,7 +28,7 @@ const getPostOriginalUrl = (post: any) => {
   const base = serverName
     ? `/${slugify(gameName)}/${slugify(serverName)}`
     : `/${slugify(gameName)}`;
-  return `${base}?post=${post.id}`;
+  return `${base}#post-${post.id}`;
 };
 
 try {

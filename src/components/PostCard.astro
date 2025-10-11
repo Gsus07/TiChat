@@ -53,7 +53,7 @@ const timeAgo = formatDate(post.created_at);
 const authorInitial = post.profiles.username.charAt(0).toUpperCase();
 ---
 
-<div class="glass-calico backdrop-blur-md rounded-xl p-6 shadow-lg post-card" data-post-id={post.id}>
+<div id={`post-${post.id}`} class="glass-calico backdrop-blur-md rounded-xl p-6 shadow-lg post-card" data-post-id={post.id}>
   <!-- Header del post -->
   <div class="flex items-center mb-4">
     {post.profiles.avatar_url ? (
