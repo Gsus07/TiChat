@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { uploadGameImage, deleteGameImage, type ImageUploadResult } from '../utils/imageUpload';
+import { updateGameImage, type ImageUploadResult } from '../utils/imageUpload';
 import { supabase } from '../utils/supabaseClient';
 import { getUserSession } from '../utils/auth';
 
@@ -202,27 +202,20 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
 
       let imageUrl = game.cover_image_url; // Mantener imagen actual por defecto
 
-      // Si se seleccionó una nueva imagen, subirla
+      // Si se seleccionó una nueva imagen, subirla y eliminar la anterior
       if (imageUpload.file) {
         setImageUpload(prev => ({ ...prev, uploading: true }));
         
         try {
-          const uploadResult: ImageUploadResult = await uploadGameImage(imageUpload.file, game.id);
+          const uploadResult: ImageUploadResult = await updateGameImage(
+            imageUpload.file,
+            game.id,
+            game.cover_image_url
+          );
           if (uploadResult.success && uploadResult.url) {
             imageUrl = uploadResult.url;
           } else {
             throw new Error(uploadResult.error || 'Error al subir la imagen');
-          }
-          
-          // Si había una imagen anterior y era del bucket, eliminarla
-          if (game.cover_image_url && game.cover_image_url.includes('supabase')) {
-            try {
-              const urlParts = game.cover_image_url.split('/');
-              const oldFileName = urlParts[urlParts.length - 1];
-              await deleteGameImage(oldFileName);
-            } catch (deleteError) {
-              // Error eliminando imagen anterior - no crítico
-            }
           }
         } catch (uploadError) {
           setErrors({ image: 'Error al subir la imagen. Inténtalo de nuevo.' });
