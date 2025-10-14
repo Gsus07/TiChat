@@ -82,10 +82,10 @@ export const PUT: APIRoute = async ({ params, request }) => {
       );
     }
 
-    // Verificar que el servidor existe y que el usuario es el propietario
+    // Verificar que el servidor existe (ya no restringimos por propietario; cualquier usuario logeado puede editar)
     const { data: existingServer, error: fetchError } = await supabase
       .from('game_servers')
-      .select('owner_id, is_active')
+      .select('id, is_active')
       .eq('id', id)
       .single();
 
@@ -93,13 +93,6 @@ export const PUT: APIRoute = async ({ params, request }) => {
       return new Response(
         JSON.stringify({ error: 'Servidor no encontrado' }),
         { status: 404, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (existingServer.owner_id !== user.id) {
-      return new Response(
-        JSON.stringify({ error: 'No tienes permisos para editar este servidor' }),
-        { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -209,10 +202,10 @@ export const DELETE: APIRoute = async ({ params, request }) => {
       );
     }
 
-    // Verificar que el servidor existe y que el usuario es el propietario
+    // Verificar que el servidor existe (cualquier usuario logeado puede eliminar según tu política)
     const { data: existingServer, error: fetchError } = await supabase
       .from('game_servers')
-      .select('owner_id, is_active')
+      .select('id, is_active')
       .eq('id', id)
       .single();
 
@@ -220,13 +213,6 @@ export const DELETE: APIRoute = async ({ params, request }) => {
       return new Response(
         JSON.stringify({ error: 'Servidor no encontrado' }),
         { status: 404, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (existingServer.owner_id !== user.id) {
-      return new Response(
-        JSON.stringify({ error: 'No tienes permisos para eliminar este servidor' }),
-        { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 

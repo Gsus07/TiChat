@@ -265,16 +265,16 @@ const EditGameForm: React.FC<EditGameFormProps> = ({ game, isOpen, onClose, onSu
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-calico-stripe-dark bg-white  rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-primary text-primary border border-primary">
         <div className="p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-calico-white">
+            <h2 className="text-2xl sm:text-3xl font-bold text-primary">
               Editar Juego
             </h2>
             <button
               onClick={onClose}
-              className="text-calico-gray-400 hover:text-calico-white transition-colors"
+              className="text-secondary hover:text-primary transition-colors"
               disabled={isSubmitting}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -189,8 +189,27 @@ export default function EditServerForm({ server, onServerUpdated, onCancel }: Ed
         return;
       }
 
-      // Obtener token de autenticación
-      const { data: { session } } = await supabase.auth.getSession();
+      // Obtener token de autenticación con fallback desde almacenamiento propio
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        try {
+          const raw = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+          if (raw) {
+            const stored = JSON.parse(raw);
+            if (stored?.access_token) {
+              // Intenta configurar la sesión de Supabase con los tokens guardados
+              await supabase.auth.setSession({
+                access_token: stored.access_token,
+                refresh_token: stored.refresh_token || ''
+              });
+              // Reintentar obtener la sesión ya configurada
+              const retry = await supabase.auth.getSession();
+              session = retry.data.session;
+            }
+          }
+        } catch (_) {}
+      }
+
       if (!session?.access_token) {
         setErrors({ general: 'Sesión expirada. Por favor, inicia sesión nuevamente.' });
         return;

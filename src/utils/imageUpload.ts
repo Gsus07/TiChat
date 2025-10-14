@@ -52,7 +52,8 @@ export async function uploadGameImage(file: File, gameId?: string): Promise<Imag
       .from('gamesimg')
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
+        contentType: file.type || 'image/jpeg'
       });
 
     if (error) {

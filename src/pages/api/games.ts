@@ -361,12 +361,10 @@ export const DELETE: APIRoute = async ({ request }) => {
       );
     }
 
-    // Eliminar imagen del bucket si existe
+    // Eliminar imagen del bucket si existe (usar URL completa para resolver el path)
     if (existingGame.cover_image_url && existingGame.cover_image_url.includes('supabase')) {
       try {
-        const urlParts = existingGame.cover_image_url.split('/');
-        const fileName = urlParts[urlParts.length - 1];
-        await deleteGameImage(fileName);
+        await deleteGameImage(existingGame.cover_image_url);
       } catch (imageError) {
         // Continuar con la eliminación del juego aunque falle la eliminación de la imagen
       }
