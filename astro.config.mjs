@@ -7,7 +7,6 @@ import node from '@astrojs/node';
 
 import tailwindcss from '@tailwindcss/vite';
 
-import vercel from '@astrojs/vercel';
 
 // Cargar variables de entorno desde .env
 config();

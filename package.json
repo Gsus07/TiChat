@@ -9,22 +9,21 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@astrojs/node": "^9.4.4",
-    "@astrojs/react": "^4.3.1",
-    "@astrojs/vercel": "^8.2.8",
-    "@supabase/supabase-js": "^2.56.0",
-    "@tailwindcss/vite": "^4.1.12",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "astro": "^5.13.10",
-    "browser-image-compression": "^2.0.2",
-    "dotenv": "^17.2.1",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "typescript": "^5.9.2"
+    "@astrojs/check": "0.9.4",
+    "@astrojs/node": "9.4.4",
+    "@astrojs/react": "4.3.1",
+    "@supabase/supabase-js": "2.56.0",
+    "@tailwindcss/vite": "4.1.12",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "astro": "5.13.10",
+    "browser-image-compression": "2.0.2",
+    "dotenv": "17.2.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "typescript": "5.9.2"
   },
   "devDependencies": {
-    "tailwindcss": "^4.1.12"
+    "tailwindcss": "4.1.12"
   }
 }
