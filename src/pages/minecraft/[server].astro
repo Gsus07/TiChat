@@ -95,61 +95,99 @@ try {
     </div>
 
     <div class="relative z-10 container mx-auto px-4 py-8">
-      <!-- Header del servidor -->
-      <div class="glass-calico rounded-2xl p-8 border border-calico-stripe-light/30 mb-8">
-        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-6">
-          <div class="relative">
-            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 rounded-2xl blur opacity-75"></div>
-            <img src={serverData.image} alt={serverData.name} class="relative w-24 h-24 rounded-2xl object-cover border-2 border-calico-stripe-light/20">
+      <!-- Header del servidor (mejorado estéticamente) -->
+      <div class="glass-calico rounded-2xl p-6 md:p-8 border border-calico-stripe-light/30 mb-8 overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full blur-2xl"></div>
+        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-6 relative">
+          <!-- Imagen del servidor -->
+          <div class="relative shrink-0">
+            <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-green-400/20 to-emerald-400/20 blur-sm"></div>
+            <img src={serverData.image} alt={serverData.name} class="relative w-28 h-28 md:w-32 md:h-32 rounded-2xl object-cover ring-4 ring-green-400/20 shadow-xl">
           </div>
           
+          <!-- Texto y métricas -->
           <div class="flex-1">
-            <h1 class="text-4xl font-bold text-calico-white mb-2">{serverData.name}</h1>
-            <p class="text-calico-gray-300 text-lg mb-4">{serverData.description}</p>
+            <div class="flex flex-wrap items-center gap-3 mb-2">
+              <h1 class="text-3xl md:text-4xl font-extrabold text-calico-white tracking-tight">{serverData.name}</h1>
+              <span class="px-3 py-1 rounded-full text-xs md:text-sm font-semibold bg-white/10 text-green-300 border border-green-400/20">
+                {serverData.status}
+              </span>
+            </div>
+            <p class="text-calico-gray-300 text-base md:text-lg mb-5 max-w-3xl">{serverData.description}</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="glass-calico rounded-lg p-4 border border-calico-stripe-light/20">
-                <div class="text-sm text-calico-gray-400 mb-1">Jugadores</div>
-                <div class="text-xl font-bold text-green-400">{serverData.players}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="glass-calico rounded-xl p-4 border border-calico-stripe-light/20">
+                <div class="flex items-center gap-3">
+                  <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-3-3h-2m-4 5h5v-2a3 3 0 00-3-3h-2m-4 5h5v-2a3 3 0 00-3-3H8m-4 5h5v-2a3 3 0 00-3-3H4"></path></svg>
+                  <div>
+                    <div class="text-xs text-calico-gray-400">Jugadores</div>
+                    <div class="text-lg md:text-xl font-bold text-green-400">{serverData.players}</div>
+                  </div>
+                </div>
               </div>
-              <div class="glass-calico rounded-lg p-4 border border-calico-stripe-light/20">
-                <div class="text-sm text-calico-gray-400 mb-1">Estado</div>
-                <div class="text-xl font-bold text-green-400">{serverData.status}</div>
+              <div class="glass-calico rounded-xl p-4 border border-calico-stripe-light/20">
+                <div class="flex items-center gap-3">
+                  <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22A10 10 0 102 12a10 10 0 0010 10z"></path></svg>
+                  <div>
+                    <div class="text-xs text-calico-gray-400">Estado</div>
+                    <div class="text-lg md:text-xl font-bold text-green-400">{serverData.status}</div>
+                  </div>
+                </div>
               </div>
-              <div class="glass-calico rounded-lg p-4 border border-calico-stripe-light/20">
-                <div class="text-sm text-calico-gray-400 mb-1">Versión</div>
-                <div class="text-xl font-bold text-calico-white">{serverData.version}</div>
+              <div class="glass-calico rounded-xl p-4 border border-calico-stripe-light/20">
+                <div class="flex items-center gap-3">
+                  <svg class="w-5 h-5 text-calico-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m0 4v12m4-12v12m4-12v12"></path></svg>
+                  <div>
+                    <div class="text-xs text-calico-gray-400">Versión</div>
+                    <div class="text-lg md:text-xl font-bold text-calico-white">{serverData.version}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           
-          <div class="glass-calico rounded-lg p-4 border border-calico-stripe-light/20">
+          <!-- IP del servidor -->
+          <div class="glass-calico rounded-xl p-5 border border-calico-stripe-light/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 w-full lg:w-auto">
             <div class="text-sm text-calico-gray-400 mb-2">Dirección del servidor</div>
-            <div class="text-green-400 font-mono text-lg">{serverData.ip}:{serverData.port}</div>
-            <button class="mt-3 bg-calico-green-600 hover:bg-calico-green-700 text-calico-white px-4 py-2 rounded-lg transition-colors w-full">
+            <div class="text-green-400 font-mono text-lg break-all">{serverData.ip}:{serverData.port}</div>
+            <button class="mt-3 inline-flex items-center justify-center gap-2 bg-calico-green-600 hover:bg-calico-green-700 text-calico-white px-4 py-2 rounded-lg transition-colors w-full">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8M8 12h8M8 8h8"></path></svg>
               Copiar IP
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Formulario para nueva publicación -->
-      <PostForm 
-        client:load
-        serverId={serverData.id}
-        gameId={serverData.game_id}
-        serverName={serverData.name}
-        placeholder={`¿Qué está pasando en ${serverData.name}?`}
-      />
+      <!-- Sección de posts del servidor (alineada con muros de juegos) -->
+      <section class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+          <!-- Formulario para crear post -->
+          <div class="mb-12">
+            <div class="glass-calico-dark rounded-2xl p-8">
+              <h2 class="text-2xl font-bold text-calico-white mb-6 font-game">
+                Comparte tu experiencia en {serverData.name}
+              </h2>
+              <PostForm 
+                client:load
+                serverId={serverData.id}
+                gameId={serverData.game_id}
+                serverName={serverData.name}
+                placeholder={`¿Qué está pasando en ${serverData.name}?`}
+                showNameField={false}
+              />
+            </div>
+          </div>
 
-      <!-- Muro de publicaciones -->
-      <PostsList 
-        client:load
-        initialPosts={posts}
-        serverId={serverData.id}
-        currentUserId={currentUserId}
-        emptyMessage={`No hay publicaciones en ${serverData.name} aún.`}
-      />
+          <!-- Lista de posts -->
+          <PostsList 
+            client:load
+            initialPosts={posts}
+            serverId={serverData.id}
+            currentUserId={currentUserId}
+            emptyMessage={`No hay publicaciones en ${serverData.name} aún. Comparte tu experiencia y sé el primero.`}
+          />
+        </div>
+      </section>
     </div>
   </main>
 
