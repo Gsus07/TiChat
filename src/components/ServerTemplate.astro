@@ -29,7 +29,7 @@ if (postsError) {
 const serverPosts = posts || [];
 
 // Configurar imágenes desde el tema (servidor + juego)
-const heroImage = themeConfig.images?.hero || game.cover_image_url || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop';
+const heroImage = server.server_cover_image || themeConfig.images?.hero || game.cover_image_url || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop';
 const serverIcon = themeConfig.images?.icon || `/icons/${server.server_type}.svg`;
 
 // Función para obtener el color del tipo de servidor

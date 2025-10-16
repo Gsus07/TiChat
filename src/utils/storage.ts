@@ -15,24 +15,31 @@ export interface UploadResult {
  * Configura la sesión de Supabase con el token guardado localmente
  */
 async function setSupabaseSession(): Promise<boolean> {
-  const session = getUserSession();
-  
-  if (!session || !session.access_token) {
-    return false;
-  }
-
   try {
-    // Configurar la sesión en Supabase
+    // 1) Si ya hay una sesión activa en Supabase, úsala
+    const current = await supabase.auth.getSession();
+    const currentSession = current.data.session;
+    if (currentSession?.access_token) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) return true;
+    }
+
+    // 2) Fallback: configurar sesión desde nuestro storage local
+    const stored = getUserSession();
+    if (!stored || !stored.access_token) {
+      return false;
+    }
+
     const { data, error } = await supabase.auth.setSession({
-      access_token: session.access_token,
-      refresh_token: session.refresh_token || ''
+      access_token: stored.access_token,
+      refresh_token: stored.refresh_token || ''
     });
-    
+
     if (error) {
       return false;
     }
-    
-    return !error && !!data.user;
+
+    return !!data.user;
   } catch (error) {
     return false;
   }

@@ -57,6 +57,7 @@ export interface GameServer {
   created_at: string;
   updated_at: string;
   theme_config?: ThemeConfig;
+  server_cover_image?: string | null;
 }
 
 export interface ServerStats {

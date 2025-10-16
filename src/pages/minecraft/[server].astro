@@ -67,7 +67,7 @@ try {
     version: dbServer.server_version || 'No especificada',
     players: `${dbServer.server_stats?.[0]?.online_players || 0}/${dbServer.max_players || 0}`,
     status: dbServer.is_active ? 'En línea' : 'Fuera de línea',
-    image: dbServer.image || '/minecraft.svg',
+    image: dbServer.server_cover_image || dbServer.image || '/minecraft.svg',
     id: dbServer.id,
     game_id: dbServer.game_id,
     server_type: dbServer.server_type || 'survival'

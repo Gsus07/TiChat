@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import type { GameServer } from '../types/game';
+import { uploadFile } from '../utils/storage';
 
 interface EditServerFormProps {
   server: GameServer;
@@ -46,6 +47,8 @@ export default function EditServerForm({ server, onServerUpdated, onCancel }: Ed
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(server.server_cover_image || null);
 
   // Manejar tecla Escape para cerrar el modal
   useEffect(() => {
@@ -80,6 +83,17 @@ export default function EditServerForm({ server, onServerUpdated, onCancel }: Ed
     // Limpiar error del campo cuando el usuario empiece a escribir
     if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    } else {
+      setImagePreview(null);
     }
   };
 
@@ -243,16 +257,46 @@ export default function EditServerForm({ server, onServerUpdated, onCancel }: Ed
         return;
       }
 
+      let updatedServer = result.data;
+      let hadUploadError = false;
+
+      // Si se seleccionó una imagen nueva, subir al bucket 'serverimg' y actualizar server_cover_image
+      if (imageFile && result.data?.id) {
+        const uploadResult = await uploadFile(imageFile, 'serverimg', result.data.id);
+        if (uploadResult.error) {
+          hadUploadError = true;
+          setErrors({ general: uploadResult.error });
+        } else if (uploadResult.data?.publicUrl) {
+          const updateResponse = await fetch(`/api/servers/${result.data.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ server_cover_image: uploadResult.data.publicUrl })
+          });
+          const updateResult = await updateResponse.json();
+          if (updateResponse.ok && updateResult.data) {
+            updatedServer = updateResult.data;
+          } else {
+            hadUploadError = true;
+            setErrors({ general: updateResult.error || 'Error al actualizar la imagen del servidor' });
+          }
+        }
+      }
+
       // Notificar éxito
-      if (onServerUpdated && result.data) {
-        onServerUpdated(result.data);
+      if (onServerUpdated && updatedServer) {
+        onServerUpdated(updatedServer);
       }
 
       // Enviar mensaje al componente padre
-      window.parent.postMessage({ type: 'SERVER_UPDATED', data: result.data }, '*');
+      window.parent.postMessage({ type: 'SERVER_UPDATED', data: updatedServer }, '*');
 
-      // Cerrar modal
-      handleCancel();
+      // Cerrar modal solo si no hubo errores de subida/actualización de imagen
+      if (!hadUploadError) {
+        handleCancel();
+      }
 
     } catch (error) {
       setErrors({ 
@@ -401,6 +445,32 @@ export default function EditServerForm({ server, onServerUpdated, onCancel }: Ed
                 <p className="mt-2 text-sm text-red-400">{errors.max_players}</p>
               )}
             </div>
+          </div>
+
+          {/* Imagen de portada del servidor (opcional) */}
+          <div>
+            <label htmlFor="server_cover_image" className="block text-sm font-medium text-calico-white mb-2">
+              Imagen de portada (opcional)
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="file"
+                id="server_cover_image"
+                name="server_cover_image"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="flex-1 px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent"
+                disabled={isSubmitting}
+              />
+              {(imagePreview || server.server_cover_image) && (
+                <img
+                  src={imagePreview || server.server_cover_image || ''}
+                  alt="Previsualización"
+                  className="w-20 h-20 rounded-lg object-cover border border-calico-stripe-light/30"
+                />
+              )}
+            </div>
+            <p className="mt-2 text-xs text-calico-gray-300">Formatos permitidos: JPG, PNG, GIF. Máx 5MB.</p>
           </div>
 
           {/* Tipo de servidor */}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import type { GameServer } from '../types/game';
+import { uploadFile } from '../utils/storage';
 
 interface CreateServerFormProps {
   gameId: string;
@@ -16,6 +17,7 @@ interface ServerFormData {
   server_version: string;
   max_players: string;
   server_type: 'survival' | 'creative' | 'pvp' | 'roleplay' | 'minigames' | 'custom';
+  server_cover_image?: string;
 }
 
 interface FormErrors {
@@ -42,6 +44,8 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Manejar tecla Escape para cerrar el modal
   useEffect(() => {
@@ -126,6 +130,17 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -206,13 +221,33 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
         return;
       }
 
+      // Si se seleccionó una imagen, subir al bucket 'serverimg' y actualizar el servidor
+      let updatedServer = result.data;
+      if (imageFile && result.data?.id) {
+        const uploadResult = await uploadFile(imageFile, 'serverimg', result.data.id);
+        if (!uploadResult.error && uploadResult.data?.publicUrl) {
+          const updateResponse = await fetch(`/api/servers/${result.data.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ server_cover_image: uploadResult.data.publicUrl })
+          });
+          const updateResult = await updateResponse.json();
+          if (updateResponse.ok && updateResult.data) {
+            updatedServer = updateResult.data;
+          }
+        }
+      }
+
       // Notificar éxito
-      if (onServerCreated && result.data) {
-        onServerCreated(result.data);
+      if (onServerCreated && updatedServer) {
+        onServerCreated(updatedServer);
       }
 
       // Enviar mensaje al componente padre
-      window.parent.postMessage({ type: 'SERVER_CREATED', data: result.data }, '*');
+      window.parent.postMessage({ type: 'SERVER_CREATED', data: updatedServer }, '*');
 
       // Limpiar formulario
       setFormData({
@@ -224,6 +259,8 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
         max_players: '100',
         server_type: 'survival'
       });
+      setImageFile(null);
+      setImagePreview(null);
 
     } catch (error) {
       setErrors({ 
@@ -332,8 +369,8 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
             </div>
           </div>
 
-          {/* Versión y Máximo de jugadores */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Versión y Máximo de jugadores */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="server_version" className="block text-sm font-medium text-calico-white mb-2">
                 Versión *
@@ -351,7 +388,33 @@ export default function CreateServerForm({ gameId, onServerCreated, onCancel }: 
               {errors.server_version && (
                 <p className="mt-2 text-sm text-red-400">{errors.server_version}</p>
               )}
-            </div>
+        </div>
+
+        {/* Imagen de portada del servidor (opcional) */}
+        <div>
+          <label htmlFor="server_cover_image" className="block text-sm font-medium text-calico-white mb-2">
+            Imagen de portada (opcional)
+          </label>
+          <div className="flex items-center gap-4">
+            <input
+              type="file"
+              id="server_cover_image"
+              name="server_cover_image"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="flex-1 px-4 py-3 bg-calico-stripe-dark/50 border border-calico-stripe-light/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent"
+              disabled={isSubmitting}
+            />
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                alt="Previsualización"
+                className="w-20 h-20 rounded-lg object-cover border border-calico-stripe-light/30"
+              />
+            )}
+          </div>
+          <p className="mt-2 text-xs text-calico-gray-300">Formatos permitidos: JPG, PNG, GIF. Máx 5MB.</p>
+        </div>
 
             <div>
               <label htmlFor="max_players" className="block text-sm font-medium text-calico-white mb-2">
