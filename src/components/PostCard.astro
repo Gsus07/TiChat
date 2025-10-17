@@ -53,7 +53,7 @@ const timeAgo = formatDate(post.created_at);
 const authorInitial = post.profiles.username.charAt(0).toUpperCase();
 ---
 
-<div id={`post-${post.id}`} class="glass-calico backdrop-blur-md rounded-xl p-6 shadow-lg post-card" data-post-id={post.id}>
+<div id={`post-${post.id}`} class="glass-calico rounded-2xl p-6 shadow-lg post-card transition-transform hover:translate-y-[2px] hover-glow-orange border border-calico-stripe-light/20" data-post-id={post.id}>
   <!-- Header del post -->
   <div class="flex items-center mb-4">
     {post.profiles.avatar_url ? (
@@ -69,7 +69,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
     )}
     <div class="ml-3 flex-1">
       <div class="flex items-center gap-2">
-        <h3 class="font-semibold text-calico-white">{post.profiles.full_name || post.profiles.username}</h3>
+        <h3 class="font-heading font-semibold text-calico-white">{post.profiles.full_name || post.profiles.username}</h3>
         {post.profiles.username !== (post.profiles.full_name || post.profiles.username) && (
           <span class="text-sm text-calico-gray-400">@{post.profiles.username}</span>
         )}
@@ -118,7 +118,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
           post.user_has_liked 
             ? 'text-calico-orange-400 hover:text-calico-orange-300' 
             : 'text-calico-gray-400 hover:text-calico-orange-400'
-        }`}
+        } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300`}
         data-post-id={post.id}
         data-liked={post.user_has_liked}
       >
@@ -138,7 +138,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
       <!-- Comentarios -->
       <button 
         onclick={`toggleComments('${post.id}')`}
-        class="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-gray-300 transition-colors group"
+        class="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-gray-300 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
       >
         <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
@@ -149,7 +149,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
       <!-- Compartir -->
       <button 
         onclick={`sharePost('${post.id}')`}
-        class="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-orange-400 transition-colors group"
+        class="flex items-center space-x-2 text-calico-gray-400 hover:text-calico-orange-400 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
       >
         <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
@@ -163,7 +163,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
       <div class="relative">
         <button 
           onclick={`togglePostOptions('${post.id}')`}
-          class="text-calico-gray-400 hover:text-calico-white transition-colors p-1 rounded-full hover:bg-white/10"
+          class="text-calico-gray-400 hover:text-calico-white transition-colors p-1 rounded-full hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
@@ -172,13 +172,13 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         <div id={`post-options-${post.id}`} class="hidden absolute right-0 top-8 glass-calico rounded-lg shadow-lg border border-calico-stripe-light/20 py-2 min-w-[120px] z-10">
           <button 
             onclick={`editPost('${post.id}')`}
-            class="w-full text-left px-4 py-2 text-sm text-calico-gray-300 hover:bg-white/10 hover:text-calico-white transition-colors"
+            class="w-full text-left px-4 py-2 text-sm text-calico-gray-300 hover:bg-white/10 hover:text-calico-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
           >
             Editar
           </button>
           <button 
             onclick={`deletePost('${post.id}')`}
-            class="w-full text-left px-4 py-2 text-sm text-calico-orange-400 hover:bg-calico-orange-500/10 hover:text-calico-orange-300 transition-colors"
+            class="w-full text-left px-4 py-2 text-sm text-calico-orange-400 hover:bg-calico-orange-500/10 hover:text-calico-orange-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
           >
             Eliminar
           </button>
@@ -197,13 +197,13 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         <input 
           type="text" 
           placeholder="Escribe un comentario..." 
-          class="flex-1 px-3 py-2 bg-white/5 border border-calico-stripe-light/20 rounded-full text-calico-white placeholder-calico-gray-500 text-sm focus:outline-none focus:border-calico-stripe-light/40 transition-colors"
+          class="flex-1 px-3 py-2 bg-white/5 border border-calico-stripe-light/20 rounded-full text-calico-white placeholder-calico-gray-500 text-sm focus:outline-none focus:border-calico-stripe-light/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
           id={`comment-input-${post.id}`}
           onkeypress={`handleCommentKeyPress(event, '${post.id}')`}
         />
         <button 
           onclick={`submitComment('${post.id}')`}
-          class="text-calico-orange-400 hover:text-calico-orange-300 transition-colors p-2 rounded-full hover:bg-calico-orange-500/10"
+          class="text-calico-orange-400 hover:text-calico-orange-300 transition-colors p-2 rounded-full hover:bg-calico-orange-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>

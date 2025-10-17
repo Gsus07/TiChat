@@ -61,7 +61,7 @@ if (joinedAt && !isNaN(joinedAt.getTime())) {
 }
 ---
 
-<div class="profile-card glass-calico backdrop-blur-xl rounded-2xl border border-calico-stripe-light/20 shadow-2xl overflow-hidden calico-fur-pattern">
+<div class="profile-card glass-calico backdrop-blur-xl rounded-2xl border border-calico-stripe-light/20 shadow-2xl overflow-hidden calico-fur-pattern transition-transform hover:translate-y-[2px] hover-glow-orange">
   <!-- Header del perfil (alineado con muros: glass + suave gradiente blanco) -->
   <div class="bg-gradient-to-r from-white/8 to-white/4 p-6 border-b border-calico-stripe-light/20">
     <div class="flex items-center space-x-4">
@@ -85,7 +85,7 @@ if (joinedAt && !isNaN(joinedAt.getTime())) {
       
       <!-- Información del usuario -->
       <div class="flex-1">
-        <h2 class="text-2xl font-bold text-calico-white mb-1">
+        <h2 class="text-2xl font-heading font-bold text-calico-white mb-1">
           {profile.full_name || profile.username}
         </h2>
         <p class="text-calico-gray-300 mb-2">@{profile.username}</p>
@@ -105,7 +105,7 @@ if (joinedAt && !isNaN(joinedAt.getTime())) {
             isFollowing 
               ? 'bg-calico-gray-600 hover:bg-red-600 text-calico-white border-calico-stripe-light/20' 
               : 'bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 hover:from-calico-orange-700 hover:to-calico-orange-600 text-calico-white border-calico-stripe-light/20'
-          }`}
+          } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300 hover-glow-orange`}
         >
           {isFollowing ? 'Siguiendo' : 'Seguir'}
         </button>

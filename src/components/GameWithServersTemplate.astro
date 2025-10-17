@@ -99,14 +99,14 @@ const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);
           <div class="flex items-center justify-between mb-8">
             <a 
               href="/" 
-              class="btn-secondary px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+              class="btn-secondary px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover-glow-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
             >
               ← Volver a Juegos
             </a>
           </div>
           
           <div class="flex items-center space-x-6 mb-8">
-            <div class="w-24 h-24 rounded-xl overflow-hidden border-4 border-accent shadow-2xl">
+            <div class="w-24 h-24 rounded-2xl overflow-hidden border-4 border-accent shadow-2xl transition-transform hover:translate-y-[2px] hover-glow-orange">
               <img 
                 src={gameIcon} 
                 alt={`${game.name} icon`}
@@ -120,7 +120,7 @@ const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);
               class="transition-colors duration-500 p-4 rounded-lg"
               style={`color: ${dynamicStyles.textColors.primary} !important; ${dynamicStyles.isHighContrast ? 'background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.75) 100%); text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.8); -webkit-text-stroke: 1px rgba(0, 0, 0, 0.8); backdrop-filter: blur(2px);' : dynamicStyles.isLightBackground ? 'text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8); -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3);' : 'text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.3);'}`}
             >
-              <h1 class="title-size font-bold font-game mb-2">{game.name}</h1>
+              <h1 class="title-size font-bold font-game font-heading mb-2">{game.name}</h1>
               <p class="body-size opacity-90 max-w-2xl" style={`color: ${dynamicStyles.textColors.secondary} !important; ${dynamicStyles.isHighContrast ? 'text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7); -webkit-text-stroke: 0.8px rgba(0, 0, 0, 0.7);' : dynamicStyles.isLightBackground ? '-webkit-text-stroke: 0.3px rgba(0, 0, 0, 0.2);' : '-webkit-text-stroke: 0.3px rgba(255, 255, 255, 0.2);'}`}>
                 {game.description || `Explora los diferentes servidores de ${game.name} y encuentra tu comunidad perfecta.`}
               </p>
@@ -201,7 +201,7 @@ const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);
                     id: server.id,
                     name: server.name,
                     description: server.description || '',
-                    image_url: server.server_cover_image || server.image || `/icons/${server.server_type}.svg`,
+                    image_url: server.server_cover_image || server.image || '/default-server.svg',
                     ip_address: server.server_ip || '',
                     port: server.server_port || 25565,
                     version: server.server_version || '',
@@ -258,7 +258,7 @@ const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);
                     id: server.id,
                     name: server.name,
                     description: server.description || '',
-                    image_url: server.server_cover_image || server.image || `/icons/${server.server_type}.svg`,
+                    image_url: server.server_cover_image || server.image || '/default-server.svg',
                     ip_address: server.server_ip || '',
                     port: server.server_port || 25565,
                     version: server.server_version || '',
@@ -278,16 +278,16 @@ const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);
               </div>
             ) : (
               <div class="text-center py-16">
-                <div class="glass-calico backdrop-blur-xl rounded-3xl p-12 max-w-lg mx-auto border border-calico-orange-500/20 relative overflow-hidden">
+                <div class="glass-calico backdrop-blur-xl rounded-3xl p-12 max-w-lg mx-auto border border-calico-orange-500/20 relative overflow-hidden shadow-xl transition-transform hover:translate-y-[2px] hover-glow-orange">
                   <!-- Background glow effect -->
                   <div class="absolute inset-0 bg-gradient-to-br from-calico-orange-500/5 to-yellow-500/5 rounded-3xl"></div>
-                  
                   <!-- Animated icon container -->
                   <div class="relative w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-calico-orange-500 to-yellow-500 flex items-center justify-center shadow-2xl shadow-calico-orange-500/25 animate-pulse">
-                    <svg class="w-12 h-12 text-calico-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
-                    </svg>
+                    <!-- icon -->
                   </div>
+                  <svg class="w-12 h-12 text-calico-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+                  </svg>
                   
                   <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-calico-white to-calico-gray-300 mb-4 font-game">
                     No hay servidores disponibles
@@ -310,7 +310,7 @@ const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);
           
           <!-- Botón para crear servidor personalizado -->
           <div id="create-server-btn-list" class="text-center" style="display: none;">
-            <button id="show-create-form" class="btn-accent px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105">
+            <button id="show-create-form" class="btn-accent px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300">
               + Crear Servidor Personalizado
             </button>
           </div>
@@ -717,7 +717,7 @@ const dynamicStyles = await getDynamicTextStyles(heroImage, game.name);
     });
     
     // Efecto hover mejorado para las tarjetas
-    document.querySelectorAll('.glass, .glass-dark').forEach((card) => {
+    document.querySelectorAll('.glass, .glass-dark, .glass-calico, .glass-calico-dark').forEach((card) => {
       card.addEventListener('mouseenter', () => {
         (card as HTMLElement).style.transform = 'translateY(-5px) scale(1.02)';
       });

@@ -40,7 +40,7 @@ const stats = await getServerStats(server.id);
 const ping = Math.floor(Math.random() * 50) + 10;
 ---
 
-<a href={`/${gameSlugFinal}/${createServerSlug(server.name)}`} class="server-card block group relative cursor-pointer" data-server-id={server.id} data-owner-id={server.created_by}>
+<a href={`/${gameSlugFinal}/${createServerSlug(server.name)}`} class="server-card block group relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300" data-server-id={server.id} data-owner-id={server.created_by}>
   <!-- Decorative cat paw prints around the card -->
   <div class="absolute -top-3 -left-3 w-5 h-5 text-calico-orange-400/30 opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse">
     <svg fill="currentColor" viewBox="0 0 24 24">
@@ -65,7 +65,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
   <div class="absolute -inset-1 bg-gradient-to-r from-calico-orange-600 to-calico-orange-500 rounded-2xl blur opacity-0 group-hover:opacity-75 transition duration-500"></div>
   
   <!-- Main card -->
-  <div class="relative bg-white/90 backdrop-blur-xl rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-calico-orange-500/25 border border-calico-gray-200 group-hover:border-calico-orange-500/50">
+  <div class="relative glass-calico rounded-2xl overflow-hidden shadow-xl transition-transform duration-500 hover:scale-[1.02] hover-glow-orange border border-calico-gray-200/50 group-hover:border-calico-orange-500/50">
     <!-- Status indicator -->
     <div class={`absolute top-4 left-4 z-10 flex items-center backdrop-blur-sm rounded-full px-3 py-1 border ${
       server.is_active 
@@ -93,7 +93,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
         alt={server.name}
         class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
         loading="lazy"
-        onerror="this.onerror=null; this.src='/icons/custom.svg'"
+        onerror="this.onerror=null; this.src='/default-server.svg'"
       />
       <!-- Gradient overlay -->
       <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent opacity-70 group-hover:opacity-50 transition-opacity duration-500"></div>
@@ -111,7 +111,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
     <div class="p-6 relative flex-grow flex flex-col justify-between bg-white/90">
       <div class="flex-grow">
         <!-- Server name with gradient -->
-        <h3 class="text-xl font-bold mb-3 text-gray-800 group-hover:text-calico-orange-600 transition-all duration-500 line-clamp-2">
+        <h3 class="text-xl font-heading font-bold mb-3 text-gray-800 group-hover:text-calico-orange-600 transition-all duration-500 line-clamp-2">
           {server.name}
         </h3>
         
@@ -149,7 +149,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
           type="button"
           data-action="copy-ip"
           data-ip={`${server.ip_address}:${server.port}`}
-          class="group/copy flex items-center text-calico-orange-600 hover:text-calico-orange-700 transition-all duration-300 hover:bg-calico-orange-50 px-3 py-2 rounded-lg z-10 relative border border-calico-orange-200 hover:border-calico-orange-300"
+          class="group/copy flex items-center text-calico-orange-600 hover:text-calico-orange-700 transition-all duration-300 hover:bg-calico-orange-50 px-3 py-2 rounded-lg z-10 relative border border-calico-orange-200 hover:border-calico-orange-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
         >
           <span class="text-sm font-medium">Copiar IP</span>
           <svg class="w-4 h-4 ml-2 transform group-hover/copy:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -376,64 +376,95 @@ const ping = Math.floor(Math.random() * 50) + 10;
     return null;
   }
 
-  // Manejar navegación de la tarjeta del servidor y eventos de botones
-  document.addEventListener('DOMContentLoaded', () => {
-    const serverCards = document.querySelectorAll('.server-card');
-    
-    serverCards.forEach(card => {
-      // Mostrar controles de edición para cualquier usuario autenticado
-      const ownerControls = card.querySelector('.owner-controls') as HTMLElement | null;
-      (async () => {
-        const currentId = await getClientCurrentUserId();
-        if (ownerControls && currentId) {
-          ownerControls.style.display = 'flex';
+  // Inicialización robusta de botones y navegación, y actualización por cambios de auth
+  async function updateOwnerControlsVisibility() {
+    try {
+      const currentId = await getClientCurrentUserId();
+      const serverCards = document.querySelectorAll('.server-card');
+      serverCards.forEach((card) => {
+        const cardEl = card as HTMLElement;
+        const ownerId = cardEl.getAttribute('data-owner-id');
+        const ctrl = cardEl.querySelector('.owner-controls') as HTMLElement | null;
+        if (ctrl) {
+          ctrl.style.display = currentId && ownerId && currentId === ownerId ? 'flex' : 'none';
         }
-      })();
-
-      // Manejar clics en botones de acción específicamente
-      const actionButtons = card.querySelectorAll('button[data-action]');
-      actionButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-          
-          const action = button.getAttribute('data-action');
-          
-          switch (action) {
-            case 'copy-ip':
-              const ip = button.getAttribute('data-ip');
-              if (ip) copyServerIP(ip);
-              break;
-              
-            case 'edit-server':
-              const editServerId = button.getAttribute('data-server-id');
-              if (editServerId) editServer(editServerId);
-              break;
-              
-            case 'delete-server':
-              const deleteServerId = button.getAttribute('data-server-id');
-              if (deleteServerId) deleteServer(deleteServerId);
-              break;
-          }
-        });
       });
-      
-      // Manejar navegación de la tarjeta solo si no se hace clic en un botón
+    } catch (_) {}
+  }
+
+  function bindServerCardEvents(card: HTMLElement) {
+    // Botones de acción (evitar duplicar listeners)
+    const actionButtons = card.querySelectorAll('button[data-action]');
+    actionButtons.forEach((button) => {
+      if (button.getAttribute('data-init') === 'true') return;
+      button.setAttribute('data-init', 'true');
+
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        const action = button.getAttribute('data-action');
+        switch (action) {
+          case 'copy-ip': {
+            const ip = button.getAttribute('data-ip');
+            if (ip) copyServerIP(ip);
+            break;
+          }
+          case 'edit-server': {
+            const editServerId = button.getAttribute('data-server-id');
+            if (editServerId) editServer(editServerId);
+            break;
+          }
+          case 'delete-server': {
+            const deleteServerId = button.getAttribute('data-server-id');
+            if (deleteServerId) deleteServer(deleteServerId);
+            break;
+          }
+        }
+      });
+    });
+
+    // Navegación del card (evitar duplicar listener)
+    if (card.getAttribute('data-click-init') !== 'true') {
+      card.setAttribute('data-click-init', 'true');
       card.addEventListener('click', (e) => {
-        // Prevenir la navegación por defecto del enlace
         e.preventDefault();
         const target = e.target as HTMLElement;
         const isButton = target.closest('button[data-action]');
-        
         if (!isButton) {
-          // Si no es un botón, navegar a la página del servidor
           const link = card as HTMLAnchorElement;
           if (link.href) {
             window.location.href = link.href;
           }
         }
       });
-    });
+    }
+  }
+
+  function initializeServerCards() {
+    const serverCards = document.querySelectorAll('.server-card');
+    serverCards.forEach((card) => bindServerCardEvents(card as HTMLElement));
+    // Mostrar/ocultar controles según autenticación
+    updateOwnerControlsVisibility();
+  }
+
+  // Ejecutar al cargar y si el DOM ya está listo
+  document.addEventListener('DOMContentLoaded', initializeServerCards);
+  if (document.readyState !== 'loading') {
+    initializeServerCards();
+  }
+
+  // Escuchar cambios de autenticación para actualizar visibilidad sin recargar
+  window.addEventListener('authStateChanged', () => {
+    updateOwnerControlsVisibility();
+  });
+  window.addEventListener('storage', (e) => {
+    try {
+      const ev = e as StorageEvent;
+      if (ev.key === 'userSession') {
+        updateOwnerControlsVisibility();
+      }
+    } catch (_) {}
   });
 </script>

@@ -125,14 +125,14 @@ const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.s
           <div class="flex items-center justify-between mb-8">
             <a 
               href="/" 
-              class="btn-secondary px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+              class="btn-secondary px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover-glow-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
             >
               ← Volver a Juegos
             </a>
           </div>
           
           <div class="flex items-center space-x-6 mb-8">
-            <div class="w-24 h-24 rounded-xl overflow-hidden border-4 border-accent shadow-2xl">
+            <div class="w-24 h-24 rounded-2xl overflow-hidden border-4 border-accent shadow-2xl transition-transform hover:translate-y-[2px] hover-glow-orange">
               <img 
                 src={gameIcon} 
                 alt={`${game.name} icon`}
@@ -141,7 +141,7 @@ const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.s
             </div>
             
             <div class="game-info-text" style={`color: ${dynamicStyles.textColors.primary} !important;`}>
-              <h1 class="title-size font-bold font-game mb-2" style={`color: ${dynamicStyles.textColors.primary} !important;`}>{game.name}</h1>
+              <h1 class="title-size font-bold font-game font-heading mb-2" style={`color: ${dynamicStyles.textColors.primary} !important;`}>{game.name}</h1>
               <p class="body-size opacity-90 max-w-2xl" style={`color: ${dynamicStyles.textColors.secondary} !important;`}>
                 {game.description || `Únete a la comunidad de ${game.name} y comparte tus experiencias de juego.`}
               </p>
@@ -164,17 +164,17 @@ const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.s
           <!-- Estadísticas del juego -->
           {themeConfig.layout?.showStats && (
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <div class="glass-calico rounded-xl p-6 text-center text-calico-white">
+              <div class="glass-calico rounded-2xl p-6 text-center text-calico-white shadow-xl border border-calico-stripe-light/20 transition-transform hover:translate-y-[2px] hover-glow-orange">
                 <div class="text-3xl font-bold text-calico-orange-500 mb-2">{gamePosts.length}</div>
                 <div class="text-sm opacity-80 text-calico-gray-300">Posts Totales</div>
               </div>
-              <div class="glass-calico rounded-xl p-6 text-center text-calico-white">
+              <div class="glass-calico rounded-2xl p-6 text-center text-calico-white shadow-xl border border-calico-stripe-light/20 transition-transform hover:translate-y-[2px] hover-glow-orange">
                 <div class="text-3xl font-bold text-calico-orange-500 mb-2">
                   {new Set(gamePosts.map(post => post.user_id)).size}
                 </div>
                 <div class="text-sm opacity-80 text-calico-gray-300">Jugadores Activos</div>
               </div>
-              <div class="glass-calico rounded-xl p-6 text-center text-calico-white">
+              <div class="glass-calico rounded-2xl p-6 text-center text-calico-white shadow-xl border border-calico-stripe-light/20 transition-transform hover:translate-y-[2px] hover-glow-orange">
                 <div class="text-3xl font-bold text-calico-orange-500 mb-2">
                   {gamePosts.filter(post => {
                     const postDate = new Date(post.created_at);
@@ -195,8 +195,8 @@ const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.s
         <div class="max-w-4xl mx-auto">
           <!-- Formulario para crear post -->
           <div class="mb-12" id="post-form-container">
-            <div class="glass-calico-dark rounded-2xl p-8">
-              <h2 class="text-2xl font-bold text-calico-white mb-6 font-game">
+            <div class="glass-calico-dark rounded-2xl p-8 shadow-xl border border-calico-stripe-light/20 transition-transform hover:translate-y-[2px] hover-glow-orange">
+              <h2 class="text-2xl font-bold text-calico-white mb-6 font-game font-heading">
                 Comparte tu experiencia en {game.name}
               </h2>
               <PostForm 
@@ -211,10 +211,10 @@ const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.s
           <!-- Lista de posts -->
           <div class="space-y-8">
             <div class="flex items-center justify-between">
-              <h2 class="text-3xl font-bold text-calico-white font-game">
+              <h2 class="text-3xl font-bold text-calico-white font-game font-heading">
                 Últimas publicaciones
               </h2>
-              <div class="text-calico-orange-500 font-medium">
+              <div class="text-calico-orange-500 text-accent font-medium">
                 {gamePosts.length} {gamePosts.length === 1 ? 'post' : 'posts'}
               </div>
             </div>
@@ -255,14 +255,14 @@ const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.s
     const authorInitial = post.author.charAt(0).toUpperCase();
     
     return `
-      <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-lg post-card transform transition-all duration-300 hover:scale-[1.02]" data-post-id="${post.id}">
+      <div class="glass-calico rounded-2xl p-6 shadow-xl border border-calico-stripe-light/20 post-card transform transition-transform duration-300 hover:translate-y-[2px] hover-glow-orange" data-post-id="${post.id}">
         <div class="flex items-center mb-4">
           <div class="w-10 h-10 bg-gradient-to-br from-calico-orange-400 to-calico-orange-600 rounded-full flex items-center justify-center text-calico-white font-bold text-sm">
             ${authorInitial}
           </div>
           <div class="ml-3 flex-1">
             <div class="flex items-center gap-2">
-              <h3 class="font-semibold text-calico-white">${post.author}</h3>
+              <h3 class="font-semibold font-heading text-calico-white">${post.author}</h3>
             </div>
             <div class="flex items-center gap-2 text-sm text-calico-gray-400">
               <span>${timeAgo}</span>
@@ -272,15 +272,15 @@ const gameIcon = game.cover_image_url || themeConfig.images?.icon || '/favicon.s
         <div class="mb-4">
           <p class="text-calico-gray-200 leading-relaxed whitespace-pre-wrap">${post.content}</p>
         </div>
-        <div class="flex items-center justify-between pt-4 border-t border-white/10">
+        <div class="flex items-center justify-between pt-4 border-t border-calico-stripe-light/10">
           <div class="flex items-center space-x-6">
-            <button class="flex items-center space-x-2 text-calico-gray-400 hover:text-red-400 transition-colors">
+            <button class="flex items-center space-x-2 text-calico-gray-400 hover:text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
               </svg>
               <span>${post.likes || 0}</span>
             </button>
-            <button class="flex items-center space-x-2 text-calico-gray-400 hover:text-blue-400 transition-colors">
+            <button class="flex items-center space-x-2 text-calico-gray-400 hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
               </svg>
