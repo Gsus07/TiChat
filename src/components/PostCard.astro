@@ -67,11 +67,11 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         {authorInitial}
       </div>
     )}
-    <div class="ml-3 flex-1">
+    <div class="ml-3 flex-1 min-w-0">
       <div class="flex items-center gap-2">
-        <h3 class="font-heading font-semibold text-calico-white">{post.profiles.full_name || post.profiles.username}</h3>
+        <h3 class="font-heading font-semibold text-calico-white truncate">{post.profiles.full_name || post.profiles.username}</h3>
         {post.profiles.username !== (post.profiles.full_name || post.profiles.username) && (
-          <span class="text-sm text-calico-gray-400">@{post.profiles.username}</span>
+          <span class="text-sm text-calico-gray-400 hidden sm:inline">@{post.profiles.username}</span>
         )}
       </div>
       <div class="flex items-center gap-2 text-sm text-calico-gray-400">
@@ -95,11 +95,11 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   
   <!-- Imagen del post (si existe) -->
   {post.image_url && (
-    <div class="mb-4 rounded-lg bg-calico-gray-800/20 p-2">
+    <div class="mb-4 rounded-lg bg-calico-gray-800/20 p-2 max-h-80 sm:max-h-[28rem] overflow-hidden flex justify-center mx-auto">
       <img 
         src={post.image_url} 
         alt="Post image" 
-        class="w-full h-auto object-contain hover:scale-[1.02] transition-transform duration-300 cursor-pointer rounded-lg shadow-lg"
+        class="mx-auto h-auto object-contain max-h-80 sm:max-h-[28rem] w-auto max-w-full sm:w-full hover:scale-[1.02] transition-transform duration-300 cursor-pointer rounded-lg shadow-lg"
         onclick="openImageModal(this.src)"
         loading="lazy"
         onerror="this.parentElement.style.display = 'none'"
@@ -109,8 +109,8 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   )}
   
   <!-- Estadísticas y acciones -->
-  <div class="flex items-center justify-between pt-4 border-t border-calico-stripe-light/20">
-    <div class="flex items-center space-x-6">
+  <div class="flex items-center justify-center sm:justify-between pt-4 border-t border-calico-stripe-light/20 flex-wrap gap-4">
+    <div class="flex items-center gap-4 sm:gap-6 flex-wrap w-full sm:w-auto justify-center">
       <!-- Likes -->
       <button 
         onclick={`togglePostLike('${post.id}')`}
@@ -160,7 +160,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
     
     <!-- Opciones del post (solo para el autor) -->
     {currentUserId === post.user_id && (
-      <div class="relative">
+      <div class="relative mx-auto sm:mx-0 sm:ml-auto">
         <button 
           onclick={`togglePostOptions('${post.id}')`}
           class="text-calico-gray-400 hover:text-calico-white transition-colors p-1 rounded-full hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
@@ -186,7 +186,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
       </div>
     )}
   </div>
-  
+
   <!-- Sección de comentarios rápidos -->
   {currentUserId && (
     <div class="mt-4 pt-4 border-t border-calico-stripe-light/20">

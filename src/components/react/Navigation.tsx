@@ -304,6 +304,19 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = original || '';
+    }
+    return () => {
+      document.body.style.overflow = original || '';
+    };
+  }, [isMobileMenuOpen]);
+
   // Game item component for reusability
   const GameItem: React.FC<{ game: Game; onClick?: () => void }> = ({
     game,
@@ -441,7 +454,7 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
                 onChange={handleSearchChange}
                 onFocus={handleSearchFocus}
                 placeholder="Buscar juegos..."
-                className="w-64 px-4 py-2.5 pl-10 pr-4 text-sm bg-gradient-to-r from-calico-dark/60 to-calico-dark/80 border border-calico-orange-500/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500/50 focus:border-calico-orange-500 transition-all duration-300 backdrop-blur-sm"
+                className="w-[clamp(12rem,24vw,18rem)] px-4 py-2.5 pl-10 pr-4 text-sm bg-gradient-to-r from-calico-dark/60 to-calico-dark/80 border border-calico-orange-500/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500/50 focus:border-calico-orange-500 transition-all duration-300 backdrop-blur-sm"
               />
               <svg
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-calico-gray-400"
@@ -526,22 +539,20 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
                 onClick={handleUserMenuClick}
                 className="group flex items-center space-x-3 text-calico-gray-300 hover:text-calico-white transition-all duration-300 px-3 py-2 rounded-xl hover:bg-gradient-to-r hover:from-calico-orange-500/10 hover:to-calico-orange-600/10 hover:shadow-lg hover:shadow-calico-orange-500/20"
               >
-                <div className="relative">
+                <div className="relative flex-shrink-0">
                   <img
-                    src={user.avatar || "/default-avatar.png"}
-                    alt="Avatar"
-                    className="w-10 h-10 rounded-xl border-2 border-calico-orange-500/50 group-hover:border-calico-orange-400 transition-all duration-300 shadow-lg group-hover:shadow-calico-orange-500/25"
+                     src={user.avatar || "/default-avatar.png"}
+                     alt="Avatar"
+                     className="w-10 h-10 aspect-square object-cover rounded-xl border-2 border-calico-orange-500/50 group-hover:border-calico-orange-400 transition-all duration-300 shadow-lg group-hover:shadow-calico-orange-500/25"
                   />
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-calico-dark shadow-lg" />
                 </div>
-                <div className="flex flex-col items-start">
-                  <span className="text-sm font-semibold">{user.name}</span>
-                  <span className="text-xs text-calico-gray-400">En línea</span>
+                <div className="flex flex-col items-start min-w-0">
+                  <span className="text-sm font-semibold truncate max-w-[8rem] sm:max-w-[10rem]">{user.name}</span>
+                   <span className="text-xs text-calico-gray-400">En línea</span>
                 </div>
                 <svg
-                  className={`w-4 h-4 transition-transform duration-300 ${
-                    isUserDropdownOpen ? "rotate-180" : ""
-                  }`}
+                  className={`${isUserDropdownOpen ? "rotate-180" : ""} w-4 h-4 transition-transform duration-300`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -556,7 +567,7 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
               </button>
 
               {/* User Dropdown Menu with Portal */}
-              {isUserDropdownOpen &&
+              {isUserDropdownOpen && (
                 createPortal(
                   <div
                     ref={userDropdownRef}
@@ -693,7 +704,8 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
                     </button>
                   </div>,
                   document.body
-                )}
+                )
+              )}
             </div>
           )}
         </div>
@@ -721,8 +733,11 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden backdrop-blur-xl bg-gradient-to-b from-calico-dark/95 to-calico-dark/90 border-t border-calico-orange-500/20 shadow-2xl">
-          <div className="px-4 pt-4 pb-6 space-y-2">
+        <div className="md:hidden fixed inset-x-0 top-16 z-[9998] backdrop-blur-xl bg-gradient-to-b from-calico-dark/95 to-calico-dark/90 border-t border-calico-orange-500/20 shadow-2xl overflow-x-hidden">
+          <div
+            className="px-4 pt-4 pb-6 space-y-2 max-h-[calc(100dvh-4rem)] overflow-y-auto"
+            style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}
+          >
             {/* Mobile Search Bar */}
             <div className="mb-4">
               <div className="relative">
@@ -785,11 +800,11 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
                 <h3 className="text-sm font-semibold text-calico-orange-400 uppercase tracking-wider mb-2">
                   Mi Cuenta
                 </h3>
-                <div className="flex items-center px-4 py-3 rounded-xl bg-gradient-to-r from-calico-orange-500/10 to-calico-orange-600/10 mb-2">
+                <div className="flex items-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-calico-orange-500/10 to-calico-orange-600/10 mb-2">
                   <img
                     src={user.avatar || "/default-avatar.png"}
                     alt="Avatar"
-                    className="w-10 h-10 rounded-xl border-2 border-calico-orange-500/50 mr-3"
+                    className="w-10 h-10 aspect-square object-cover rounded-xl border-2 border-calico-orange-500/50 mr-3 flex-shrink-0"
                   />
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold text-calico-white">{user.name}</span>
