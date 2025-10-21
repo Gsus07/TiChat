@@ -735,11 +735,11 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
       {isMobileMenuOpen && (
         <>
           <div
-            className="md:hidden fixed inset-0 top-16 z-[9997] bg-black/40"
+            className="md:hidden fixed inset-0 top-16 z-[9997] bg-black/40 animate-overlay-in"
             onClick={handleMobileMenuClick}
             aria-hidden="true"
           />
-          <div className="md:hidden fixed inset-x-0 top-16 z-[9998] backdrop-blur-xl bg-gradient-to-b from-calico-dark/95 to-calico-dark/90 border-t border-calico-orange-500/20 shadow-2xl overflow-x-hidden ring-1 ring-calico-orange-500/20">
+          <div className="md:hidden fixed inset-x-0 top-16 z-[9998] backdrop-blur-xl bg-gradient-to-b from-calico-dark/95 to-calico-dark/90 border-t border-calico-orange-500/20 shadow-2xl overflow-x-hidden ring-1 ring-calico-orange-500/20 animate-panel-in">
             <div
               className="px-4 pt-4 pb-6 space-y-2 max-h-[calc(100dvh-4rem)] overflow-y-auto"
               style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}

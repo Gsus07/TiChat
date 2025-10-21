@@ -529,3 +529,42 @@ body::before {
 .hero-subtitle-emphasis {
   color: var(--text-primary);
 }
+
+/* Scrollbar tematizada con colores calico */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--calico-orange-200), var(--calico-orange-500));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+.dark *::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(251, 146, 60, 0.6), rgba(251, 146, 60, 0.9));
+}
+/* Firefox */
+* {
+  scrollbar-color: var(--calico-orange) var(--bg-secondary);
+  scrollbar-width: thin;
+}
+
+/* Animaciones suaves para overlay y panel del menú móvil */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes slideDown {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-overlay-in {
+  animation: fadeIn 180ms ease-out both;
+}
+.animate-panel-in {
+  animation: slideDown 220ms ease-out both;
+}
