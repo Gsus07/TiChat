@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNotifications } from './NotificationProvider';
 
 interface Post {
@@ -68,6 +69,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const { addNotification } = useNotifications();
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [imageModalSrc, setImageModalSrc] = useState<string | null>(null);
 
   // Manejar hidratación y autenticación
   useEffect(() => {
@@ -334,6 +337,39 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
     }
   };
 
+  const openImageModal = (src: string) => {
+    setImageModalSrc(src);
+    setIsImageModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setIsImageModalOpen(false);
+    setImageModalSrc(null);
+  };
+
+  useEffect(() => {
+    if (!isImageModalOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeImageModal();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isImageModalOpen]);
+
+  // Lock body scroll while modal is open
+  useEffect(() => {
+    if (isImageModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isImageModalOpen]);
+
   return (
     <div id={`post-${post.id}`} className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-calico-stripe-light/20">
       {/* Header del post */}
@@ -377,7 +413,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
                 src={post.image_url} 
                 alt="Post image" 
                 className="w-full h-auto object-contain rounded-lg cursor-pointer hover:scale-[1.02] transition-transform duration-300 shadow-lg"
-                onClick={() => window.open(post.image_url, '_blank')}
+                onClick={() => openImageModal(post.image_url!)}
                 style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
               />
             </div>
@@ -638,6 +674,32 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onPostUpdate }
           </div>
         </div>
       )}
+      {isClient && isImageModalOpen && imageModalSrc && (
+         createPortal(
+           (
+             <div 
+               className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+               onClick={(e) => {
+                 if (e.target === e.currentTarget) closeImageModal();
+               }}
+             >
+               <div className="relative max-w-4xl max-h-full">
+                 <img src={imageModalSrc} className="max-w-full max-h-full object-contain rounded-lg" alt="Imagen del post" />
+                 <button 
+                   onClick={closeImageModal}
+                   className="absolute top-4 right-4 text-calico-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
+                   aria-label="Cerrar"
+                 >
+                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                   </svg>
+                 </button>
+               </div>
+             </div>
+           ),
+           document.body
+         )
+       )}
     </div>
   );
 };
