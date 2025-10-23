@@ -23,6 +23,9 @@ const TinaEasterEgg: React.FC<TinaEasterEggProps> = ({
   const [currentAnimation, setCurrentAnimation] = useState('');
   const effectsRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  // Nuevo: control del video como easter egg
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const messages = variant === 'login' ? [
     "¡Miau! Bienvenido 🐱",
@@ -134,6 +137,9 @@ const TinaEasterEgg: React.FC<TinaEasterEggProps> = ({
 
   // Manejar click en TTina
   const handleTinaClick = (e: React.MouseEvent) => {
+    // Si el video está reproduciéndose, ignorar clics para no interrumpir la transición
+    if (isVideoPlaying) return;
+
     const newClickCount = clickCount + 1;
     setClickCount(newClickCount);
 
@@ -185,7 +191,19 @@ const TinaEasterEgg: React.FC<TinaEasterEggProps> = ({
     // Sonido de maullido
     playMeowSound();
 
-    // Easter egg especial
+    // Nuevo easter egg: transición imagen → video tras N clics
+    const videoThreshold = variant === 'login' ? 12 : 7; // puedes ajustar estos valores
+    if (newClickCount % videoThreshold === 0) {
+      setIsVideoPlaying(true);
+      // Intentar reproducir por si el autoplay es bloqueado
+      setTimeout(() => {
+        try {
+          videoRef.current?.play();
+        } catch {}
+      }, 100);
+    }
+
+    // Easter egg especial existente
     const specialClickThreshold = variant === 'login' ? 15 : 10;
     if (newClickCount % specialClickThreshold === 0) {
       const specialMessage = variant === 'login' 
@@ -334,18 +352,33 @@ const TinaEasterEgg: React.FC<TinaEasterEggProps> = ({
         </div>
       )}
 
-      {/* TTina Image */}
-      <img
-        ref={imageRef}
-        src="/TTina.png"
-        alt="TTina - Mascota de TiChat"
-        className={imageClassName || defaultImageClasses}
-        title="¡Haz clic en TTina! 🐱"
-        onClick={handleTinaClick}
-        style={{
-          animation: currentAnimation || (variant === 'home' ? 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : '')
-        }}
-      />
+      {/* Imagen y Video con transición */}
+      <div className="relative">
+        <img
+          ref={imageRef}
+          src="/TTina.png"
+          alt="TTina - Mascota de TiChat"
+          className={`${imageClassName || defaultImageClasses} transition-opacity duration-700 ${isVideoPlaying ? 'opacity-0' : 'opacity-100'}`}
+          title="¡Haz clic en TTina! 🐱"
+          onClick={handleTinaClick}
+          style={{
+            animation: currentAnimation || (variant === 'home' ? 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : '')
+          }}
+        />
+        <video
+          ref={videoRef}
+          src="/edit_vd_tina.mp4"
+          className={`${imageClassName || defaultImageClasses} absolute inset-0 transition-opacity duration-700 ${isVideoPlaying ? 'opacity-100' : 'opacity-0'} pointer-events-none object-cover`}
+          muted
+          playsInline
+          preload="metadata"
+          autoPlay={isVideoPlaying}
+          onEnded={() => {
+            setIsVideoPlaying(false);
+            setCurrentAnimation(variant === 'home' ? 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : '');
+          }}
+        />
+      </div>
 
       {/* Mensaje para variante login */}
       {variant === 'login' && (
