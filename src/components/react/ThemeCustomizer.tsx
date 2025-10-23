@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from '../../utils/themeManager';
 
 interface ThemeCustomizerProps {
   className?: string;
@@ -14,11 +14,34 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
     accent: '#1e40af',
   });
 
+  // Paletas predefinidas
+  const palettes = [
+    { name: 'Océano', primary: '#0ea5a7', secondary: '#0284c7', accent: '#06b6d4' },
+    { name: 'Atardecer', primary: '#fb923c', secondary: '#f59e0b', accent: '#ef4444' },
+    { name: 'Bosque', primary: '#22c55e', secondary: '#16a34a', accent: '#4ade80' },
+    { name: 'Violeta', primary: '#8b5cf6', secondary: '#7c3aed', accent: '#a78bfa' },
+    { name: 'Neón', primary: '#22d3ee', secondary: '#22c55e', accent: '#f472b6' },
+  ];
+
   const themeOptions = [
     { value: 'light', label: 'Claro', icon: '☀️' },
     { value: 'dark', label: 'Oscuro', icon: '🌙' },
-    { value: 'auto', label: 'Automático', icon: '🔄' },
+    { value: 'auto', label: 'Automático', icon: '💻' }
   ];
+  useEffect(() => {
+    const saved = localStorage.getItem('theme-custom-colors');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setCustomColors(parsed);
+        Object.entries(parsed).forEach(([key, value]) => {
+          document.documentElement.style.setProperty(`--color-${key}`, String(value));
+        });
+      } catch {
+        // ignore
+      }
+    }
+  }, []);
 
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'auto') => {
     setTheme(newTheme);
@@ -29,9 +52,19 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
       ...prev,
       [colorKey]: value
     }));
-    
-    // Aplicar el color personalizado inmediatamente
     document.documentElement.style.setProperty(`--color-${colorKey}`, value);
+  };
+
+  const applyPalette = (palette: { primary: string; secondary: string; accent: string }) => {
+    const next = {
+      primary: palette.primary,
+      secondary: palette.secondary,
+      accent: palette.accent,
+    };
+    setCustomColors(next);
+    Object.entries(next).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(`--color-${key}`, value as string);
+    });
   };
 
   const resetToDefaults = () => {
@@ -40,10 +73,7 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
       secondary: '#1d4ed8',
       accent: '#1e40af',
     };
-    
     setCustomColors(defaultColors);
-    
-    // Remover las variables personalizadas para volver a los valores por defecto
     Object.keys(defaultColors).forEach(key => {
       document.documentElement.style.removeProperty(`--color-${key}`);
     });
@@ -73,7 +103,7 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
       </div>
 
       {/* Content */}
-      <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[44rem] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="p-4 space-y-6">
           {/* Theme Selection */}
           <div className="space-y-3">
@@ -93,6 +123,32 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
                 >
                   <div className="text-lg mb-1">{option.icon}</div>
                   <div className="text-xs font-medium">{option.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Paletas Predefinidas */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-medium text-secondary flex items-center gap-2">
+              🧪 Paletas predefinidas
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {palettes.map((p) => (
+                <button
+                  key={p.name}
+                  onClick={() => applyPalette(p)}
+                  className="p-3 rounded-lg border border-primary/20 bg-secondary/50 hover:bg-secondary/70 transition-all duration-200 hover:scale-105 text-left"
+                  title={`Aplicar ${p.name}`}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-semibold text-primary">{p.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-4 w-4 rounded-full" style={{ backgroundColor: p.primary }} />
+                    <span className="h-4 w-4 rounded-full" style={{ backgroundColor: p.secondary }} />
+                    <span className="h-4 w-4 rounded-full" style={{ backgroundColor: p.accent }} />
+                  </div>
                 </button>
               ))}
             </div>
@@ -139,9 +195,7 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
             </button>
             <button
               onClick={() => {
-                // Guardar configuración en localStorage
                 localStorage.setItem('theme-custom-colors', JSON.stringify(customColors));
-                // Mostrar feedback visual
                 const button = document.activeElement as HTMLButtonElement;
                 if (button) {
                   const originalText = button.textContent;

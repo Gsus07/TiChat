@@ -1,18 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getCurrentUser } from '../utils/auth';
-
-// Verificar autenticación
-const currentUser = await getCurrentUser(Astro.request);
-
-if (!currentUser) {
-  return Astro.redirect('/login');
-}
+import ThemeCustomizer from '../components/react/ThemeCustomizer';
 ---
 
 <Layout title="Configuraciones">
   <main class="min-h-screen bg-gradient-to-br from-calico-white via-calico-cream to-calico-orange-50 py-12 px-4">
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto pt-10">
       <!-- Header -->
       <div class="text-center mb-12">
         <h1 class="text-4xl font-bold text-calico-gray-800 mb-4">Configuraciones</h1>
@@ -21,6 +14,18 @@ if (!currentUser) {
 
       <!-- Settings Sections -->
       <div class="grid gap-8">
+        <!-- Apariencia y Tema -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-calico-orange-200">
+          <h2 class="text-2xl font-semibold text-calico-gray-800 mb-6 flex items-center">
+            <svg class="w-6 h-6 mr-3 text-calico-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Apariencia y Tema
+          </h2>
+          <p class="text-calico-gray-600 mb-4">Elige modo claro/oscuro y ajusta la paleta de colores.</p>
+          <ThemeCustomizer client:load className="mt-2" />
+        </div>
+
         <!-- Perfil -->
         <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-calico-orange-200">
           <h2 class="text-2xl font-semibold text-calico-gray-800 mb-6 flex items-center">
@@ -110,4 +115,16 @@ if (!currentUser) {
       </div>
     </div>
   </main>
+<script>
+  try {
+    const raw = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+    if (!raw) {
+      const target = '/settings';
+      const redirectParam = encodeURIComponent(target);
+      window.location.replace(`/login?redirect=${redirectParam}`);
+    }
+  } catch (_) {
+    window.location.replace('/login?redirect=' + encodeURIComponent('/settings'));
+  }
+</script>
 </Layout>

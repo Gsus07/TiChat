@@ -34,7 +34,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
   useEffect(() => {
     const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
     if (userSession) {
-      window.location.href = '/';
+      const params = new URLSearchParams(window.location.search);
+      const rawRedirect = params.get('redirect');
+      const redirect = rawRedirect ? decodeURIComponent(rawRedirect) : null;
+      const target = redirect && redirect.startsWith('/') ? redirect : '/';
+      window.location.href = target;
     }
   }, []);
 
@@ -177,7 +181,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
 
       // Redirigir después de un delay más largo para que se vea la notificación
       setTimeout(() => {
-        window.location.href = '/';
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const rawRedirect = params.get('redirect');
+          const redirect = rawRedirect ? decodeURIComponent(rawRedirect) : null;
+          const target = redirect && redirect.startsWith('/') ? redirect : '/';
+          window.location.href = target;
+        } catch {
+          window.location.href = '/';
+        }
       }, 2500);
 
     } catch (error: any) {
