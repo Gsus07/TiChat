@@ -129,18 +129,16 @@ export default function SimpleThemeToggle() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="group fixed bottom-6 right-6 z-50 w-14 h-14 
-                   bg-gradient-to-br from-white/90 to-white/70 dark:from-gray-800/90 dark:to-gray-900/70
-                   backdrop-blur-md border border-white/20 dark:border-gray-700/50
-                   rounded-full shadow-lg dark:shadow-gray-900/50
-                   hover:shadow-xl hover:shadow-blue-500/20 dark:hover:shadow-blue-400/20
+                   bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-primary)]
+                   backdrop-blur-md border border-secondary
+                   rounded-full shadow-lg
+                   hover:shadow-xl hover:shadow-accent/25
                    hover:scale-110 active:scale-95
                    transition-all duration-300 ease-out
-                   text-gray-700 dark:text-gray-200
-                   hover:text-blue-600 dark:hover:text-blue-400
-                   hover:bg-gradient-to-br hover:from-blue-50/90 hover:to-white/90 
-                   dark:hover:from-blue-900/30 dark:hover:to-gray-800/90
-                   hover:border-blue-200/50 dark:hover:border-blue-600/30
-                   focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
+                   text-secondary
+                   hover:text-accent
+                   hover:bg-gradient-to-br hover:from-[var(--bg-secondary)] hover:to-[var(--bg-primary)]
+                   focus:outline-none focus:ring-2 focus:ring-[var(--border-accent)] focus:ring-offset-2 focus:ring-offset-transparent"
         title={`Tema actual: ${getThemeLabel(theme)}`}
       >
         <div className="flex items-center justify-center transform transition-transform duration-500 group-hover:rotate-180">
@@ -148,7 +146,7 @@ export default function SimpleThemeToggle() {
         </div>
         
         {/* Indicador de estado del tema */}
-        <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 transition-all duration-300 ${
+        <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-secondary transition-all duration-300 ${
           theme === 'light' ? 'bg-yellow-400 shadow-yellow-400/50' :
           theme === 'dark' ? 'bg-blue-600 shadow-blue-600/50' :
           'bg-gradient-to-r from-yellow-400 to-blue-600 shadow-purple-500/50'
@@ -156,17 +154,17 @@ export default function SimpleThemeToggle() {
         
         {/* Flecha del dropdown */}
         <div className={`absolute bottom-1 right-1 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
-          <svg className="w-3 h-3 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"/>
+          <svg className="w-3 h-3 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a.75.75 0 010-1.414z" clipRule="evenodd"/>
           </svg>
         </div>
       </button>
 
       {/* Dropdown menu */}
       <div className={`fixed bottom-20 right-6 z-40 w-48 
-                      bg-white/95 dark:bg-gray-800/95 backdrop-blur-md
-                      border border-white/20 dark:border-gray-700/50
-                      rounded-xl shadow-xl dark:shadow-gray-900/50
+                      bg-secondary backdrop-blur-md
+                      border border-secondary
+                      rounded-xl shadow-xl
                       transition-all duration-300 ease-out origin-bottom-right
                       ${isOpen 
                         ? 'opacity-100 scale-100 translate-y-0' 
@@ -180,13 +178,13 @@ export default function SimpleThemeToggle() {
               onClick={() => selectTheme(themeOption)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg
                          transition-all duration-200 text-left
-                         hover:bg-gray-100/80 dark:hover:bg-gray-700/80
+                         hover:bg-secondary
                          ${theme === themeOption 
-                           ? 'bg-blue-50/80 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200/50 dark:border-blue-600/30' 
-                           : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white'
+                           ? 'bg-accent text-white border border-accent' 
+                           : 'text-secondary hover:text-primary'
                          }`}
             >
-              <div className={`flex-shrink-0 ${theme === themeOption ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
+              <div className={`flex-shrink-0 ${theme === themeOption ? 'text-accent' : 'text-secondary'}`}>
                 {getThemeIcon(themeOption)}
               </div>
               
@@ -201,7 +199,7 @@ export default function SimpleThemeToggle() {
               
               {theme === themeOption && (
                 <div className="flex-shrink-0">
-                  <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
                 </div>
@@ -211,8 +209,8 @@ export default function SimpleThemeToggle() {
         </div>
         
         {/* Separador y información adicional */}
-        <div className="border-t border-gray-200/50 dark:border-gray-700/50 p-3">
-          <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+        <div className="border-t border-secondary p-3">
+          <div className="text-xs text-secondary text-center">
             Los cambios se aplican inmediatamente
           </div>
         </div>

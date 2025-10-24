@@ -35,10 +35,10 @@
   --color-secondary-light: #D5F3F2;
   
   /* Colores calico para tema claro */
-  --calico-orange: #FB7A1F;
-  --calico-orange-light: #FFE4CC;
-  --calico-gray: #5E667A;
-  --calico-gray-light: #ECEEF5;
+  --calico-orange: var(--color-accent);
+  --calico-orange-light: var(--color-primary-light);
+  --calico-gray: var(--text-secondary);
+  --calico-gray-light: var(--text-muted);
   
   /* Estados */
   --color-success: #10B981;

@@ -5,48 +5,48 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Paleta modernizada inspirada en gata calico
+        // Paleta basada en variables CSS para soportar tema global
         calico: {
           // Blancos y superficies
-          white: '#FAFAFC',
-          'white-soft': '#F5F7FA',
-          'white-warm': '#FFF7F0',
-          cream: '#FFF1E6',
-          sand: '#F4E1C1',
+          white: 'var(--calico-white)',
+          'white-soft': 'var(--calico-white-soft)',
+          'white-warm': 'var(--calico-white-warm)',
+          cream: 'var(--calico-cream)',
+          sand: 'var(--calico-ivory)',
           
           // Neutros (slate moderno)
           gray: {
-            50: '#F6F7FB',
-            100: '#ECEEF5',
-            200: '#D7DBE8',
-            300: '#A9B0C6',
-            400: '#7C859F',
-            500: '#5E667A',
-            600: '#474E62',
-            700: '#323849',
-            800: '#222739',
-            900: '#161A2A'
+            50: 'var(--calico-gray-50)',
+            100: 'var(--calico-gray-100)',
+            200: 'var(--calico-gray-200)',
+            300: 'var(--calico-gray-300)',
+            400: 'var(--calico-gray-400)',
+            500: 'var(--calico-gray-500)',
+            600: 'var(--calico-gray-600)',
+            700: 'var(--calico-gray-700)',
+            800: 'var(--calico-gray-800)',
+            900: 'var(--calico-gray-900)'
           },
           
           // Naranja cálido refinado
           orange: {
-            50: '#FFF3E8',
-            100: '#FFE4CC',
-            200: '#FFD0A8',
-            300: '#FEB97A',
-            400: '#FD974D',
-            500: '#FB7A1F',
-            600: '#E76812',
-            700: '#C4570F',
-            800: '#9F440C',
-            900: '#7D360A'
+            50: 'var(--calico-orange-50)',
+            100: 'var(--calico-orange-100)',
+            200: 'var(--calico-orange-200)',
+            300: 'var(--calico-orange-300)',
+            400: 'var(--calico-orange-400)',
+            500: 'var(--calico-orange-500)',
+            600: 'var(--calico-orange-600)',
+            700: 'var(--calico-orange-700)',
+            800: 'var(--calico-orange-800)',
+            900: 'var(--calico-orange-900)'
           },
           
           // Colores de acento para patrones atigrados
           stripe: {
-            light: '#E6E8F0',
-            medium: '#A9B0C6',
-            dark: '#5E667A'
+            light: 'var(--calico-stripe-light)',
+            medium: 'var(--calico-stripe-medium)',
+            dark: 'var(--calico-stripe-dark)'
           }
         }
       },

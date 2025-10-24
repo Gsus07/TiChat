@@ -25,6 +25,25 @@ const { title } = Astro.props;
 		
 		<!-- Script para inicializar tema antes del render -->
 		<script is:inline set:html={getInitialTheme()}></script>
+		<!-- Aplicar paleta de colores personalizada guardada -->
+		<script is:inline>
+			(function() {
+				try {
+					var raw = localStorage.getItem('theme-custom-colors');
+					if (raw) {
+						var colors = JSON.parse(raw);
+						var root = document.documentElement;
+						for (var key in colors) {
+							if (Object.prototype.hasOwnProperty.call(colors, key)) {
+								root.style.setProperty('--color-' + key, colors[key]);
+							}
+						}
+					}
+				} catch (e) {
+					// fail silently
+				}
+			})();
+		</script>
 		
 		<!-- Preload critical resources -->
 		<!-- SVG preloads removed - images now loaded from database -->

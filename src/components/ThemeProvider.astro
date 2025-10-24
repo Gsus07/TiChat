@@ -12,9 +12,9 @@ const cssVariables = generateCSSVariables(themeConfig);
 ---
 
 <style define:vars={{ 
-  colorPrimary: themeConfig.colors?.primary || '#3B82F6',
-  colorSecondary: themeConfig.colors?.secondary || '#1D4ED8',
-  colorAccent: themeConfig.colors?.accent || '#60A5FA',
+  colorPrimary: themeConfig.colors?.primary || 'var(--color-primary)',
+  colorSecondary: themeConfig.colors?.secondary || 'var(--color-secondary)',
+  colorAccent: themeConfig.colors?.accent || 'var(--color-accent)',
   bgFrom: themeConfig.colors?.background?.from || 'blue-900',
   bgTo: themeConfig.colors?.background?.to || 'indigo-900',
   fontFamily: themeConfig.typography?.fontFamily || 'Inter',

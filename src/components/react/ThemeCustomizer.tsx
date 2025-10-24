@@ -43,6 +43,15 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
     }
   }, []);
 
+  // Persistir automáticamente cambios de paleta
+  useEffect(() => {
+    try {
+      localStorage.setItem('theme-custom-colors', JSON.stringify(customColors));
+    } catch (_) {
+      // ignore storage errors
+    }
+  }, [customColors]);
+
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'auto') => {
     setTheme(newTheme);
   };
