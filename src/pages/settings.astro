@@ -8,48 +8,48 @@ import ThemeCustomizer from '../components/react/ThemeCustomizer';
     <div class="max-w-4xl mx-auto pt-10">
       <!-- Header -->
       <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-calico-gray-800 mb-4">Configuraciones</h1>
-        <p class="text-calico-gray-600">Personaliza tu experiencia en la plataforma</p>
+        <h1 class="text-4xl font-bold text-primary mb-4">Configuraciones</h1>
+        <p class="text-secondary">Personaliza tu experiencia en la plataforma</p>
       </div>
 
       <!-- Settings Sections -->
       <div class="grid gap-8">
         <!-- Apariencia y Tema -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-calico-orange-200">
-          <h2 class="text-2xl font-semibold text-calico-gray-800 mb-6 flex items-center">
-            <svg class="w-6 h-6 mr-3 text-calico-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-secondary backdrop-blur-sm rounded-2xl p-8 shadow-theme-lg border border-accent">
+          <h2 class="text-2xl font-semibold text-primary mb-6 flex items-center">
+            <svg class="w-6 h-6 mr-3 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             Apariencia y Tema
           </h2>
-          <p class="text-calico-gray-600 mb-4">Elige modo claro/oscuro y ajusta la paleta de colores.</p>
+          <p class="text-secondary mb-4">Elige modo claro/oscuro y ajusta la paleta de colores.</p>
           <ThemeCustomizer client:load className="mt-2" />
         </div>
 
         <!-- Perfil -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-calico-orange-200">
-          <h2 class="text-2xl font-semibold text-calico-gray-800 mb-6 flex items-center">
-            <svg class="w-6 h-6 mr-3 text-calico-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-secondary backdrop-blur-sm rounded-2xl p-8 shadow-theme-lg border border-accent">
+          <h2 class="text-2xl font-semibold text-primary mb-6 flex items-center">
+            <svg class="w-6 h-6 mr-3 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
             Configuración de Perfil
           </h2>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-calico-gray-700 mb-2">Nombre de usuario</label>
-              <input type="text" class="w-full px-4 py-3 rounded-xl border border-calico-gray-300 focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent" placeholder="Tu nombre de usuario">
+              <label class="block text-sm font-medium text-secondary mb-2">Nombre de usuario</label>
+              <input type="text" class="w-full px-4 py-3 rounded-xl border border-secondary bg-primary text-primary placeholder-muted focus:ring-2 focus:ring-[var(--border-accent)] focus:border-transparent" placeholder="Tu nombre de usuario">
             </div>
             <div>
-              <label class="block text-sm font-medium text-calico-gray-700 mb-2">Biografía</label>
-              <textarea class="w-full px-4 py-3 rounded-xl border border-calico-gray-300 focus:ring-2 focus:ring-calico-orange-500 focus:border-transparent" rows="3" placeholder="Cuéntanos sobre ti..."></textarea>
+              <label class="block text-sm font-medium text-secondary mb-2">Biografía</label>
+              <textarea class="w-full px-4 py-3 rounded-xl border border-secondary bg-primary text-primary placeholder-muted focus:ring-2 focus:ring-[var(--border-accent)] focus:border-transparent" rows="3" placeholder="Cuéntanos sobre ti..."></textarea>
             </div>
           </div>
         </div>
 
         <!-- Notificaciones -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-calico-orange-200">
-          <h2 class="text-2xl font-semibold text-calico-gray-800 mb-6 flex items-center">
-            <svg class="w-6 h-6 mr-3 text-calico-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-secondary backdrop-blur-sm rounded-2xl p-8 shadow-theme-lg border border-accent">
+          <h2 class="text-2xl font-semibold text-primary mb-6 flex items-center">
+            <svg class="w-6 h-6 mr-3 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 19H6a2 2 0 01-2-2V7a2 2 0 012-2h5m5 0v6m0 0l3-3m-3 3l-3-3"></path>
             </svg>
             Notificaciones
@@ -62,7 +62,7 @@ import ThemeCustomizer from '../components/react/ThemeCustomizer';
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" class="sr-only peer" checked>
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-calico-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-calico-orange-500"></div>
+                <div class="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--border-accent)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--bg-primary)] after:border-[var(--border-primary)] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-accent)]"></div>
               </label>
             </div>
             <div class="flex items-center justify-between">
@@ -105,10 +105,10 @@ import ThemeCustomizer from '../components/react/ThemeCustomizer';
 
         <!-- Botones de acción -->
         <div class="flex gap-4 justify-end">
-          <button class="px-6 py-3 border border-calico-gray-300 text-calico-gray-700 rounded-xl hover:bg-calico-gray-50 transition-colors duration-300">
+          <button class="px-6 py-3 border border-secondary text-secondary rounded-xl hover:bg-tertiary transition-colors duration-300">
             Cancelar
           </button>
-          <button class="px-6 py-3 bg-calico-orange-500 hover:bg-calico-orange-600 text-white rounded-xl transition-colors duration-300">
+          <button class="px-6 py-3 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-inverse rounded-xl transition-colors duration-300">
             Guardar Cambios
           </button>
         </div>
