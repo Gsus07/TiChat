@@ -25,20 +25,127 @@ const { title } = Astro.props;
 		
 		<!-- Script para inicializar tema antes del render -->
 		<script is:inline set:html={getInitialTheme()}></script>
-		<!-- Aplicar paleta de colores personalizada guardada -->
+		<!-- Aplicar paleta guardada y derivar fondos/bordes globalmente -->
 		<script is:inline>
 			(function() {
 				try {
-					var raw = localStorage.getItem('theme-custom-colors');
-					if (raw) {
-						var colors = JSON.parse(raw);
-						var root = document.documentElement;
-						for (var key in colors) {
-							if (Object.prototype.hasOwnProperty.call(colors, key)) {
-								root.style.setProperty('--color-' + key, colors[key]);
+					var root = document.documentElement;
+					var readColors = function(){
+						var raw = localStorage.getItem('theme-custom-colors');
+						return raw ? JSON.parse(raw) : null;
+					};
+					var colors = readColors();
+
+					// Helpers de color
+					var clamp = function(v){ return Math.max(0, Math.min(255, v)); };
+					var hexToRgb = function(hex){
+						var s = (hex || '').replace('#','');
+						if (s.length !== 6) return { r:0,g:0,b:0 };
+						return { r: parseInt(s.slice(0,2),16), g: parseInt(s.slice(2,4),16), b: parseInt(s.slice(4,6),16) };
+					};
+					var rgbToHex = function(r,g,b){
+						var h = function(n){ return clamp(n).toString(16).padStart(2,'0'); };
+						return '#' + h(r) + h(g) + h(b);
+					};
+					var mix = function(hex1, hex2, weight){
+						var a = hexToRgb(hex1); var b = hexToRgb(hex2);
+						var w = Math.max(0, Math.min(1, weight||0));
+						var r = Math.round(a.r*(1-w) + b.r*w);
+						var g = Math.round(a.g*(1-w) + b.g*w);
+						var bl = Math.round(a.b*(1-w) + b.b*w);
+						return rgbToHex(r,g,bl);
+					};
+					var lighten = function(hex, amt){ return mix(hex, '#ffffff', amt); };
+					var darken = function(hex, amt){ return mix(hex, '#000000', amt); };
+
+					var applyBase = function(c){
+						for (var key in c) {
+							if (Object.prototype.hasOwnProperty.call(c, key)) {
+								root.style.setProperty('--color-' + key, c[key]);
 							}
 						}
+					};
+
+					var applyDerived = function(c){
+						var isDark = root.classList.contains('dark');
+						var bg1 = isDark ? darken(c.primary, 0.7) : lighten(c.primary, 0.92);
+						var bg2 = isDark ? mix('#1e293b', c.secondary, 0.18) : lighten(c.secondary, 0.88);
+						var bg3 = isDark ? mix('#0f172a', c.accent, 0.22) : lighten(c.accent, 0.82);
+						var bgAccent = isDark ? mix('#0b1220', c.accent, 0.28) : lighten(c.accent, 0.75);
+
+						var borderPrimary = isDark ? mix('#334155', c.primary, 0.2) : lighten(c.primary, 0.7);
+						var borderSecondary = isDark ? mix('#475569', c.secondary, 0.22) : lighten(c.secondary, 0.65);
+						var borderAccent = isDark ? mix('#64748b', c.accent, 0.28) : lighten(c.accent, 0.6);
+
+						root.style.setProperty('--bg-primary', bg1);
+						root.style.setProperty('--bg-secondary', bg2);
+						root.style.setProperty('--bg-tertiary', bg3);
+						root.style.setProperty('--bg-accent', bgAccent);
+						root.style.setProperty('--border-primary', borderPrimary);
+						root.style.setProperty('--border-secondary', borderSecondary);
+						root.style.setProperty('--border-accent', borderAccent);
+						root.style.setProperty('--calico-orange', c.accent);
+						root.style.setProperty('--calico-orange-light', lighten(c.accent, isDark ? 0.2 : 0.75));
+					};
+
+					if (colors) {
+						applyBase(colors);
+						applyDerived(colors);
 					}
+
+					// Reaplicar cuando cambie el tema (claro/oscuro)
+					var observer = new MutationObserver(function(mutations){
+						for (var i=0; i<mutations.length; i++) {
+							if (mutations[i].type === 'attributes' && mutations[i].attributeName === 'class') {
+								applyDerived(colors);
+							}
+						}
+					});
+					observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+
+					// Reaplicar si cambian los colores guardados (otra pestaña o borrados)
+					window.addEventListener('storage', function(ev){
+						if (ev.key === 'theme-custom-colors') {
+							if (ev.newValue) {
+								try {
+									var next = JSON.parse(ev.newValue);
+									applyBase(next);
+									applyDerived(next);
+									colors = next;
+								} catch(_){}
+							} else {
+								// Eliminado -> limpiar overrides derivados
+								['--bg-primary','--bg-secondary','--bg-tertiary','--bg-accent','--border-primary','--border-secondary','--border-accent','--calico-orange','--calico-orange-light'].forEach(function(k){
+									root.style.removeProperty(k);
+								});
+							}
+						}
+					});
+
+					// Reaplicar al navegar con Astro SPA (sin recargar)
+					var reapplyFromStore = function(){
+						var next = readColors();
+						if (next) {
+							applyBase(next);
+							applyDerived(next);
+							colors = next;
+						}
+					};
+					document.addEventListener('astro:after-swap', reapplyFromStore);
+					document.addEventListener('astro:page-load', reapplyFromStore);
+
+					// Soportar evento custom emitido por el customizador
+					window.addEventListener('theme-custom-colors-updated', function(ev){
+						try {
+							var detail = ev && ev.detail ? ev.detail : {};
+							var next = detail.colors || readColors();
+							if (next) {
+								applyBase(next);
+								applyDerived(next);
+								colors = next;
+							}
+						} catch(_){}
+					});
 				} catch (e) {
 					// fail silently
 				}
@@ -62,6 +169,9 @@ const { title } = Astro.props;
 		<div class="fixed inset-0 z-0">
 			<!-- Luz central pulsante -->
 			<div class="central-light"></div>
+
+			<!-- Cielo estrellado para modo oscuro -->
+			<div class="starry-sky"></div>
 			
 			<!-- Patrón geométrico sutil -->
 			<div class="geometric-pattern"></div>
@@ -84,7 +194,7 @@ const { title } = Astro.props;
 			
 			<!-- Theme Toggle - Outside of React context to avoid issues -->
 			<SimpleThemeToggle client:load />
-		</div>
+	</div>
 	</body>
 </html>
 
@@ -162,7 +272,7 @@ const { title } = Astro.props;
 		z-index: 3;
 	}
 
-	/* Patrón geométrico sutil */
+	/* Patrón geométrico sutil (solo en tema claro) */
 	.geometric-pattern {
 		position: fixed;
 		top: 0;
@@ -179,6 +289,95 @@ const { title } = Astro.props;
 		pointer-events: none;
 		z-index: 1;
 	}
+
+	/* Ocultar cuadrícula en modo oscuro */
+	.dark .geometric-pattern { display: none; }
+
+	/* Cielo estrellado (solo en tema oscuro) */
+	.starry-sky {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		pointer-events: none;
+		z-index: 1;
+		/* Fondo de espacio profundo con nebulosas suaves */
+		background:
+			linear-gradient(to bottom, #0b1020 0%, #000814 50%, #000000 100%),
+			radial-gradient(circle at 20% 30%, rgba(120, 170, 255, 0.15) 0%, transparent 60%),
+			radial-gradient(circle at 80% 70%, rgba(185, 120, 255, 0.13) 0%, transparent 60%),
+			radial-gradient(circle at 60% 20%, rgba(255, 120, 170, 0.10) 0%, transparent 60%);
+		opacity: 0; /* oculto por defecto, visible en .dark */
+	}
+
+	/* Estrellas: puntos distribuidos en varias capas */
+	.starry-sky::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-image:
+			/* estrellas pequeñas */
+			radial-gradient(1px 1px at 5% 10%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1px 1px at 15% 35%, rgba(255,255,255,0.7) 50%, transparent 51%),
+			radial-gradient(1px 1px at 28% 22%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1px 1px at 42% 18%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			radial-gradient(1px 1px at 60% 30%, rgba(255,255,255,0.7) 50%, transparent 51%),
+			radial-gradient(1px 1px at 75% 12%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			radial-gradient(1px 1px at 88% 26%, rgba(255,255,255,0.7) 50%, transparent 51%),
+			radial-gradient(1px 1px at 12% 55%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1px 1px at 25% 64%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			radial-gradient(1px 1px at 38% 52%, rgba(255,255,255,0.75) 50%, transparent 51%),
+			radial-gradient(1px 1px at 50% 68%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			radial-gradient(1px 1px at 66% 58%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1px 1px at 78% 50%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			radial-gradient(1px 1px at 90% 62%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			radial-gradient(1px 1px at 8% 82%, rgba(255,255,255,0.75) 50%, transparent 51%),
+			radial-gradient(1px 1px at 22% 90%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1px 1px at 34% 78%, rgba(255,255,255,0.7) 50%, transparent 51%),
+			radial-gradient(1px 1px at 48% 86%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1px 1px at 64% 80%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			radial-gradient(1px 1px at 76% 88%, rgba(255,255,255,0.75) 50%, transparent 51%),
+			radial-gradient(1px 1px at 88% 78%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			/* estrellas medianas */
+			radial-gradient(1.5px 1.5px at 12% 18%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 30% 12%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 48% 24%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 66% 16%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 84% 28%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 20% 44%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 38% 40%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 56% 46%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 72% 42%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 88% 48%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 16% 72%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 32% 68%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 48% 72%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 64% 70%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 80% 66%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 24% 88%, rgba(255,255,255,0.8) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 40% 84%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 56% 90%, rgba(255,255,255,0.85) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 72% 86%, rgba(255,255,255,0.9) 50%, transparent 51%),
+			radial-gradient(1.5px 1.5px at 88% 92%, rgba(255,255,255,0.85) 50%, transparent 51%);
+		background-repeat: no-repeat;
+		opacity: 0.9;
+		filter: drop-shadow(0 0 2px rgba(255,255,255,0.15));
+		animation: twinkle 6s ease-in-out infinite alternate;
+	}
+
+	/* Twinkle sutil de estrellas */
+	@keyframes twinkle {
+		0% { opacity: 0.65 }
+		50% { opacity: 0.85 }
+		100% { opacity: 1 }
+	}
+
+	/* Activar cielo estrellado solo en modo oscuro */
+	.dark .starry-sky { opacity: 1; }
+
+	/* Suavizar la capa decorativa previa en oscuro para no competir */
+	.dark body::before { opacity: 0.06; }
 
 	/* Animaciones - solo mantener las necesarias */
 	@keyframes pulse-slow {

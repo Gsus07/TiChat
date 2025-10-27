@@ -6,13 +6,67 @@ interface ThemeCustomizerProps {
 }
 
 export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = '' }) => {
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
   const [customColors, setCustomColors] = useState({
     primary: '#3b82f6',
     secondary: '#1d4ed8',
     accent: '#1e40af',
   });
+
+  // Utilidades para mezclar/derivar colores con mayor contraste visual
+  const clamp = (v: number) => Math.max(0, Math.min(255, v));
+  const hexToRgb = (hex: string) => {
+    const s = hex.replace('#', '');
+    if (s.length !== 6) return { r: 0, g: 0, b: 0 };
+    return {
+      r: parseInt(s.substring(0, 2), 16),
+      g: parseInt(s.substring(2, 4), 16),
+      b: parseInt(s.substring(4, 6), 16)
+    };
+  };
+  const rgbToHex = (r: number, g: number, b: number) =>
+    `#${clamp(r).toString(16).padStart(2, '0')}${clamp(g).toString(16).padStart(2, '0')}${clamp(b).toString(16).padStart(2, '0')}`;
+  const mix = (hex1: string, hex2: string, weight: number) => {
+    const a = hexToRgb(hex1);
+    const b = hexToRgb(hex2);
+    const w = Math.max(0, Math.min(1, weight));
+    const r = Math.round(a.r * (1 - w) + b.r * w);
+    const g = Math.round(a.g * (1 - w) + b.g * w);
+    const bl = Math.round(a.b * (1 - w) + b.b * w);
+    return rgbToHex(r, g, bl);
+  };
+  const lighten = (hex: string, amount: number) => mix(hex, '#ffffff', amount);
+  const darken = (hex: string, amount: number) => mix(hex, '#000000', amount);
+
+  // Aplica variables derivadas para que la paleta afecte fondos/bordes y sea más visible
+  const applyDerivedVariables = (base: { primary: string; secondary: string; accent: string }) => {
+    const root = document.documentElement;
+    // Intensidad de tinte en fondos según tema resuelto
+    const isDark = resolvedTheme === 'dark';
+    const bg1 = isDark ? darken(base.primary, 0.7) : lighten(base.primary, 0.92);
+    const bg2 = isDark ? mix('#1e293b', base.secondary, 0.18) : lighten(base.secondary, 0.88);
+    const bg3 = isDark ? mix('#0f172a', base.accent, 0.22) : lighten(base.accent, 0.82);
+    const bgAccent = isDark ? mix('#0b1220', base.accent, 0.28) : lighten(base.accent, 0.75);
+
+    // Bordes y calico basados en acento para coherencia
+    const borderPrimary = isDark ? mix('#334155', base.primary, 0.2) : lighten(base.primary, 0.7);
+    const borderSecondary = isDark ? mix('#475569', base.secondary, 0.22) : lighten(base.secondary, 0.65);
+    const borderAccent = isDark ? mix('#64748b', base.accent, 0.28) : lighten(base.accent, 0.6);
+
+    root.style.setProperty('--bg-primary', bg1);
+    root.style.setProperty('--bg-secondary', bg2);
+    root.style.setProperty('--bg-tertiary', bg3);
+    root.style.setProperty('--bg-accent', bgAccent);
+
+    root.style.setProperty('--border-primary', borderPrimary);
+    root.style.setProperty('--border-secondary', borderSecondary);
+    root.style.setProperty('--border-accent', borderAccent);
+
+    // Potenciar elementos que usan esquema “calico” y acentos
+    root.style.setProperty('--calico-orange', base.accent);
+    root.style.setProperty('--calico-orange-light', lighten(base.accent, isDark ? 0.2 : 0.75));
+  };
 
   // Paletas predefinidas
   const palettes = [
@@ -37,6 +91,8 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
         Object.entries(parsed).forEach(([key, value]) => {
           document.documentElement.style.setProperty(`--color-${key}`, String(value));
         });
+        // Aplicar variables derivadas para que el cambio sea notable en toda la UI
+        applyDerivedVariables(parsed);
       } catch {
         // ignore
       }
@@ -54,6 +110,8 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
 
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'auto') => {
     setTheme(newTheme);
+    // Reaplicar derivados al cambiar entre claro/oscuro para mantener contraste
+    applyDerivedVariables(customColors);
   };
 
   const handleColorChange = (colorKey: string, value: string) => {
@@ -62,6 +120,11 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
       [colorKey]: value
     }));
     document.documentElement.style.setProperty(`--color-${colorKey}`, value);
+    // Cada cambio de color actualiza los derivados
+    const next = { ...customColors, [colorKey]: value } as {
+      primary: string; secondary: string; accent: string
+    };
+    applyDerivedVariables(next);
   };
 
   const applyPalette = (palette: { primary: string; secondary: string; accent: string }) => {
@@ -74,6 +137,12 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
     Object.entries(next).forEach(([key, value]) => {
       document.documentElement.style.setProperty(`--color-${key}`, value as string);
     });
+    applyDerivedVariables(next);
+    try {
+      localStorage.setItem('theme-custom-colors', JSON.stringify(next));
+    } catch {}
+    // Avisar globalmente para navegación SPA
+    window.dispatchEvent(new CustomEvent('theme-custom-colors-updated', { detail: { colors: next } }));
   };
 
   const resetToDefaults = () => {
@@ -86,6 +155,17 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
     Object.keys(defaultColors).forEach(key => {
       document.documentElement.style.removeProperty(`--color-${key}`);
     });
+    // Quitar overrides derivados para volver al estilo base del tema
+    const derivedKeys = [
+      '--bg-primary','--bg-secondary','--bg-tertiary','--bg-accent',
+      '--border-primary','--border-secondary','--border-accent',
+      '--calico-orange','--calico-orange-light'
+    ];
+    derivedKeys.forEach(k => document.documentElement.style.removeProperty(k));
+    try {
+      localStorage.removeItem('theme-custom-colors');
+    } catch {}
+    window.dispatchEvent(new CustomEvent('theme-custom-colors-updated', { detail: { colors: null } }));
   };
 
   return (
@@ -205,6 +285,8 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
             <button
               onClick={() => {
                 localStorage.setItem('theme-custom-colors', JSON.stringify(customColors));
+                // Notificar para que otras vistas re-apliquen sin recargar
+                window.dispatchEvent(new CustomEvent('theme-custom-colors-updated', { detail: { colors: customColors } }));
                 const button = document.activeElement as HTMLButtonElement;
                 if (button) {
                   const originalText = button.textContent;
