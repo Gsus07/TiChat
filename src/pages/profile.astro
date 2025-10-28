@@ -9,12 +9,15 @@ import { supabase } from '../utils/supabaseClient';
 // Asegurar renderizado bajo demanda y evitar HTML estático con datos sensibles
 export const prerender = false;
 
-// Obtener el usuario autenticado en servidor; si no hay sesión, redirigir a login
-const { data: { user: authUser } } = await supabase.auth.getUser();
-if (!authUser) {
-  return Astro.redirect('/login');
+// Intentar obtener usuario en servidor, pero no forzar redirección aquí
+let authUser: any = null;
+try {
+  const { data: { user } } = await supabase.auth.getUser();
+  authUser = user;
+} catch (_) {
+  // Ignorar errores en SSR, el cliente gestionará la sesión
 }
-const userId = authUser.id;
+const userId = authUser?.id;
 
 // Get dynamic data
 let favoriteGames: any[] = [];
@@ -32,14 +35,15 @@ const getPostOriginalUrl = (post: any) => {
 };
 
 try {
-  const [favGamesResult, postsResult] = await Promise.all([
-    getFavoriteGamesByPosts(userId, 3),
-    getPostsByUserId(userId, userId, 10)
-  ]);
-  
-  favoriteGames = favGamesResult.data || [];
-  recentPosts = postsResult.data || [];
-  
+  if (userId) {
+    const [favGamesResult, postsResult] = await Promise.all([
+      getFavoriteGamesByPosts(userId, 3),
+      getPostsByUserId(userId, userId, 10)
+    ]);
+
+    favoriteGames = favGamesResult.data || [];
+    recentPosts = postsResult.data || [];
+  }
 } catch (error) {
   // Silent error handling
 }

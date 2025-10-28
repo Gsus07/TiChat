@@ -27,6 +27,10 @@
   --shadow-xl: 0 18px 28px rgba(0, 0, 0, 0.12);
   
   /* Colores de acento y marca */
+  /* Acento principal de la marca (usado por la paleta calico naranja) */
+  --color-accent: #FB923C; /* naranja cálido por defecto, inspirado en Tina */
+  --color-accent-hover: #F97316;
+  --accent-shadow: 0 0 24px rgba(251, 146, 60, 0.35);
   --color-primary: #2563EB;
   --color-primary-hover: #1D4ED8;
   --color-primary-light: #E1E9FF;
@@ -270,6 +274,79 @@ a:active, button:active {
   --calico-stripe-dark: var(--border-accent);
   
   --text-accent: var(--color-error);
+}
+
+/* Utilidades de botones y formularios (kit reutilizable) */
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--text-inverse);
+  border-radius: 12px;
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  transition: transform 180ms ease, box-shadow 220ms ease, background-color var(--theme-transition);
+}
+.btn-primary:hover { 
+  background: var(--color-accent-hover); 
+  box-shadow: var(--shadow-md), var(--accent-shadow);
+}
+.btn-primary:active { transform: translateY(1px); }
+.btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.35); outline: none; }
+
+.btn-secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  transition: transform 180ms ease, box-shadow 220ms ease, background-color var(--theme-transition), border-color var(--theme-transition);
+}
+.btn-secondary:hover { 
+  background: rgba(255,255,255,0.1); 
+  border-color: var(--border-accent);
+}
+.btn-secondary:active { transform: translateY(1px); }
+.btn-secondary:focus-visible { box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.35); outline: none; }
+
+.input-glass {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  border-radius: 9999px;
+  padding: 0.5rem 0.875rem;
+  transition: background-color var(--theme-transition), border-color var(--theme-transition), box-shadow 180ms ease;
+}
+.input-glass::placeholder { color: var(--text-muted); }
+.input-glass:hover { background: rgba(255,255,255,0.09); }
+.input-glass:focus { border-color: var(--border-accent); box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.25); outline: none; }
+
+/* Animaciones sutiles reutilizables */
+@keyframes fadeInSoft { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUpSoft { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
+.animate-fade-in { animation: fadeInSoft 240ms ease-out both; }
+.animate-slide-up { animation: slideUpSoft 260ms ease-out both; }
+
+/* Hilo de comentarios estilo burbuja */
+.comment-thread { position: relative; }
+.comment-item { position: relative; }
+.comment-item::before {
+  content: "";
+  position: absolute;
+  left: 0.94rem; /* centrado con avatar de 24px + ring */
+  top: -10px;
+  bottom: -10px;
+  width: 2px;
+  background: var(--calico-gray-200);
+  opacity: 0.4;
+}
+.comment-item:last-child::before { display: none; }
+.comment-avatar { box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--calico-orange-500); border-radius: 9999px; }
+
+/* Fondo grid sutil reutilizable */
+.bg-soft-grid {
+  background-image: linear-gradient(to right, rgba(148,163,184,0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* Animaciones para partículas flotantes */

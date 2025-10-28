@@ -108,43 +108,43 @@ const ping = Math.floor(Math.random() * 50) + 10;
     </div>
     
     <!-- Content section -->
-    <div class="p-6 relative flex-grow flex flex-col justify-between bg-white/90">
+    <div class="p-6 relative flex-grow flex flex-col justify-between bg-primary">
       <div class="flex-grow">
         <!-- Server name with gradient -->
-        <h3 class="text-xl font-heading font-bold mb-3 text-gray-800 group-hover:text-calico-orange-600 transition-all duration-500 line-clamp-2">
+        <h3 class="text-xl font-heading font-bold mb-3 text-calico-gray-800 group-hover:text-calico-orange-600 transition-all duration-500 line-clamp-2">
           {server.name}
         </h3>
         
         <!-- Description -->
-        <p class="text-gray-600 group-hover:text-gray-700 transition-colors duration-300 mb-4 text-sm leading-relaxed line-clamp-2">
+        <p class="text-calico-gray-600 group-hover:text-calico-gray-700 transition-colors duration-300 mb-4 text-sm leading-relaxed line-clamp-2">
           {server.description || 'Servidor de Minecraft'}
         </p>
         
         <!-- Server info grid -->
         <div class="grid grid-cols-2 gap-3 mb-4">
           <!-- IP Address -->
-          <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 group-hover:border-calico-orange-200 transition-colors duration-300">
-            <div class="text-gray-500 text-xs mb-1 font-medium">IP</div>
-            <div class="text-gray-800 text-sm font-mono truncate">{server.ip_address}:{server.port}</div>
+          <div class="bg-secondary rounded-lg p-3 border border-calico-gray-200 group-hover:border-calico-orange-200 transition-colors duration-300">
+            <div class="text-calico-gray-500 text-xs mb-1 font-medium">IP</div>
+            <div class="text-calico-gray-800 text-sm font-mono truncate">{server.ip_address}:{server.port}</div>
           </div>
           
           <!-- Players -->
-          <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 group-hover:border-calico-orange-200 transition-colors duration-300">
-            <div class="text-gray-500 text-xs mb-1 font-medium">Jugadores</div>
-            <div class="text-gray-800 text-sm font-semibold">{stats?.data?.total_posts || 0} posts</div>
+          <div class="bg-secondary rounded-lg p-3 border border-calico-gray-200 group-hover:border-calico-orange-200 transition-colors duration-300">
+            <div class="text-calico-gray-500 text-xs mb-1 font-medium">Jugadores</div>
+            <div class="text-calico-gray-800 text-sm font-semibold">{stats?.data?.total_posts || 0} posts</div>
           </div>
         </div>
         
         <!-- Last activity -->
         {stats?.data?.last_updated && (
-          <div class="text-gray-500 text-xs mb-4">
+          <div class="text-calico-gray-500 text-xs mb-4">
             Última actividad: {new Date(stats.data.last_updated).toLocaleDateString('es-ES')}
           </div>
         )}
       </div>
       
       <!-- Action buttons -->
-      <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+      <div class="flex items-center justify-between pt-4 border-t border-calico-gray-200">
         <button 
           type="button"
           data-action="copy-ip"
@@ -158,7 +158,7 @@ const ping = Math.floor(Math.random() * 50) + 10;
         </button>
         
         <!-- Ping indicator -->
-        <div class="flex items-center text-xs text-gray-500">
+        <div class="flex items-center text-xs text-calico-gray-500">
           <div class={`w-2 h-2 rounded-full mr-1 ${
             server.is_active ? 'bg-green-400 animate-pulse' : 'bg-red-400'
           }`}></div>

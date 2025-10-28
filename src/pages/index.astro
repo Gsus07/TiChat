@@ -423,23 +423,27 @@ const currentUserId = user?.id || null;
     }, 50);
   }
 
-  // Add event listener to the add game button
-  document.addEventListener('DOMContentLoaded', () => {
+  // Attach event listeners and initialize UI once, regardless of load timing
+  function attachIndexListenersOnce() {
+    if ((window as any).__indexInitDone) return;
+    (window as any).__indexInitDone = true;
+
     // Initial authentication check
     forceUIUpdate();
-    
+
     const addGameBtn = document.getElementById('add-game-btn');
-    if (addGameBtn) {
+    if (addGameBtn && !(addGameBtn as any).__bound) {
       addGameBtn.addEventListener('click', showCreateGameModal);
+      (addGameBtn as any).__bound = true;
     }
-    
+
     // Listen for authentication changes (cross-tab)
     window.addEventListener('storage', (e) => {
       if (e.key === 'userSession' || e.key === 'sessionStorage') {
         forceUIUpdate();
       }
     });
-    
+
     // Listen for custom authentication events
     window.addEventListener('authStateChanged', () => {
       forceUIUpdate();
@@ -474,14 +478,14 @@ const currentUserId = user?.id || null;
     setTimeout(() => {
       forceUIUpdate();
     }, 100);
-  });
+  }
 
-  // Also run the check when the script loads (immediate execution)
+  // Ensure listeners are attached both for late and early script execution
   if (document.readyState === 'loading') {
-    // DOM is still loading
-    document.addEventListener('DOMContentLoaded', forceUIUpdate);
+    document.addEventListener('DOMContentLoaded', () => {
+      attachIndexListenersOnce();
+    });
   } else {
-    // DOM is already loaded
-    forceUIUpdate();
+    attachIndexListenersOnce();
   }
 </script>

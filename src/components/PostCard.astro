@@ -191,19 +191,19 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   {currentUserId && (
     <div class="mt-4 pt-4 border-t border-calico-stripe-light/20">
       <div class="flex items-center space-x-3">
-        <div class="w-8 h-8 bg-gradient-to-br from-calico-orange-400 to-calico-brown-500 rounded-full flex items-center justify-center text-calico-white font-bold text-xs">
+        <div class="w-8 h-8 bg-gradient-to-br from-calico-orange-400 to-calico-brown-500 rounded-full flex items-center justify-center text-calico-white font-bold text-xs comment-avatar">
           {currentUserId.charAt(0).toUpperCase()}
         </div>
         <input 
           type="text" 
           placeholder="Escribe un comentario..." 
-          class="flex-1 px-3 py-2 bg-white/5 border border-calico-stripe-light/20 rounded-full text-calico-white placeholder-calico-gray-500 text-sm focus:outline-none focus:border-calico-stripe-light/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
+          class="input-glass flex-1 text-calico-white placeholder-calico-gray-500 text-sm"
           id={`comment-input-${post.id}`}
           onkeypress={`handleCommentKeyPress(event, '${post.id}')`}
         />
         <button 
           onclick={`submitComment('${post.id}')`}
-          class="text-calico-orange-400 hover:text-calico-orange-300 transition-colors p-2 rounded-full hover:bg-calico-orange-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calico-orange-300"
+          class="btn-primary px-3 py-2"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
@@ -215,7 +215,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
   
   <!-- Sección de comentarios expandida (inicialmente oculta) -->
   <div id={`comments-section-${post.id}`} class="hidden mt-4 pt-4 border-t border-calico-stripe-light/20">
-    <div class="space-y-3 max-h-60 overflow-y-auto" id={`comments-list-${post.id}`}>
+    <div class="comment-thread space-y-3 max-h-60 overflow-y-auto" id={`comments-list-${post.id}`}>
       <!-- Los comentarios se cargarán dinámicamente aquí -->
     </div>
   </div>
@@ -304,9 +304,9 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
         const commentsList = document.getElementById(`comments-list-${postId}`);
         
         if (commentsList) {
-          commentsList.innerHTML = comments.map((comment: any) => `
-          <div class="flex items-start space-x-3 p-3 bg-white/5 rounded-lg">
-            <div class="w-6 h-6 bg-gradient-to-br from-calico-orange-400 to-calico-brown-500 rounded-full flex items-center justify-center text-calico-white font-bold text-xs">
+          commentsList.innerHTML = comments.map((comment: any, idx: number) => `
+          <div class="comment-item flex items-start space-x-3 p-3 bg-white/5 border border-calico-stripe-light/20 rounded-xl hover:bg-white/7 transition-colors">
+            <div class="w-6 h-6 bg-gradient-to-br from-calico-orange-400 to-calico-brown-500 rounded-full flex items-center justify-center text-calico-white font-bold text-xs comment-avatar">
               ${comment.profiles.username.charAt(0).toUpperCase()}
             </div>
             <div class="flex-1">
@@ -314,7 +314,7 @@ const authorInitial = post.profiles.username.charAt(0).toUpperCase();
                 <span class="text-sm font-medium text-calico-white">${comment.profiles.username}</span>
                 <span class="text-xs text-calico-gray-400">${formatTimeAgo(comment.created_at)}</span>
               </div>
-              <p class="text-sm text-calico-gray-200">${comment.content}</p>
+              <p class="text-sm text-calico-gray-200 leading-relaxed">${comment.content}</p>
             </div>
           </div>
         `).join('');
