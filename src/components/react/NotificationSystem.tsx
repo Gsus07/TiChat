@@ -55,20 +55,35 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
     }
   };
 
-  // Get notification styles
+  // Get notification styles (themed + glass)
   const getNotificationStyles = (type: Notification['type']): string => {
-    const baseStyles = 'relative p-4 rounded-lg shadow-xl border backdrop-blur-sm transition-all duration-300 transform';
-    
+    const baseStyles = 'relative p-4 rounded-xl shadow-theme-xl border transition-all duration-300 transform glass-calico text-primary';
+
     switch (type) {
       case 'success':
-        return `${baseStyles} bg-green-500 text-white border-green-400 shadow-green-500/25`;
+        return `${baseStyles} border-success`;
       case 'error':
-        return `${baseStyles} bg-red-500 text-white border-red-400 shadow-red-500/25`;
+        return `${baseStyles} border-error`;
       case 'warning':
-        return `${baseStyles} bg-yellow-500 text-white border-yellow-400 shadow-yellow-500/25`;
+        return `${baseStyles} border-warning`;
       case 'info':
       default:
-        return `${baseStyles} bg-blue-500 text-white border-blue-400 shadow-blue-500/25`;
+        return `${baseStyles} border-accent`;
+    }
+  };
+
+  // Icon color classes per type (uses theme variables)
+  const getNotificationIconClass = (type: Notification['type']): string => {
+    switch (type) {
+      case 'success':
+        return 'text-success';
+      case 'error':
+        return 'text-error';
+      case 'warning':
+        return 'text-warning';
+      case 'info':
+      default:
+        return 'text-info';
     }
   };
 
@@ -117,14 +132,14 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-5 h-5 mr-3 flex-shrink-0 ${getNotificationIconClass(notification.type)}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {getNotificationIcon(notification.type)}
               </svg>
-              <span className="text-sm font-medium text-white">{notification.message}</span>
+              <span className="text-sm font-medium">{notification.message}</span>
             </div>
             <button
               onClick={() => removeNotification(notification.id)}
-              className="ml-4 text-calico-white/80 hover:text-calico-white transition-colors flex-shrink-0"
+              className="ml-4 text-tertiary hover:text-primary transition-colors flex-shrink-0"
               aria-label="Cerrar notificación"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

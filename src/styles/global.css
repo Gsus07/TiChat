@@ -206,6 +206,10 @@ a:active, button:active {
 .border-secondary { border-color: var(--border-secondary); }
 .border-accent { border-color: var(--border-accent); }
 .border-error { border-color: var(--color-error); }
+/* Estados adicionales para consistencia temática */
+.border-success { border-color: var(--color-success); }
+.border-warning { border-color: var(--color-warning); }
+.border-info { border-color: var(--color-info); }
 
 .placeholder-muted::placeholder { color: var(--text-muted); }
 
@@ -223,6 +227,11 @@ a:active, button:active {
 .notification-button-hover { background-color: var(--notification-button-hover); }
 .notification-avatar-border { border-color: var(--notification-avatar-border); }
 .notification-content-bg { background-color: var(--notification-content-bg); }
+
+/* Fondos sutiles por estado (opcional) */
+.bg-success-subtle { background-color: var(--bg-tertiary); }
+.bg-warning-subtle { background-color: var(--bg-tertiary); }
+.bg-info-subtle { background-color: var(--bg-tertiary); }
 
 /* Glassmorphism con soporte para temas */
 .glass {
