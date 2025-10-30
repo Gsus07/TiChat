@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNotifications } from './NotificationProvider';
+import { saveUserSession } from '../../utils/auth';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -150,7 +151,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         throw new Error(result.error || 'Error al iniciar sesión');
       }
 
-      // Crear datos de sesión
+      // Crear datos de sesión (incluye loginTime y rememberMe)
       const sessionData = {
         user: {
           id: result.user.id,
@@ -161,15 +162,49 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
         },
         access_token: result.session?.access_token,
         refresh_token: result.session?.refresh_token,
-        expires_at: result.session?.expires_at
+        expires_at: result.session?.expires_at,
+        loginTime: new Date().toISOString(),
+        rememberMe: !!formData.rememberMe
       };
 
-      // Guardar sesión según la preferencia del usuario
-      if (formData.rememberMe) {
-        localStorage.setItem('userSession', JSON.stringify(sessionData));
-      } else {
-        sessionStorage.setItem('userSession', JSON.stringify(sessionData));
-      }
+      // Guardar usando util centralizada (limpia storage opuesto y calcula expiresAt)
+      saveUserSession(sessionData as any, !!formData.rememberMe);
+
+      // Aplicar tema guardado en el perfil si existe
+      try {
+        const rawTheme = result.profile?.theme;
+        let profileTheme: any = null;
+        if (rawTheme) {
+          if (typeof rawTheme === 'string') {
+            const t = rawTheme.trim();
+            if (t === 'light' || t === 'dark' || t === 'auto') {
+              profileTheme = { mode: t };
+            } else {
+              try { profileTheme = JSON.parse(t); } catch {}
+            }
+          } else if (typeof rawTheme === 'object') {
+            profileTheme = rawTheme;
+          }
+        }
+
+        if (profileTheme) {
+          if (profileTheme.colors) {
+            try {
+              localStorage.setItem('theme-custom-colors', JSON.stringify(profileTheme.colors));
+            } catch {}
+            window.dispatchEvent(new CustomEvent('theme-custom-colors-updated', { detail: { colors: profileTheme.colors } }));
+          }
+          const mode = profileTheme.mode as 'light' | 'dark' | 'auto' | undefined;
+          if (mode) {
+            try { localStorage.setItem('tichat-theme-preference', mode); } catch {}
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const resolved = mode === 'auto' ? (prefersDark ? 'dark' : 'light') : mode;
+            document.documentElement.classList.toggle('dark', resolved === 'dark');
+            document.documentElement.classList.toggle('light', resolved === 'light');
+            document.documentElement.setAttribute('data-theme', resolved);
+          }
+        }
+      } catch {}
 
       // Mostrar mensaje de éxito
       addNotification('¡Bienvenido! Has iniciado sesión correctamente.', 'success');

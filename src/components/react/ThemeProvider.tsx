@@ -1,5 +1,6 @@
 // src/components/react/ThemeProvider.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getUserThemePreference } from '../../utils/storage';
 
 export type Theme = 'light' | 'dark' | 'auto';
 
@@ -25,7 +26,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const sys = prefersDark ? 'dark' : 'light';
     setSystemTheme(sys);
-    setThemeState(saved || 'auto');
+    // Intentar cargar desde perfil primero
+    (async () => {
+      const { theme: profileTheme } = await getUserThemePreference();
+      if (profileTheme?.mode) {
+        setThemeState(profileTheme.mode as Theme);
+        try {
+          localStorage.setItem('tichat-theme-preference', profileTheme.mode);
+        } catch {}
+        // Sincronizar colores personalizados
+        if (profileTheme.colors) {
+          try {
+            localStorage.setItem('theme-custom-colors', JSON.stringify(profileTheme.colors));
+          } catch {}
+          // Avisar para re-aplicar colores derivados
+          window.dispatchEvent(new CustomEvent('theme-custom-colors-updated', { detail: { colors: profileTheme.colors } }));
+        }
+      } else {
+        setThemeState(saved || 'auto');
+      }
+    })();
   }, []);
 
   useEffect(() => {

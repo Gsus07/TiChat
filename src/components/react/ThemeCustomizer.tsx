@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../utils/themeManager';
+import { getUserThemePreference, saveUserThemePreference } from '../../utils/storage';
 
 interface ThemeCustomizerProps {
   className?: string;
@@ -97,6 +98,26 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
         // ignore
       }
     }
+    // Intentar cargar tema desde el perfil en Supabase
+    (async () => {
+      const { theme: profileTheme } = await getUserThemePreference();
+      if (profileTheme?.colors) {
+        setCustomColors(profileTheme.colors);
+        Object.entries(profileTheme.colors).forEach(([key, value]) => {
+          document.documentElement.style.setProperty(`--color-${key}`, String(value));
+        });
+        applyDerivedVariables(profileTheme.colors);
+        try {
+          localStorage.setItem('theme-custom-colors', JSON.stringify(profileTheme.colors));
+        } catch {}
+      }
+      if (profileTheme?.mode) {
+        setTheme(profileTheme.mode);
+        try {
+          localStorage.setItem('tichat-theme-preference', profileTheme.mode);
+        } catch {}
+      }
+    })();
   }, []);
 
   // Persistir automáticamente cambios de paleta
@@ -112,6 +133,8 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
     setTheme(newTheme);
     // Reaplicar derivados al cambiar entre claro/oscuro para mantener contraste
     applyDerivedVariables(customColors);
+    // Persistir en perfil si está autenticado
+    saveUserThemePreference({ mode: newTheme, colors: customColors, version: 1 }).catch(() => {});
   };
 
   const handleColorChange = (colorKey: string, value: string) => {
@@ -283,8 +306,12 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
               🔄 Restablecer
             </button>
             <button
-              onClick={() => {
-                localStorage.setItem('theme-custom-colors', JSON.stringify(customColors));
+              onClick={async () => {
+                try {
+                  localStorage.setItem('theme-custom-colors', JSON.stringify(customColors));
+                } catch {}
+                // Guardar también en el perfil
+                await saveUserThemePreference({ mode: theme as any, colors: customColors, version: 1 }).catch(() => {});
                 // Notificar para que otras vistas re-apliquen sin recargar
                 window.dispatchEvent(new CustomEvent('theme-custom-colors-updated', { detail: { colors: customColors } }));
                 const button = document.activeElement as HTMLButtonElement;

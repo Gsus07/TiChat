@@ -110,7 +110,8 @@ async function refreshToken(): Promise<{ success: boolean; error?: string }> {
  * @returns UserSession object or null if no valid session exists
  */
 export function getUserSession(): UserSession | null {
-  const userSession = localStorage.getItem('userSession') || sessionStorage.getItem('userSession');
+  // Priorizar la sesión de la pestaña actual (sessionStorage) sobre una persistente (localStorage)
+  const userSession = sessionStorage.getItem('userSession') || localStorage.getItem('userSession');
   
   if (!userSession) {
     return null;

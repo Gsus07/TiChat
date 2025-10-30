@@ -16,16 +16,31 @@ export interface UploadResult {
  */
 async function setSupabaseSession(): Promise<boolean> {
   try {
-    // 1) Si ya hay una sesión activa en Supabase, úsala
+    // Leer sesión almacenada de nuestra app
+    const stored = getUserSession();
+
+    // 1) Si ya hay una sesión activa en Supabase, validar que corresponda al usuario actual
     const current = await supabase.auth.getSession();
     const currentSession = current.data.session;
     if (currentSession?.access_token) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) return true;
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        // Si tenemos una sesión almacenada y el usuario no coincide, reconfigurar la sesión
+        if (stored?.user?.id && currentUser.id !== stored.user.id && stored.access_token) {
+          const { error } = await supabase.auth.setSession({
+            access_token: stored.access_token,
+            refresh_token: stored.refresh_token || ''
+          });
+          if (error) return false;
+          const { data: { user } } = await supabase.auth.getUser();
+          return !!user;
+        }
+        // Si coincide o no hay sesión almacenada, aceptar la actual
+        return true;
+      }
     }
 
     // 2) Fallback: configurar sesión desde nuestro storage local
-    const stored = getUserSession();
     if (!stored || !stored.access_token) {
       return false;
     }
@@ -366,5 +381,115 @@ export async function uploadPostImage(
       data: null,
       error: 'Error inesperado al subir la imagen del post'
     };
+  }
+}
+
+// === Preferencias de tema del usuario (modo + colores personalizados) ===
+export interface ProfileTheme {
+  mode: 'light' | 'dark' | 'auto';
+  colors: { primary: string; secondary: string; accent: string };
+  version?: number;
+}
+
+function parseProfileTheme(raw: any): ProfileTheme | null {
+  try {
+    if (!raw) return null;
+    // Puede venir como string 'light'|'dark'|'auto' o como JSON/string JSON
+    if (typeof raw === 'string') {
+      const trimmed = raw.trim();
+      if (trimmed === 'light' || trimmed === 'dark' || trimmed === 'auto') {
+        return { mode: trimmed, colors: { primary: '#3b82f6', secondary: '#1d4ed8', accent: '#1e40af' }, version: 1 };
+      }
+      // Intentar parsear JSON si el string representa un objeto
+      try {
+        const obj = JSON.parse(trimmed);
+        if (obj && obj.mode && obj.colors) {
+          return {
+            mode: obj.mode,
+            colors: obj.colors,
+            version: obj.version || 1
+          };
+        }
+      } catch {
+        return null;
+      }
+    } else if (typeof raw === 'object') {
+      // Si la columna es JSONB y ya viene como objeto
+      if (raw.mode && raw.colors) {
+        return {
+          mode: raw.mode,
+          colors: raw.colors,
+          version: raw.version || 1
+        };
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Obtiene el tema guardado del perfil (modo + colores personalizados)
+ */
+export async function getUserThemePreference(): Promise<{ theme: ProfileTheme | null; error: string | null }> {
+  try {
+    const sessionSet = await setSupabaseSession();
+    if (!sessionSet) {
+      return { theme: null, error: 'Usuario no autenticado' };
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { theme: null, error: 'Usuario no autenticado' };
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('theme')
+      .eq('id', user.id)
+      .single();
+
+    if (error) {
+      return { theme: null, error: `Error al obtener tema: ${error.message}` };
+    }
+
+    const parsed = parseProfileTheme(data?.theme);
+    return { theme: parsed, error: null };
+  } catch (err) {
+    return { theme: null, error: 'Error inesperado al obtener el tema' };
+  }
+}
+
+/**
+ * Guarda el tema del perfil (modo + colores personalizados)
+ */
+export async function saveUserThemePreference(theme: ProfileTheme): Promise<{ error: string | null }> {
+  try {
+    const sessionSet = await setSupabaseSession();
+    if (!sessionSet) {
+      return { error: 'Usuario no autenticado' };
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { error: 'Usuario no autenticado' };
+    }
+
+    // Guardamos como string JSON para soportar columnas tipo text o jsonb
+    const payload = { theme: JSON.stringify({ ...theme, version: theme.version || 1 }) };
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(payload)
+      .eq('id', user.id);
+
+    if (error) {
+      return { error: `Error al guardar tema: ${error.message}` };
+    }
+
+    return { error: null };
+  } catch (err) {
+    return { error: 'Error inesperado al guardar el tema' };
   }
 }
