@@ -735,11 +735,11 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
       {isMobileMenuOpen && (
         <>
           <div
-            className="md:hidden fixed inset-0 top-16 z-[9997] bg-black/40 animate-overlay-in"
+            className="md:hidden fixed inset-0 top-16 z-[9997] bg-black/60 animate-overlay-in"
             onClick={handleMobileMenuClick}
             aria-hidden="true"
           />
-          <div className="md:hidden fixed inset-x-0 top-16 z-[9998] backdrop-blur-xl bg-gradient-to-b from-calico-dark/95 to-calico-dark/90 border-t border-calico-orange-500/20 shadow-2xl overflow-x-hidden ring-1 ring-calico-orange-500/20 animate-panel-in">
+          <div className="md:hidden fixed inset-x-0 top-16 z-[9998] bg-[var(--bg-secondary)] border-t border-calico-orange-500/20 shadow-2xl overflow-x-hidden ring-1 ring-calico-orange-500/20 animate-panel-in">
             <div
               className="px-4 pt-4 pb-6 space-y-2 max-h-[calc(100dvh-4rem)] overflow-y-auto"
               style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}
@@ -754,7 +754,7 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
                   onChange={handleMobileSearchChange}
                   onFocus={handleMobileSearchFocus}
                   placeholder="Buscar juegos..."
-                  className="w-full px-4 py-2.5 pl-10 pr-4 text-sm bg-gradient-to-r from-calico-dark/60 to-calico-dark/80 border border-calico-orange-500/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500/50 focus:border-calico-orange-500 transition-all duration-300 backdrop-blur-sm"
+                  className="w-full px-4 py-2.5 pl-10 pr-4 text-sm bg-calico-gray-800 border border-calico-orange-500/30 rounded-xl text-calico-white placeholder-calico-gray-400 focus:outline-none focus:ring-2 focus:ring-calico-orange-500/50 focus:border-calico-orange-500 transition-all duration-300"
                 />
                 <svg
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-calico-gray-400"
@@ -842,6 +842,33 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
                     />
                   </svg>
                   Mi Perfil
+                </a>
+                
+                <a
+                  href="/settings"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-calico-gray-300 hover:text-calico-white transition-all duration-300 hover:bg-gradient-to-r hover:from-calico-orange-500/20 hover:to-calico-orange-600/20 hover:shadow-lg hover:shadow-calico-orange-500/25"
+                >
+                  <svg
+                    className="w-5 h-5 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  Configuraciones
                 </a>
                 
                 <a

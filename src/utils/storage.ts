@@ -493,3 +493,102 @@ export async function saveUserThemePreference(theme: ProfileTheme): Promise<{ er
     return { error: 'Error inesperado al guardar el tema' };
   }
 }
+
+/**
+ * Obtiene los campos básicos de perfil del usuario autenticado
+ * @returns username y bio del perfil del usuario actual
+ */
+export async function getUserProfileBasic(): Promise<{
+  data: { username: string | null; bio: string | null } | null;
+  error: string | null;
+}> {
+  try {
+    const sessionSet = await setSupabaseSession();
+    if (!sessionSet) {
+      return { data: null, error: 'Usuario no autenticado' };
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { data: null, error: 'Usuario no autenticado' };
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('username,bio')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      return { data: null, error: `Error al obtener perfil: ${error.message}` };
+    }
+
+    if (!data) {
+      return { data: { username: null, bio: null }, error: null };
+    }
+
+    return { data: { username: data.username ?? null, bio: data.bio ?? null }, error: null };
+  } catch (_) {
+    return { data: null, error: 'Error inesperado al obtener el perfil' };
+  }
+}
+
+/**
+ * Actualiza username y/o bio del perfil del usuario autenticado
+ */
+export async function updateUserProfileBasic(payload: {
+  username?: string | null;
+  bio?: string | null;
+}): Promise<{ error: string | null }> {
+  try {
+    const sessionSet = await setSupabaseSession();
+    if (!sessionSet) {
+      return { error: 'Usuario no autenticado' };
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { error: 'Usuario no autenticado' };
+    }
+
+    // Normalizar datos: recortar y convertir cadenas vacías a null
+    const updates: { username?: string | null; bio?: string | null } = {};
+    if (payload.username !== undefined) {
+      if (payload.username === null) {
+        updates.username = null;
+      } else {
+        const u = String(payload.username).trim();
+        updates.username = u.length ? u : null;
+      }
+    }
+    if (payload.bio !== undefined) {
+      if (payload.bio === null) {
+        updates.bio = null;
+      } else {
+        const b = String(payload.bio).trim();
+        updates.bio = b.length ? b : null;
+      }
+    }
+
+    if (!('username' in updates) && !('bio' in updates)) {
+      return { error: null };
+    }
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', user.id);
+
+    if (updateError) {
+      // Mensajes más amigables según código
+      if (updateError.code === '23505') {
+        return { error: 'El nombre de usuario ya está en uso' };
+      }
+      return { error: `Error al actualizar perfil: ${updateError.message}` };
+    }
+
+    return { error: null };
+  } catch (_) {
+    return { error: 'Error inesperado al actualizar el perfil' };
+  }
+}

@@ -22,6 +22,7 @@ const userId = authUser?.id;
 // Get dynamic data
 let favoriteGames: any[] = [];
 let recentPosts: any[] = [];
+let userBio: string | null = null;
 
 // Utilidades para construir la URL de la publicación original
 const slugify = (s: string) => s.toLowerCase().trim().replace(/\s+/g, '-');
@@ -43,6 +44,14 @@ try {
 
     favoriteGames = favGamesResult.data || [];
     recentPosts = postsResult.data || [];
+
+    // SSR: cargar bio para evitar FOUC si hay sesión en SSR
+    const { data: profileRow } = await supabase
+      .from('profiles')
+      .select('bio')
+      .eq('id', userId)
+      .maybeSingle();
+    userBio = profileRow?.bio ?? null;
   }
 } catch (error) {
   // Silent error handling
@@ -83,6 +92,12 @@ try {
                 <span class="bg-calico-orange/20 text-calico-orange px-3 py-1 rounded-full text-sm border border-calico-orange/30">Gamer</span>
                 <span class="bg-calico-brown/20 text-calico-brown px-3 py-1 rounded-full text-sm border border-calico-brown/30">Miembro desde <span id="memberSince">2024</span></span>
               </div>
+              {userBio && (
+                <p id="profileBio" class="mt-3 text-calico-gray-300 dark:text-calico-gray-400 text-sm leading-relaxed">{userBio}</p>
+              )}
+              {!userBio && (
+                <p id="profileBio" class="mt-3 text-calico-gray-300 dark:text-calico-gray-400 text-sm leading-relaxed"></p>
+              )}
             </div>
 
             <!-- Edit Button -->
@@ -329,6 +344,22 @@ try {
       }
     }
 
+    // Load user bio dynamically
+    async function loadUserBio(userId: string) {
+      try {
+        const response = await fetch(`/api/users/${userId}/profile`);
+        if (!response.ok) return;
+        const result = await response.json();
+        const bio = result?.data?.bio || '';
+        const bioEl = document.getElementById('profileBio');
+        if (bioEl) {
+          bioEl.textContent = bio;
+        }
+      } catch (_) {
+        // Silent error handling
+      }
+    }
+
     // Load user profile data
     async function loadProfile() {
       const session = checkAuth();
@@ -365,6 +396,7 @@ try {
       if (user.id) {
         try {
           await loadFavoriteGames(user.id);
+          await loadUserBio(user.id);
           // Nota: omitimos cargar actividad reciente por cliente para mantener SSR
         } catch (error) {
           // Silent error handling
