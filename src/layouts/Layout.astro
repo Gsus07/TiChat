@@ -30,6 +30,18 @@ const { title } = Astro.props;
 			(function() {
 				try {
 					var root = document.documentElement;
+                    var applyThemeFromStore = function(){
+                        try {
+                            var theme = localStorage.getItem('tichat-theme-preference') || 'auto';
+                            var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                            var resolved = theme === 'auto' ? systemTheme : theme;
+                            root.classList.remove('light','dark');
+                            root.classList.add(resolved);
+                            root.setAttribute('data-theme', resolved);
+                            var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                            if (metaThemeColor) { metaThemeColor.setAttribute('content', resolved === 'dark' ? '#1e293b' : '#ffffff'); }
+                        } catch(_){ }
+                    };
 					var readColors = function(){
 						var raw = localStorage.getItem('theme-custom-colors');
 						return raw ? JSON.parse(raw) : null;
@@ -97,7 +109,7 @@ const { title } = Astro.props;
 					var observer = new MutationObserver(function(mutations){
 						for (var i=0; i<mutations.length; i++) {
 							if (mutations[i].type === 'attributes' && mutations[i].attributeName === 'class') {
-								applyDerived(colors);
+								if (colors) { applyDerived(colors); }
 							}
 						}
 					});
@@ -122,8 +134,8 @@ const { title } = Astro.props;
 						}
 					});
 
-					// Reaplicar al navegar con Astro SPA (sin recargar)
 					var reapplyFromStore = function(){
+						applyThemeFromStore();
 						var next = readColors();
 						if (next) {
 							applyBase(next);

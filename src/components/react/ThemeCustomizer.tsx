@@ -76,6 +76,11 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
     { name: 'Bosque', primary: '#22c55e', secondary: '#16a34a', accent: '#4ade80' },
     { name: 'Violeta', primary: '#8b5cf6', secondary: '#7c3aed', accent: '#a78bfa' },
     { name: 'Neón', primary: '#22d3ee', secondary: '#22c55e', accent: '#f472b6' },
+    { name: 'Nord', primary: '#88C0D0', secondary: '#5E81AC', accent: '#81A1C1' },
+    { name: 'Drácula', primary: '#BD93F9', secondary: '#6272A4', accent: '#FF79C6' },
+    { name: 'Solarizado', primary: '#268BD2', secondary: '#2AA198', accent: '#B58900' },
+    { name: 'Pastel', primary: '#A5B4FC', secondary: '#FBCFE8', accent: '#6EE7B7' },
+    { name: 'Monokai', primary: '#F92672', secondary: '#66D9EF', accent: '#A6E22E' },
   ];
 
   const themeOptions = [
@@ -215,7 +220,7 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
       </div>
 
       {/* Content */}
-      <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[44rem] opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[75vh] opacity-100 overflow-y-auto pr-1' : 'max-h-0 opacity-0 overflow-y-hidden'}`}>
         <div className="p-4 space-y-6">
           {/* Theme Selection */}
           <div className="space-y-3">
@@ -245,7 +250,7 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({ className = ''
             <h4 className="text-sm font-medium text-secondary flex items-center gap-2">
               🧪 Paletas predefinidas
             </h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="max-h-[50vh] overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {palettes.map((p) => (
                 <button
                   key={p.name}

@@ -135,6 +135,12 @@
               transform 180ms ease;
 }
 
+html.no-theme-transition *,
+html.no-theme-transition *::before,
+html.no-theme-transition *::after {
+  transition: none !important;
+}
+
 /* Tipografía mejorada */
 body {
   font-family: 'Inter', system-ui, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif;

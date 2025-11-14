@@ -1,91 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
+import { useTheme } from '../../utils/themeManager';
 
 type Theme = 'light' | 'dark' | 'auto';
 
 export default function SimpleThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('auto');
+  const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Obtener tema actual del localStorage o usar 'auto' por defecto
-    const savedTheme = localStorage.getItem('tichat-theme-preference') as Theme || 'auto';
-    setTheme(savedTheme);
-
-    // Función para detectar el tema del sistema
-    const getSystemTheme = (): 'light' | 'dark' => {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    };
-
-    // Función para resolver el tema actual
-    const resolveTheme = (themeType: Theme): 'light' | 'dark' => {
-      return themeType === 'auto' ? getSystemTheme() : themeType;
-    };
-
-    // Aplicar tema inicial
-    const resolved = resolveTheme(savedTheme);
-    
-    // Aplicar clase dark al documentElement
-    if (resolved === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-    }
-
-    // Escuchar cambios en el tema del sistema
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = () => {
-      if (savedTheme === 'auto') {
-        const newResolved = getSystemTheme();
-        
-        // Aplicar clase dark al documentElement
-        if (newResolved === 'dark') {
-          document.documentElement.classList.add('dark');
-          document.documentElement.classList.remove('light');
-        } else {
-          document.documentElement.classList.add('light');
-          document.documentElement.classList.remove('dark');
-        }
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
-  }, []);
-
-  // Función para cerrar el dropdown al hacer clic fuera
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  // Función para cambiar el tema directamente
   const selectTheme = (selectedTheme: Theme) => {
     setTheme(selectedTheme);
-    localStorage.setItem('tichat-theme-preference', selectedTheme);
-    
-    const resolvedTheme = selectedTheme === 'auto' 
-      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-      : selectedTheme;
-    
-    if (resolvedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-    }
-    
+    try { localStorage.setItem('tichat-theme-preference', selectedTheme); } catch {}
     setIsOpen(false);
   };
 

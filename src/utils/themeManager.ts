@@ -224,6 +224,7 @@ export function getInitialTheme(): string {
   return `
     (function() {
       try {
+        document.documentElement.classList.add('no-theme-transition');
         var theme = localStorage.getItem('tichat-theme-preference') || 'auto';
         var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         var resolvedTheme = theme === 'auto' ? systemTheme : theme;
@@ -238,6 +239,7 @@ export function getInitialTheme(): string {
           document.head.appendChild(metaThemeColor);
         }
         metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#1e293b' : '#ffffff');
+        setTimeout(function(){ document.documentElement.classList.remove('no-theme-transition'); }, 0);
       } catch (e) {
         // Silently handle theme initialization errors
       }

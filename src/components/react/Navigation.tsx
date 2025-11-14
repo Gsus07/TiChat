@@ -739,7 +739,7 @@ const Navigation: React.FC<NavigationProps> = ({ games = [] }) => {
             onClick={handleMobileMenuClick}
             aria-hidden="true"
           />
-          <div className="md:hidden fixed inset-x-0 top-16 z-[9998] bg-[var(--bg-secondary)] border-t border-calico-orange-500/20 shadow-2xl overflow-x-hidden ring-1 ring-calico-orange-500/20 animate-panel-in">
+          <div className="md:hidden fixed inset-x-0 top-16 z-[9998] bg-[var(--bg-secondary)] border-t border-secondary shadow-theme-xl overflow-x-hidden animate-panel-in">
             <div
               className="px-4 pt-4 pb-6 space-y-2 max-h-[calc(100dvh-4rem)] overflow-y-auto"
               style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}
